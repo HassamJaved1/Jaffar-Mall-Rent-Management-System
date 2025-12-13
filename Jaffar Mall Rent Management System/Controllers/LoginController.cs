@@ -35,7 +35,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             }
 
             // login success, redirect
-            return RedirectToAction("Privacy", "Home");
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }
