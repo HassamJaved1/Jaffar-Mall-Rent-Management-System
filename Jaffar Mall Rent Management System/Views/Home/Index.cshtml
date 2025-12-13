@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model Jaffar_Mall_Rent_Management_System.Models.ViewModels.LoginViewModel
+
+<!DOCTYPE html>
 
 <html class="dark" lang="en">
 <head>
@@ -58,26 +60,26 @@
                                 <div class="text-left">
                                     <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Log in to your account</h3>
                                 </div>
-                                <form class="flex flex-col gap-6">
+                                <form asp-action="Index" asp-controller="Login" method="post" class="flex flex-col gap-6">
                                     <div class="flex flex-col gap-4">
                                         <label class="flex flex-col min-w-40 flex-1">
-                                            <p class="text-slate-700 dark:text-white text-sm font-medium leading-normal pb-2">Email Address</p>
+                                            <p class="text-slate-700 dark:text-white text-sm font-medium leading-normal pb-2">Username</p>
                                             <div class="relative flex w-full items-center">
                                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 dark:text-[#9dabb8]">mail</span>
-                                                <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#3c4753] bg-white dark:bg-[#1c2126] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-[#9dabb8] pl-11 pr-4 py-2 text-base font-normal leading-normal" placeholder="you@example.com" type="email" value="" />
+                                                <input asp-for ="@Model.Username"  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#3c4753] bg-white dark:bg-[#1c2126] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-[#9dabb8] pl-11 pr-4 py-2 text-base font-normal leading-normal" placeholder="you@example.com" type="text" value="" />
                                             </div>
                                         </label>
                                         <label class="flex flex-col min-w-40 flex-1">
                                             <p class="text-slate-700 dark:text-white text-sm font-medium leading-normal pb-2">Password</p>
                                             <div class="relative flex w-full items-center">
                                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 dark:text-[#9dabb8]">lock</span>
-                                                <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#3c4753] bg-white dark:bg-[#1c2126] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-[#9dabb8] pl-11 pr-4 py-2 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value="" />
+                                                <input asp-for="@Model.Password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#3c4753] bg-white dark:bg-[#1c2126] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-[#9dabb8] pl-11 pr-4 py-2 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value="" />
                                             </div>
                                         </label>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2">
-                                            <input class="form-checkbox h-4 w-4 rounded border-slate-300 dark:border-[#3c4753] text-primary focus:ring-primary bg-background-light dark:bg-[#1c2126]" id="remember-me" type="checkbox" />
+                                            <input asp-for="@Model.RememberMe" class="form-checkbox h-4 w-4 rounded border-slate-300 dark:border-[#3c4753] text-primary focus:ring-primary bg-background-light dark:bg-[#1c2126]" id="remember-me" type="checkbox" />
                                             <label class="text-sm text-slate-600 dark:text-[#9dabb8]" for="remember-me">Remember me</label>
                                         </div>
                                         <p class="text-primary text-sm font-medium leading-normal underline cursor-pointer">Forgot Password?</p>
