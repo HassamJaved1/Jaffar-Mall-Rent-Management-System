@@ -18,10 +18,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
             try
             {
-                var now = DateTime.UtcNow;
-                if (item.CreatedAt == default) item.CreatedAt = now;
-                item.UpdatedAt = now;
-
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
@@ -41,8 +37,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)item.Status,
                     Priority = (short)item.Priority,
                     AssignedTo = item.AssignedTo,
-                    CreatedAt = item.CreatedAt,
-                    UpdatedAt = item.UpdatedAt,
                     ResolvedAt = item.ResolvedAt
                 };
 
@@ -88,7 +82,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 return Array.Empty<Maintenance>();
             }
         }
-
+        
         public async Task<Maintenance?> GetByIdAsync(long id)
         {
             if (id <= 0) return null;
@@ -212,7 +206,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     status = @Status,
                     priority = @Priority,
                     assigned_to = @AssignedTo,
-                    updated_at = @UpdatedAt,
                     resolved_at = @ResolvedAt
                 WHERE id = @Id";
 
@@ -224,7 +217,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)item.Status,
                     Priority = (short)item.Priority,
                     AssignedTo = item.AssignedTo,
-                    UpdatedAt = item.UpdatedAt,
                     ResolvedAt = item.ResolvedAt
                 };
 
