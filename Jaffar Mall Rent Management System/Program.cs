@@ -1,4 +1,5 @@
 using Jaffar_Mall_Rent_Management_System.Backend_Logics;
+using Jaffar_Mall_Rent_Management_System.Repositories;
 using Jaffar_Mall_Rent_Management_System.Services;
 using Jaffar_Mall_Rent_Management_System.Utilities;
 
@@ -15,8 +16,16 @@ builder.Services.AddScoped<UserAuthRepository>(provider =>
     return new UserAuthRepository(connString!);
 });
 
+builder.Services.AddScoped<PropertyRepository>(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new PropertyRepository(connString!);
+});
+
+
 // Inject the service
 builder.Services.AddScoped<UserAuthService>();
+builder.Services.AddScoped<PropertyServices>();
 
 var app = builder.Build();
 
