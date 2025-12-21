@@ -12,6 +12,13 @@
 
         public string PropertyCode { get; set; } = string.Empty;
 
+        // New fields (match new DB schema)
+        public string? Address { get; set; }
+
+        public string? City { get; set; }
+
+        public string? Country { get; set; }
+
         public PropertyStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }

@@ -41,17 +41,22 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await connection.OpenAsync();
 
                 const string sql = @"
-                INSERT INTO properties (name, property_type,property_code,description, status)
-                VALUES (@Name, @PropertyType,@PropertyCode,@Description, @Status)
+                INSERT INTO properties
+                    (name, description, property_type, property_code, status, address, city, country, created_at, updated_at)
+                VALUES
+                    (@Name, @Description, @PropertyType, @PropertyCode, @Status, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
                 RETURNING id";
 
                 var parameters = new
                 {
                     Name = property.Name,
+                    Description = property.Description,
                     PropertyType = property.PropertyType,
                     PropertyCode = property.PropertyCode,
-                    Description = property.Description, 
-                    Status = (int)property.Status
+                    Status = (int)property.Status,
+                    Address = property.Address,
+                    City = property.City,
+                    Country = property.Country
                 };
 
                 long insertedId = await connection.ExecuteScalarAsync<long>(sql, parameters);
@@ -78,19 +83,19 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
             try
             {
-                var now = DateTime.UtcNow;
-                property.UpdatedAt = now;
-
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
                 const string sql = @"
                 UPDATE properties
                 SET name = @Name,
+                    description = @Description,
                     property_type = @PropertyType,
                     property_code = @PropertyCode,
-                    description = @Description,
                     status = @Status,
+                    address = @Address,
+                    city = @City,
+                    country = @Country,
                     updated_at = @UpdatedAt
                 WHERE id = @Id";
 
@@ -98,11 +103,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 {
                     Id = property.Id,
                     Name = property.Name,
+                    Description = property.Description,
                     PropertyType = property.PropertyType,
                     PropertyCode = property.PropertyCode,
-                    Description = property.Description,
                     Status = (int)property.Status,
-                    UpdatedAt = property.UpdatedAt
+                    Address = property.Address,
+                    City = property.City,
+                    Country = property.Country
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);
@@ -126,9 +133,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SELECT
                     id,
                     name,
+                    description,
                     property_type AS ""PropertyType"",
                     property_code AS ""PropertyCode"",
                     status AS ""Status"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM properties
@@ -157,9 +168,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SELECT
                     id,
                     name,
+                    description,
                     property_type AS ""PropertyType"",
                     property_code AS ""PropertyCode"",
                     status AS ""Status"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM properties

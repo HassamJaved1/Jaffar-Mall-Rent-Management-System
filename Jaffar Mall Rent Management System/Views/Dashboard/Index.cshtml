@@ -77,19 +77,19 @@
                             <span class="material-symbols-outlined fill-1">dashboard</span>
                             <p class="text-sm font-semibold leading-normal">Dashboard</p>
                         </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" href="#">
+                        <a asp-controller="Property" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
                             <span class="material-symbols-outlined group-hover:text-white transition-colors">domain</span>
                             <p class="text-sm font-medium leading-normal">Properties</p>
                         </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" href="#">
+                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
                             <span class="material-symbols-outlined group-hover:text-white transition-colors">group</span>
                             <p class="text-sm font-medium leading-normal">Tenants</p>
                         </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" href="#">
+                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
                             <span class="material-symbols-outlined group-hover:text-white transition-colors">payments</span>
                             <p class="text-sm font-medium leading-normal">Payments</p>
                         </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" href="#">
+                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
                             <div class="relative">
                                 <span class="material-symbols-outlined group-hover:text-white transition-colors">home_repair_service</span>
                                 <span class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-background-dark"></span>
@@ -156,10 +156,12 @@
                         <button class="p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
                             <span class="material-symbols-outlined">help</span>
                         </button>
-                        <button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+                   
+                        <a asp-controller="Property" asp-action="AddProperty" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
                             <span class="material-symbols-outlined text-[20px]">add</span>
                             <span class="hidden sm:inline">Add Property</span>
-                        </button>
+                        </a>
+                      
                     </div>
                 </div>
             </header>

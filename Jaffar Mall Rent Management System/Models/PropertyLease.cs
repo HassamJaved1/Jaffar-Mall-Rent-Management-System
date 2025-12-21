@@ -18,6 +18,8 @@ namespace Jaffar_Mall_Rent_Management_System.Models
 
         public string? AddedBy { get; set; }
 
+        public int Months { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
