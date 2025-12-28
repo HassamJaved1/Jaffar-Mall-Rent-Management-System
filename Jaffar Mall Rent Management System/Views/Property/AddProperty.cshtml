@@ -6,9 +6,11 @@
     <title>Add New Property - RentManager</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -22,10 +24,7 @@
                         "border-dark": "#3c4753",
                         "text-secondary": "#9dabb8"
                     },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
                 },
             },
         }
@@ -38,72 +37,10 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
-            .material-symbols-outlined.fill {
-                font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #111921;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #3c4753;
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #4b5966;
-            }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-hidden">
     <div class="flex h-screen w-full overflow-hidden">
-        @* <aside class="hidden lg:flex w-72 flex-col border-r border-border-dark bg-[#111418] shrink-0">
-            <div class="flex flex-col h-full p-4 justify-between">
-                <div class="flex flex-col gap-8">
-                    <div class="flex gap-3 items-center px-2">
-                        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-border-dark" data-alt="User profile picture showing a smiling person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQTmD2vS2uXpx8CmoK4XXnsfx79p-ea5z29FPM9ycRObQO0QyQRj-oX8SCwfpE5yECSHtG6sRR_wk_8ZlNroE04Ccna5mrpe4ZU5hyMHYKcOt-FY6Fi1wHxWgeXiPR3w0NiAGxzhxCwwoWAwc3GbW7AKuydFOGrU92mvMCxQ9zx3cNHeuhvxOeYh71XI0gN5g9CSu9V1vkABN6a-z1cu2WCAueoy5tJa_WUr-eNzkdoVVBExVJpV6v8fL1YaPxU7Xliodgb2s96DTZ");'></div>
-                        <div class="flex flex-col">
-                            <h1 class="text-white text-base font-bold leading-normal">RentManager</h1>
-                            <p class="text-text-secondary text-xs font-normal leading-normal">Admin Panel</p>
-                        </div>
-                    </div>
-                    <nav class="flex flex-col gap-2">
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
-                            <span class="material-symbols-outlined text-text-secondary group-hover:text-white">dashboard</span>
-                            <span class="text-sm font-medium leading-normal">Dashboard</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors" href="#">
-                            <span class="material-symbols-outlined text-primary fill">apartment</span>
-                            <span class="text-sm font-bold leading-normal">Properties</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
-                            <span class="material-symbols-outlined text-text-secondary group-hover:text-white">group</span>
-                            <span class="text-sm font-medium leading-normal">Tenants</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
-                            <span class="material-symbols-outlined text-text-secondary group-hover:text-white">handyman</span>
-                            <span class="text-sm font-medium leading-normal">Maintenance</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
-                            <span class="material-symbols-outlined text-text-secondary group-hover:text-white">settings</span>
-                            <span class="text-sm font-medium leading-normal">Settings</span>
-                        </a>
-                    </nav>
-                </div>
-                <div class="px-2">
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:text-white transition-colors" href="#">
-                        <span class="material-symbols-outlined">logout</span>
-                        <span class="text-sm font-medium">Log Out</span>
-                    </a>
-                </div>
-            </div>
-        </aside> *@
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <header class="w-full bg-background-light dark:bg-background-dark border-b border-border-dark shrink-0 z-10">
                 <div class="max-w-5xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4">
@@ -115,33 +52,16 @@
                         <button class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
                             Cancel
                         </button>
-                        <button class="px-5 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
+                        <button id="btnSaveProperty" class="px-5 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">save</span>
                             Save Property
                         </button>
                     </div>
                 </div>
             </header>
+
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="max-w-5xl mx-auto flex flex-col gap-6 pb-20">
-                    @* <section class="flex flex-col gap-4">
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">imagesmode</span>
-                            Property Media
-                        </h2>
-                        <div class="w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-border-dark bg-white dark:bg-surface-dark p-10 flex flex-col items-center justify-center gap-4 transition-colors hover:border-primary group cursor-pointer">
-                            <div class="size-16 rounded-full bg-slate-100 dark:bg-[#2a3441] flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-3xl text-slate-400 dark:text-text-secondary group-hover:text-primary">cloud_upload</span>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-slate-900 dark:text-white font-bold text-lg">Click to upload or drag and drop</p>
-                                <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">SVG, PNG, JPG or GIF (max. 3MB)</p>
-                            </div>
-                            <button class="mt-2 px-4 py-2 bg-slate-100 dark:bg-[#2a3441] text-slate-700 dark:text-white text-sm font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-border-dark transition-colors">
-                                Browse Files
-                            </button>
-                        </div>
-                    </section> *@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2 flex flex-col gap-6">
                             <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
@@ -149,50 +69,36 @@
                                 <div class="flex flex-col gap-5">
                                     <label class="flex flex-col gap-1.5 w-full">
                                         <span class="text-slate-700 dark:text-white text-sm font-medium">Property Name</span>
-                                        <input class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary" placeholder="e.g. Sunset Heights Apartments" type="text" />
+                                        <input id="propName" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. Sunset Heights Apartments" type="text" />
                                     </label>
                                     <label class="flex flex-col gap-1.5 w-full">
-                                        <span class="text-slate-700 dark:text-white text-sm font-medium">Property Code</span>
-                                        <input class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary" placeholder="e.g. PROP-2024-001" type="text" />
+                                        <span class="text-slate-700 dark:text-white text-sm font-medium">Property Description</span>
+                                        <textarea id="propDesc" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" rows="5"></textarea>
                                     </label>
                                 </div>
                             </div>
+
                             <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Location Details</h3>
                                 <div class="flex flex-col gap-5">
                                     <label class="flex flex-col gap-1.5 w-full">
                                         <span class="text-slate-700 dark:text-white text-sm font-medium">Address</span>
-                                        <input class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary" placeholder="e.g. 123 Main St" type="text" />
+                                        <input id="propAddress" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. 123 Main St" type="text" />
                                     </label>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <label class="flex flex-col gap-1.5">
                                             <span class="text-slate-700 dark:text-white text-sm font-medium">City</span>
-                                            <input class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="New York" type="text" />
+                                            <input id="propCity" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="New York" type="text" />
                                         </label>
                                         <label class="flex flex-col gap-1.5">
                                             <span class="text-slate-700 dark:text-white text-sm font-medium">Country</span>
-                                            <input class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="United States" type="text" />
+                                            <input id="propCountry" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="United States" type="text" />
                                         </label>
                                     </div>
-                                    @* <div class="w-full h-40 rounded-lg bg-slate-100 dark:bg-[#111418] border border-slate-200 dark:border-border-dark overflow-hidden relative group">
-                                        <div class="absolute inset-0 bg-cover bg-center opacity-60 dark:opacity-40" data-location="New York City map view" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDYG226Eq0jHRYlZt-6D56T339w9aRL9RkBzmfSC0tghbgpc9IZYdC68-0rfNiAr3rAlu9o8nmfpos2SY_Pu_ZFEslP8BPAnk_4FbigNOtKlgn-76v4cMwuJu955f8CWgNL-3jkX6v78h6s5jlm9Xo-OZbpQ-has1j5RKtwsm9uJED3hTdBpI0fSw_u4q03CzGI4U3qoM5EKJXZpPnhRGJBkrUTUlAMeyZcjI-m42m-eeVd5Mz4sM-K1v5ip5DJCF6PE558YhiL1TlS");'></div>
-                                        <div class="absolute inset-0 flex items-center justify-center">
-                                            <button class="bg-white dark:bg-surface-dark text-slate-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded shadow-lg flex items-center gap-1.5 hover:scale-105 transition-transform">
-                                                <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
-                                                Adjust Pin
-                                            </button>
-                                        </div>
-                                    </div> *@
                                 </div>
                             </div>
-                            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Description</h3>
-                                <label class="flex flex-col gap-1.5 w-full">
-                                    <span class="text-slate-700 dark:text-white text-sm font-medium">Property Description</span>
-<textarea class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary resize-none" placeholder="Describe the key features, neighborhood, and unique selling points..." rows="5"></textarea>
-                                </label>
-                            </div>
                         </div>
+
                         <div class="flex flex-col gap-6">
                             <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Classification</h3>
@@ -200,23 +106,13 @@
                                     <label class="flex flex-col gap-1.5 w-full">
                                         <span class="text-slate-700 dark:text-white text-sm font-medium">Property Type</span>
                                         <div class="relative">
-                                            <select class="w-full appearance-none rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
+                                            <select id="propType" class="w-full appearance-none rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
                                                 <option>Apartment</option>
                                                 <option>Single Family House</option>
                                                 <option>Condo</option>
                                                 <option>Townhouse</option>
                                                 <option>Commercial</option>
                                                 <option>Industrial</option>
-                                            </select>
-                                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-lg">expand_more</span>
-                                        </div>
-                                    </label>
-                                    <label class="flex flex-col gap-1.5 w-full">
-                                        <span class="text-slate-700 dark:text-white text-sm font-medium">Status</span>
-                                        <div class="relative">
-                                            <select class="w-full appearance-none rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
-                                                <option selected="">Vacant</option>
-                                                <option>Occupied</option>
                                             </select>
                                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-lg">expand_more</span>
                                         </div>
@@ -229,5 +125,55 @@
             </div>
         </main>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#btnSaveProperty").click(function (e) {
+                e.preventDefault();
+
+                // 1. Map UI fields to your C# Model properties
+                const propertyData = {
+                    Name: $("#propName").val(),
+                    Address: $("#propAddress").val(),
+                    City: $("#propCity").val(),
+                    Country: $("#propCountry").val(),
+                    Description: $("#propDesc").val(),
+                    PropertyType: $("#propType").val()
+                };
+
+                // Simple Validation
+                if (!propertyData.Name) {
+                    alert("Please enter a property name.");
+                    return;
+                }
+
+                // UI Feedback: Disable button
+                const $btn = $(this);
+                $btn.prop('disabled', true).addClass('opacity-50').text('Saving...');
+
+                // 2. AJAX POST Request
+                $.ajax({
+                    url: '/Property/AddProperty', // Replace with your actual [Controller]/[Action]
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(propertyData),
+                    success: function (response) {
+                        console.log(response);
+                        alert("Property saved successfully!");
+                        // Optional: Redirect or clear form
+                        // window.location.href = '/Property/Index';
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                        alert("Failed to save property. Please check the console.");
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $btn.prop('disabled', false).removeClass('opacity-50').html('<span class="material-symbols-outlined text-[18px]">save</span> Save Property');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

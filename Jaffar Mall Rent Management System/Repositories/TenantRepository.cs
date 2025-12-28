@@ -29,7 +29,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
-        public async Task<bool> AddTenantAsync(Tenants tenant)
+        public async Task<bool> AddTenantAsync(Tenant tenant)
         {
             if (tenant == null) throw new ArgumentNullException(nameof(tenant));
 
@@ -39,8 +39,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await connection.OpenAsync();
 
                 const string sql = @"
-                INSERT INTO tenants (name, description, phone_no, created_at, updated_at)
-                VALUES (@Name, @Description, @Phone_No, @CreatedAt, @UpdatedAt)
+                INSERT INTO tenants (name, description, phone_no)
+                VALUES (@Name, @Description, @Phone_No)
                 RETURNING id";
 
                 var parameters = new
@@ -67,7 +67,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
-        public async Task<IEnumerable<Tenants>> GetAllTenantsAsync()
+        public async Task<IEnumerable<Tenant>> GetAllTenantsAsync()
         {
             try
             {
@@ -85,17 +85,17 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 FROM tenants
                 ORDER BY id";
 
-                var tenants = await connection.QueryAsync<Tenants>(sql);
+                var tenants = await connection.QueryAsync<Tenant>(sql);
                 return tenants;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Array.Empty<Tenants>();
+                return Array.Empty<Tenant>();
             }
         }
 
-        public async Task<Tenants?> GetTenantByIdAsync(long id)
+        public async Task<Tenant?> GetTenantByIdAsync(long id)
         {
             if (id <= 0) return null;
 
@@ -115,7 +115,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 FROM tenants
                 WHERE id = @Id";
 
-                var tenant = await connection.QuerySingleOrDefaultAsync<Tenants?>(sql, new { Id = id });
+                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant?>(sql, new { Id = id });
                 return tenant;
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
-        public async Task<bool> UpdateTenantAsync(Tenants tenant)
+        public async Task<bool> UpdateTenantAsync(Tenant tenant)
         {
             if (tenant == null) throw new ArgumentNullException(nameof(tenant));
             if (tenant.Id <= 0) throw new ArgumentException("Tenant must have a valid Id to update.", nameof(tenant));

@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Jaffar_Mall_Rent_Management_System.Models;
-using Jaffar_Mall_Rent_Management_System.Repositories;
+﻿using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 
 namespace Jaffar_Mall_Rent_Management_System.Controllers
 {
-    public class PropertyController : Controller
+    public class TenantController : Controller
     {
-        private readonly PropertyServices _propertyServices;
-
-        public PropertyController(PropertyServices propertyServices)
+        private readonly TenantServices _tenantServices;
+        public TenantController(TenantServices tenantServices)
         {
-            _propertyServices = propertyServices;
+            _tenantServices = tenantServices;
         }
 
         public IActionResult Index()
@@ -19,38 +18,37 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             return View();
         }
 
-        public IActionResult AddProperty()
+
+        public IActionResult AddTenant()
         {
             return View();
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> AddProperty([FromBody] Property property)
+        public async Task<IActionResult> AddTenant([FromBody] Tenant tenant)
         {
-            if (property == null)
+            if (tenant == null)
                 return BadRequest();
 
             if (!ModelState.IsValid)
-                return View(property);
-
+                return View(tenant);
             try
             {
                 // repository will set timestamps
-                var added = await _propertyServices.AddPropertyAsync(property);
+                var added = await _tenantServices.AddTenantAsync(tenant);
                 if (added.Data)
                     return RedirectToAction("Index");
 
                 ViewData["Error"] = "Unable to save property. Please try again.";
-                return View(property);
+                return View(tenant);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 ViewData["Error"] = "An error occurred while saving the property.";
-                return View(property);
+                return View(tenant);
             }
         }
     }
 }
-
-

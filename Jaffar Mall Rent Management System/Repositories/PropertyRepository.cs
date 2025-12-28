@@ -42,9 +42,9 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 INSERT INTO properties
-                    (name, description, property_type, property_code, status, address, city, country, created_at, updated_at)
+                    (name, description, property_type, property_code,address, city, country)
                 VALUES
-                    (@Name, @Description, @PropertyType, @PropertyCode, @Status, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
+                    (@Name, @Description,@PropertyType,@PropertyCode,@Address,@City,@Country)
                 RETURNING id";
 
                 var parameters = new
@@ -52,8 +52,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = property.Name,
                     Description = property.Description,
                     PropertyType = property.PropertyType,
-                    PropertyCode = property.PropertyCode,
-                    Status = (int)property.Status,
+                    PropertyCode = Guid.NewGuid(),
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country
@@ -91,8 +90,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SET name = @Name,
                     description = @Description,
                     property_type = @PropertyType,
-                    property_code = @PropertyCode,
-                    status = @Status,
                     address = @Address,
                     city = @City,
                     country = @Country,
@@ -105,8 +102,6 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = property.Name,
                     Description = property.Description,
                     PropertyType = property.PropertyType,
-                    PropertyCode = property.PropertyCode,
-                    Status = (int)property.Status,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country

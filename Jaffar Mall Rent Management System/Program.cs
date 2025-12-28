@@ -22,10 +22,18 @@ builder.Services.AddScoped<PropertyRepository>(provider =>
     return new PropertyRepository(connString!);
 });
 
+builder.Services.AddScoped<TenantRepository>(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new TenantRepository(connString!);
+});
+
+
 
 // Inject the service
 builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();
+builder.Services.AddScoped<TenantServices>();
 
 var app = builder.Build();
 
