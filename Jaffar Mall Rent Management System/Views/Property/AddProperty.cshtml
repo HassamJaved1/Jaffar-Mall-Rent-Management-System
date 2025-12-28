@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script id="tailwind-config">
         tailwind.config = {
@@ -49,7 +48,7 @@
                         <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">Fill in the details below to list a new rental unit.</p>
                     </div>
                     <div class="flex gap-3">
-                        <button class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+                        <button type="button" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
                             Cancel
                         </button>
                         <button id="btnSaveProperty" class="px-5 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
@@ -127,18 +126,20 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            $("#btnSaveProperty").click(function (e) {
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnSave = document.getElementById('btnSaveProperty');
+
+            btnSave.addEventListener('click', async (e) => {
                 e.preventDefault();
 
-                // 1. Map UI fields to your C# Model properties
+                // 1. Map UI fields
                 const propertyData = {
-                    Name: $("#propName").val(),
-                    Address: $("#propAddress").val(),
-                    City: $("#propCity").val(),
-                    Country: $("#propCountry").val(),
-                    Description: $("#propDesc").val(),
-                    PropertyType: $("#propType").val()
+                    Name: document.getElementById('propName').value,
+                    Address: document.getElementById('propAddress').value,
+                    City: document.getElementById('propCity').value,
+                    Country: document.getElementById('propCountry').value,
+                    Description: document.getElementById('propDesc').value,
+                    PropertyType: document.getElementById('propType').value
                 };
 
                 // Simple Validation
@@ -148,30 +149,46 @@
                 }
 
                 // UI Feedback: Disable button
-                const $btn = $(this);
-                $btn.prop('disabled', true).addClass('opacity-50').text('Saving...');
+                btnSave.disabled = true;
+                btnSave.classList.add('opacity-50');
+                const originalHtml = btnSave.innerHTML;
+                btnSave.textContent = 'Saving...';
 
-                // 2. AJAX POST Request
-                $.ajax({
-                    url: '/Property/AddProperty', // Replace with your actual [Controller]/[Action]
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(propertyData),
-                    success: function (response) {
-                        console.log(response);
-                        alert("Property saved successfully!");
-                        // Optional: Redirect or clear form
-                        // window.location.href = '/Property/Index';
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
-                        alert("Failed to save property. Please check the console.");
-                    },
-                    complete: function() {
-                        // Re-enable button
-                        $btn.prop('disabled', false).removeClass('opacity-50').html('<span class="material-symbols-outlined text-[18px]">save</span> Save Property');
+                try {
+                    // 2. Fetch API POST Request
+                    const response = await fetch('/Property/AddProperty', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(propertyData)
+                    });
+
+                    console.log(response);
+
+                    // Parse JSON response
+                    const result = await response.json();
+
+                    // console logging as requested
+                    console.log("Response Object:", result);
+
+                    if (response.ok && result.code === 200) {
+                        alert(result.message);
+                        // Optional: clear form
+                        // document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                    } else {
+                        alert(`Error: ${result.message || 'Something went wrong'}`);
                     }
-                });
+
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    alert("Failed to connect to the server.");
+                } finally {
+                    // Re-enable button
+                    btnSave.disabled = false;
+                    btnSave.classList.remove('opacity-50');
+                    btnSave.innerHTML = originalHtml;
+                }
             });
         });
     </script>

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Jaffar_Mall_Rent_Management_System.Models;
-using Jaffar_Mall_Rent_Management_System.Repositories;
+﻿using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jaffar_Mall_Rent_Management_System.Controllers
 {
@@ -27,28 +26,17 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProperty([FromBody] Property property)
         {
-            if (property == null)
-                return BadRequest();
-
-            if (!ModelState.IsValid)
-                return View(property);
-
-            try
+            // repository will set timestamps
+            var response = await _propertyServices.AddPropertyAsync(property);
+            if (response.Data)
             {
-                // repository will set timestamps
-                var added = await _propertyServices.AddPropertyAsync(property);
-                if (added.Data)
-                    return RedirectToAction("Index");
+                return BackendResponse<bool>.Success(true, response.Message)
+                                            .ToActionResult();
+            }
 
-                ViewData["Error"] = "Unable to save property. Please try again.";
-                return View(property);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                ViewData["Error"] = "An error occurred while saving the property.";
-                return View(property);
-            }
+            return BackendResponse<bool>.Failure(response.Message, response.Code)
+                                        .ToActionResult();
+
         }
     }
 }
