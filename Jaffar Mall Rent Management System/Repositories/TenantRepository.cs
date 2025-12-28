@@ -35,19 +35,31 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
             try
             {
+                var now = DateTime.UtcNow;
+                tenant.CreatedAt = now;
+                tenant.UpdatedAt = now;
+
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
                 const string sql = @"
-                INSERT INTO tenants (name, description, phone_no)
-                VALUES (@Name, @Description, @Phone_No)
+                INSERT INTO tenants
+                    (name, description, phone_no, card_number, address, city, country, created_at, updated_at)
+                VALUES
+                    (@Name, @Description, @Phone_No, @CardNumber, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
                 RETURNING id";
 
                 var parameters = new
                 {
                     Name = tenant.Name,
                     Description = tenant.Description,
-                    Phone_No = tenant.Phone_No
+                    Phone_No = tenant.Phone_No,
+                    CardNumber = tenant.CardNumber,
+                    Address = tenant.Address,
+                    City = tenant.City,
+                    Country = tenant.Country,
+                    CreatedAt = tenant.CreatedAt,
+                    UpdatedAt = tenant.UpdatedAt
                 };
 
                 long insertedId = await connection.ExecuteScalarAsync<long>(sql, parameters);
@@ -80,6 +92,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    card_number AS ""CardNumber"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -110,6 +126,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    card_number AS ""CardNumber"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -140,10 +160,14 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 UPDATE tenants
-                SET name = @Name,
+                SET
+                    name = @Name,
                     description = @Description,
                     phone_no = @Phone_No,
-                    updated_at = @UpdatedAt
+                    card_number = @CardNumber,
+                    address = @Address,
+                    city = @City,
+                    country = @Country
                 WHERE id = @Id";
 
                 var parameters = new
@@ -152,7 +176,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = tenant.Name,
                     Description = tenant.Description,
                     Phone_No = tenant.Phone_No,
-                    UpdatedAt = tenant.UpdatedAt
+                    CardNumber = tenant.CardNumber,
+                    Address = tenant.Address,
+                    City = tenant.City,
+                    Country = tenant.Country
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);
