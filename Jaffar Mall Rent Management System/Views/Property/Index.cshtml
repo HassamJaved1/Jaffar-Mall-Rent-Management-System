@@ -2,176 +2,110 @@
 @using Jaffar_Mall_Rent_Management_System.Models.ViewModels
 @model PaginatedViewModel<Property>
 @{
-    Layout = null;
+    ViewData["Title"] = "Properties List";
 }
-<!DOCTYPE html>
 
-<html class="dark" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Properties List - RentManager</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet" />
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Theme Config -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#197fe6",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111921",
-                        "surface-dark": "#1a1d23",
-                        "element-dark": "#293038",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom scrollbar for better aesthetics in dark mode */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #111921;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #293038;
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #3e4854;
-            }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden">
-    <div class="flex h-screen w-full">
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-            <!-- Top Header & Actions -->
-            <header class="w-full bg-white dark:bg-[#111418] border-b border-[#dce0e5] dark:border-[#293038] px-8 py-6 shrink-0 z-10">
-                <div class="flex flex-col gap-6 max-w-[1400px] mx-auto">
-                    <!-- Title and Subtitle -->
-                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                        <div class="flex flex-col gap-1">
-                            <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">All Properties</h1>
-                            <p class="text-[#637588] dark:text-[#9dabb8] text-base font-normal">Manage your listings, track occupancy, and monitor rent status.</p>
-                        </div>
-                        <!-- Add Property Button -->
-                        <div class="flex items-center gap-3">
-                            <a href="@Url.Action("AddProperty", "Property")" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
-                                <span class="material-symbols-outlined text-[20px] mr-2">add</span>
-                                <span class="truncate">New Property</span>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- Search and Filters Bar -->
-                    <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-                    <!-- Search -->
-                    <form method="get" class="relative w-full lg:max-w-[480px]">
-                        <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
-                            <button type="submit" class="flex items-center justify-center pl-4 pr-2 outline-none">
-                                <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
-                            </button>
-                            <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search properties by address, name..." />
-                        </div>
-                    </form>
-                        <!-- Filter Chips -->
-                        <div class="flex flex-wrap gap-2">
-                            <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                                <p class="text-[#111418] dark:text-white text-sm font-medium">Status: <span class="text-primary font-bold">All</span></p>
-                                <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
-                            </button>
-                            <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                                <p class="text-[#111418] dark:text-white text-sm font-medium">Type: <span class="text-primary font-bold">Apartment</span></p>
-                                <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
-                            </button>
-                            <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                                <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">sort</span>
-                                <p class="text-[#111418] dark:text-white text-sm font-medium">Sort by: Date Added</p>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            <!-- Scrollable List Area -->
-            <div class="flex-1 overflow-y-auto p-4 sm:p-8">
-                <div id="property-list-container">
-                    <partial name="_PropertyListPartial" model="Model" />
-                </div>
+<!-- Top Header & Actions -->
+<header class="w-full bg-white dark:bg-[#111418] border-b border-[#dce0e5] dark:border-[#293038] px-8 py-6 shrink-0 z-10">
+    <div class="flex flex-col gap-6 max-w-[1400px] mx-auto">
+        <!-- Title and Subtitle -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">All Properties</h1>
+                <p class="text-[#637588] dark:text-[#9dabb8] text-base font-normal">Manage your listings, track occupancy, and monitor rent status.</p>
             </div>
-        </main>
+            <!-- Add Property Button -->
+            <div class="flex items-center gap-3">
+                <a href="@Url.Action("AddProperty", "Property")" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                    <span class="material-symbols-outlined text-[20px] mr-2">add</span>
+                    <span class="truncate">New Property</span>
+                </a>
+            </div>
+        </div>
+        <!-- Search and Filters Bar -->
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+        <!-- Search -->
+        <form method="get" class="relative w-full lg:max-w-[480px]">
+            <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
+                <button type="submit" class="flex items-center justify-center pl-4 pr-2 outline-none">
+                    <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
+                </button>
+                <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search properties by address, name..." />
+            </div>
+        </form>
+            <!-- Filter Chips -->
+            <div class="flex flex-wrap gap-2">
+                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
+                    <p class="text-[#111418] dark:text-white text-sm font-medium">Status: <span class="text-primary font-bold">All</span></p>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
+                </button>
+                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
+                    <p class="text-[#111418] dark:text-white text-sm font-medium">Type: <span class="text-primary font-bold">Apartment</span></p>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
+                </button>
+                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">sort</span>
+                    <p class="text-[#111418] dark:text-white text-sm font-medium">Sort by: Date Added</p>
+                </button>
+            </div>
+        </div>
     </div>
+</header>
+<!-- Scrollable List Area -->
+<div class="flex-1 overflow-y-auto p-4 sm:p-8">
+    <div id="property-list-container">
+        <partial name="_PropertyListPartial" model="Model" />
+    </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let debounceTimer;
-            const searchInput = document.querySelector('input[name="search"]');
-            const listContainer = document.getElementById('property-list-container');
-            const form = searchInput.closest('form');
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let debounceTimer;
+        const searchInput = document.querySelector('input[name="search"]');
+        const listContainer = document.getElementById('property-list-container');
+        const form = searchInput.closest('form');
 
-            // Prevent default form submission on enter
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                performSearch(searchInput.value);
-            });
-
-            searchInput.addEventListener('input', function (e) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    performSearch(e.target.value);
-                }, 300); // 300ms debounce
-            });
-
-            function performSearch(query) {
-                // Construct URL with query parameters
-                // Using a relative path helper or base URL logic
-                const url = new URL(window.location.origin + '@Url.Action("Index", "Property")');
-                if (query) {
-                    url.searchParams.set('search', query);
-                }
-                url.searchParams.set('page', 1); // Reset to page 1 on search
-
-                // Update browser history
-                window.history.pushState({}, '', url);
-
-                // Fetch data
-                fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(html => {
-                    listContainer.innerHTML = html;
-                })
-                .catch(error => console.error('Error fetching properties:', error));
-            }
+        // Prevent default form submission on enter
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            performSearch(searchInput.value);
         });
-    </script>
-</body>
-</html>
+
+        searchInput.addEventListener('input', function (e) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                performSearch(e.target.value);
+            }, 300); // 300ms debounce
+        });
+
+        function performSearch(query) {
+            // Construct URL with query parameters
+            // Using a relative path helper or base URL logic
+            const url = new URL(window.location.origin + '@Url.Action("Index", "Property")');
+            if (query) {
+                url.searchParams.set('search', query);
+            }
+            url.searchParams.set('page', 1); // Reset to page 1 on search
+
+            // Update browser history
+            window.history.pushState({}, '', url);
+
+            // Fetch data
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(html => {
+                listContainer.innerHTML = html;
+            })
+            .catch(error => console.error('Error fetching properties:', error));
+        }
+    });
+</script>
+}

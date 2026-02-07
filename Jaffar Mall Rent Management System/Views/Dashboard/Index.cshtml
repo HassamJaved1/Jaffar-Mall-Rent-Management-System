@@ -1,562 +1,432 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewData["Title"] = "Dashboard Overview";
+}
 
-<html class="dark" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>RentManager Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#197fe6",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111418", // Matching the component's base dark color
-                        "card-dark": "#1e252b", // Slightly lighter for cards
-                        "card-hover": "#293038", // Lighter still for hover states
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom scrollbar for webkit browsers */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #111418;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #293038;
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #4a5568;
-            }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden">
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-[280px] hidden md:flex flex-col bg-background-dark border-r border-[#293038] shrink-0 h-full overflow-y-auto">
-            <div class="flex h-full flex-col justify-between p-4">
-                <div class="flex flex-col gap-6">
-                    <!-- Brand -->
-                    <div class="flex items-center gap-3 px-2">
-                        <div class="bg-center bg-no-repeat bg-cover rounded-lg size-10 bg-primary flex items-center justify-center text-white" data-alt="RentManager Logo">
-                            <span class="material-symbols-outlined text-2xl">apartment</span>
-                        </div>
-                        <h1 class="text-white text-xl font-bold leading-normal tracking-tight">RentManager</h1>
-                    </div>
-                    <!-- Navigation -->
-                    <nav class="flex flex-col gap-2">
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-primary/20 text-primary border-l-4 border-primary" href="#">
-                            <span class="material-symbols-outlined fill-1">dashboard</span>
-                            <p class="text-sm font-semibold leading-normal">Dashboard</p>
-                        </a>
-                        <a asp-controller="Property" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
-                            <span class="material-symbols-outlined group-hover:text-white transition-colors">domain</span>
-                            <p class="text-sm font-medium leading-normal">Properties</p>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
-                            <span class="material-symbols-outlined group-hover:text-white transition-colors">group</span>
-                            <p class="text-sm font-medium leading-normal">Tenants</p>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
-                            <span class="material-symbols-outlined group-hover:text-white transition-colors">payments</span>
-                            <p class="text-sm font-medium leading-normal">Payments</p>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
-                            <div class="relative">
-                                <span class="material-symbols-outlined group-hover:text-white transition-colors">home_repair_service</span>
-                                <span class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-background-dark"></span>
-                            </div>
-                            <p class="text-sm font-medium leading-normal">Maintenance</p>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" href="#">
-                            <span class="material-symbols-outlined group-hover:text-white transition-colors">description</span>
-                            <p class="text-sm font-medium leading-normal">Documents</p>
-                        </a>
-                    </nav>
-                </div>
-                <div class="flex flex-col gap-4">
-                    <div class="px-3">
-                        <p class="text-xs font-bold text-[#9dabb8] uppercase tracking-wider mb-2">System</p>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors mb-1" href="#">
-                            <span class="material-symbols-outlined">settings</span>
-                            <p class="text-sm font-medium leading-normal">Settings</p>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors" href="#">
-                            <span class="material-symbols-outlined">logout</span>
-                            <p class="text-sm font-medium leading-normal">Logout</p>
-                        </a>
-                    </div>
-                    <div class="p-4 rounded-xl bg-[#1e252b] border border-[#293038]">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="size-10 rounded-full bg-cover bg-center" data-alt="User profile photo" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2HA0NAXihEVKshNYBbssShVeU35hA1TJkpVOBJQgqGRWQf9Jr__nYfj2IOz52WJSL1jc3CZkK5mwDcI0SUo3wwaPaJx7Htu-HbjUSfRSO6y0uN99EYC3MkoTtZmgscWWq7s46U_bIrLBTnFxBNb0pYbBywUE-bxcUakBvbwmPi2Te4GYTRHhtTVXTVF_nbEH5Y-9U3Cy_b9bqoQUT_r4aUAAfs_Uj6Qh4aD5c1gUAAM0qJ3qAu6Eha9Nr9hkxJUZEQq47JNfn3cfI');"></div>
-                            <div>
-                                <p class="text-sm font-bold text-white">Hassam Javed</p>
-                                <p class="text-xs text-[#9dabb8]">Admin</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-background-light dark:bg-background-dark">
-            <!-- Top Header -->
-            <header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
-                <div class="flex items-center gap-4">
-                    <!-- Mobile Menu Button (Visible only on small screens) -->
-                    <button class="md:hidden text-white p-2">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                    <h2 class="text-lg font-bold text-white hidden sm:block">Dashboard Overview</h2>
-                </div>
-                <div class="flex items-center gap-4 flex-1 justify-end">
-                    <!-- Search -->
-                    <div class="hidden sm:flex items-center max-w-md flex-1 mx-4">
-                        <div class="relative w-full">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9dabb8]">
-                                <span class="material-symbols-outlined text-[20px]">search</span>
-                            </div>
-                            <input class="block w-full rounded-lg border-0 py-2 pl-10 bg-[#1e252b] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary focus:bg-[#293038] sm:text-sm sm:leading-6 transition-all" placeholder="Search properties, tenants..." type="text" />
-                        </div>
-                    </div>
-                    <!-- Actions -->
-                    <div class="flex items-center gap-3">
-                        <button class="relative p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
-                            <span class="material-symbols-outlined">notifications</span>
-                            <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-background-dark"></span>
-                        </button>
-                        <button class="p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
-                            <span class="material-symbols-outlined">help</span>
-                        </button>
-                   
-                        <a asp-controller="Leases" asp-action="Index" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
-                            <span class="material-symbols-outlined text-[20px]">add</span>
-                            <span class="hidden sm:inline">Assign Property</span>
-                        </a>
-                      
-                    </div>
-                </div>
-            </header>
-            <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
-                <div class="max-w-7xl mx-auto space-y-6 pb-10">
-                    <!-- Welcome Section -->
-                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-white tracking-tight">Good Morning, Hassam 👋</h2>
-                            <p class="text-[#9dabb8] mt-1">Here's what's happening with your properties today.</p>
-                        </div>
-                        <div class="flex items-center gap-2 bg-[#1e252b] rounded-lg p-1 border border-[#293038]">
-                            <button class="px-3 py-1.5 text-sm font-medium rounded text-white bg-[#293038] shadow-sm">Last 30 Days</button>
-                            <button class="px-3 py-1.5 text-sm font-medium rounded text-[#9dabb8] hover:text-white hover:bg-[#293038]/50">Last Quarter</button>
-                            <button class="px-3 py-1.5 text-sm font-medium rounded text-[#9dabb8] hover:text-white hover:bg-[#293038]/50">Last Year</button>
-                        </div>
-                    </div>
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Revenue -->
-                        <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 rounded-lg bg-green-500/10 text-green-500">
-                                    <span class="material-symbols-outlined">attach_money</span>
-                                </div>
-                                <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                                    <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                                    +5.2%
-                                </span>
-                            </div>
-                            <p class="text-[#9dabb8] text-sm font-medium">Total Revenue</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">$45,200</h3>
-                        </div>
-                        <!-- Occupancy -->
-                        <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                                    <span class="material-symbols-outlined">apartment</span>
-                                </div>
-                                <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                                    <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                                    +1.0%
-                                </span>
-                            </div>
-                            <p class="text-[#9dabb8] text-sm font-medium">Occupancy Rate</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">94%</h3>
-                        </div>
-                        <!-- Pending Rent -->
-                        <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 rounded-lg bg-orange-500/10 text-orange-500">
-                                    <span class="material-symbols-outlined">pending_actions</span>
-                                </div>
-                                <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                                    <span class="material-symbols-outlined text-[14px] mr-0.5">trending_down</span>
-                                    -12.5%
-                                </span>
-                            </div>
-                            <p class="text-[#9dabb8] text-sm font-medium">Pending Rent</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">$3,400</h3>
-                        </div>
-                        <!-- Active Maintenance -->
-                        <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 rounded-lg bg-red-500/10 text-red-500">
-                                    <span class="material-symbols-outlined">plumbing</span>
-                                </div>
-                                <span class="flex items-center text-xs font-semibold text-red-500 bg-red-500/10 px-2 py-1 rounded-full">
-                                    <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                                    +2 new
-                                </span>
-                            </div>
-                            <p class="text-[#9dabb8] text-sm font-medium">Active Maintenance</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">5</h3>
-                        </div>
-                    </div>
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Rent Status Chart -->
-                        <div class="bg-[#1e252b] p-6 rounded-xl border border-[#293038] flex flex-col">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-white text-base font-bold">Rent Status</h3>
-                                <button class="text-[#9dabb8] hover:text-white">
-                                    <span class="material-symbols-outlined">more_horiz</span>
-                                </button>
-                            </div>
-                            <div class="flex-1 flex flex-col gap-4">
-                                <div class="relative pt-2">
-                                    <div class="flex justify-between items-end mb-1">
-                                        <span class="text-sm font-medium text-[#9dabb8]">Collected</span>
-                                        <span class="text-sm font-bold text-white">$45.2k (80%)</span>
-                                    </div>
-                                    <div class="w-full bg-[#293038] rounded-full h-2.5">
-                                        <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
-                                    </div>
-                                </div>
-                                <div class="relative pt-2">
-                                    <div class="flex justify-between items-end mb-1">
-                                        <span class="text-sm font-medium text-[#9dabb8]">Pending</span>
-                                        <span class="text-sm font-bold text-white">$2.8k (15%)</span>
-                                    </div>
-                                    <div class="w-full bg-[#293038] rounded-full h-2.5">
-                                        <div class="bg-orange-500 h-2.5 rounded-full" style="width: 15%"></div>
-                                    </div>
-                                </div>
-                                <div class="relative pt-2">
-                                    <div class="flex justify-between items-end mb-1">
-                                        <span class="text-sm font-medium text-[#9dabb8]">Overdue</span>
-                                        <span class="text-sm font-bold text-white">$0.6k (5%)</span>
-                                    </div>
-                                    <div class="w-full bg-[#293038] rounded-full h-2.5">
-                                        <div class="bg-red-500 h-2.5 rounded-full" style="width: 5%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-6 pt-6 border-t border-[#293038] flex justify-between items-center text-sm">
-                                <span class="text-[#9dabb8]">Total Expected</span>
-                                <span class="font-bold text-white">$48,600</span>
-                            </div>
-                        </div>
-                        <!-- Cash Flow Graph -->
-                        <div class="bg-[#1e252b] p-6 rounded-xl border border-[#293038] lg:col-span-2 flex flex-col">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="text-white text-base font-bold">Cash Flow Overview</h3>
-                                    <p class="text-xs text-[#9dabb8]">Last 6 months revenue vs expenses</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#293038]/50">
-                                        <span class="size-2 rounded-full bg-primary"></span>
-                                        <span class="text-xs text-white">Income</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#293038]/50">
-                                        <span class="size-2 rounded-full bg-[#9dabb8]"></span>
-                                        <span class="text-xs text-white">Expense</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-h-[200px] w-full relative flex items-end justify-between gap-2 pt-8 pb-2 px-2">
-                                <!-- Chart Bars -->
-                                <!-- Month 1 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[60%] relative"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">Jan</span>
-                                </div>
-                                <!-- Month 2 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[75%]"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[40%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">Feb</span>
-                                </div>
-                                <!-- Month 3 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[50%]"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[45%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">Mar</span>
-                                </div>
-                                <!-- Month 4 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[85%]"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[35%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">Apr</span>
-                                </div>
-                                <!-- Month 5 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[90%]"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">May</span>
-                                </div>
-                                <!-- Month 6 -->
-                                <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                                    <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                                        <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[80%]"></div>
-                                        <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[25%]"></div>
-                                    </div>
-                                    <span class="text-xs text-[#9dabb8] font-medium">Jun</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Main Grid: Property List & Recent Activity -->
-                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                        <!-- Properties Table -->
-                        <div class="xl:col-span-2 bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
-                            <div class="p-6 border-b border-[#293038] flex items-center justify-between">
-                                <h3 class="text-white text-base font-bold">Top Properties</h3>
-                                <a class="text-sm text-primary hover:text-primary/80 font-medium" href="#">View All</a>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="bg-[#293038]/50 text-[#9dabb8] text-xs uppercase tracking-wider">
-                                            <th class="px-6 py-3 font-semibold">Property</th>
-                                            <th class="px-6 py-3 font-semibold">Status</th>
-                                            <th class="px-6 py-3 font-semibold">Tenant</th>
-                                            <th class="px-6 py-3 font-semibold text-right">Rent</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-[#293038]">
-                                        <!-- Row 1 -->
-                                        <tr class="hover:bg-[#293038]/30 transition-colors">
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern white house with garden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBJ69YHJdjH3qmKHfjquqDbPhg4zY9tS6IPCjaGspz_Nt2tDRm500Fy6YGddFpZ0X3hcc4LvigA4N55uJ576sB0hFn7vZnVJIM5b5HSYHU7tEkN4BftcZjL1RXOaIEEmmgr_eA6aUW6BeNhMbMIbnSQwTYgTWaAfZtzSMnDCD-sFjEmFH9D-qc7HkQFXeED2olCGQtEyOBou2wgllxbUeb0ccAmmVqMhiumHS9VFep71ruHG5EL7oLxTTcQn7HhEyj7n5cvtns4gj8v');"></div>
-                                                    <div>
-                                                        <p class="text-white text-sm font-medium">Sunset Apartments</p>
-                                                        <p class="text-[#9dabb8] text-xs">Unit 402</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
-                                                    Occupied
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">JD</div>
-                                                    <span class="text-white text-sm">John Doe</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
-                                                <span class="text-white text-sm font-medium">$2,400</span>
-                                                <span class="block text-[#9dabb8] text-xs">Paid</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 2 -->
-                                        <tr class="hover:bg-[#293038]/30 transition-colors">
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern apartment interior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfncPSnBFZXDyRfokAZgOaJ-0sBS3BXtSCiuX8pcrBFiYNII9mGfZQeAe9j8CpYkOaK72W7dyVZX6CzNcyXwescek93V68wQADcwo9m_s2jYPaqtmFSBGekm85nrdQhQZzD4jkxP8j5XSyzbtbvMnOe-mwop9ZlWtcMZiwqaoGC8PTlFaFzW9BQyOP84LsS4ns8kyO38vIHwTyZ5OqBLla5IYR0Wuc5U5JxKbMpXFquPWHMb-dmcUcZUt1xMjjomZGXbSSJB-255Ux');"></div>
-                                                    <div>
-                                                        <p class="text-white text-sm font-medium">Highland Towers</p>
-                                                        <p class="text-[#9dabb8] text-xs">Unit 105</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500">
-                                                    Pending
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">AS</div>
-                                                    <span class="text-white text-sm">Alice Smith</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
-                                                <span class="text-white text-sm font-medium">$1,850</span>
-                                                <span class="block text-orange-500 text-xs">Due in 2 days</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 3 -->
-                                        <tr class="hover:bg-[#293038]/30 transition-colors">
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Suburban family house" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAsj5XhO7qFWzMkCLuc-xBnyFVpm0KEHFtvkpnFqDMJaJ7bswFiDmGOhyRX3WcHRWOE-WqOvLPYRAxMSCAF5b7V8anJ_QX1xtL10iYBciCy3hPuMITGwuYvYgeAYYraN0dYt0J9EWiiwC2Dowg2RE-F_9wkSfjQi_RsTDxPRr3PN61wzMZKJih8InAMoet1ieH5nN5JCrzROhbEUc8yLSSPO6nCmk51mJyn9isqYeau6toK_CE-6YACZeWChIBgzeTodMjkAS7pr6sU');"></div>
-                                                    <div>
-                                                        <p class="text-white text-sm font-medium">Lakeside Manor</p>
-                                                        <p class="text-[#9dabb8] text-xs">Unit 12B</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
-                                                    Vacant
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="text-[#9dabb8] text-sm">-</span>
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
-                                                <span class="text-white text-sm font-medium">$3,100</span>
-                                                <span class="block text-[#9dabb8] text-xs">Listed</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 4 -->
-                                        <tr class="hover:bg-[#293038]/30 transition-colors">
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern house exterior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAltMm1rMKksd83oHl2Y9D76NNC-m9F_65VeaF9Pqc5aLcuUE0Wjyka1JdPGFzJ_FK0XNRxHKAi6seKWQIOId_hG2MKWyjU7bVXLhEAxpk82ckfSljWyLgkTUjvGcUopgon8oxs6mSSbKY2ORdzTS28zQWVg0MEZOHGVR_FiFAY5itCkhcQw9xnK9TVcnYnOo18C-H5FPRy6IkQnHF_C0R0D0RK2uwS_GwJRCvQ5HOmpsBW1l-caJXsEJaJlXArHk62hPyWg_RWLt_F');"></div>
-                                                    <div>
-                                                        <p class="text-white text-sm font-medium">Urban Loft</p>
-                                                        <p class="text-[#9dabb8] text-xs">Unit 301</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
-                                                    Occupied
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">MK</div>
-                                                    <span class="text-white text-sm">Mike K.</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
-                                                <span class="text-white text-sm font-medium">$2,100</span>
-                                                <span class="block text-[#9dabb8] text-xs">Paid</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- Recent Activity & Notifications -->
-                        <div class="flex flex-col gap-6">
-                            <!-- Maintenance Alerts -->
-                            <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6">
-                                <h3 class="text-white text-base font-bold mb-4 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-red-500">warning</span>
-                                    Attention Required
-                                </h3>
-                                <div class="space-y-4">
-                                    <!-- Item 1 -->
-                                    <div class="flex gap-3 items-start pb-4 border-b border-[#293038]">
-                                        <div class="size-8 rounded bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
-                                            <span class="material-symbols-outlined text-sm">plumbing</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Water Leak - Unit 402</p>
-                                            <p class="text-[#9dabb8] text-xs mt-1">Reported 2 hours ago by John Doe</p>
-                                            <div class="mt-2 flex gap-2">
-                                                <button class="text-xs bg-[#293038] hover:bg-[#363f4a] text-white px-2 py-1 rounded transition-colors">View Ticket</button>
-                                                <button class="text-xs text-[#9dabb8] hover:text-white px-2 py-1 transition-colors">Dismiss</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Item 2 -->
-                                    <div class="flex gap-3 items-start">
-                                        <div class="size-8 rounded bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
-                                            <span class="material-symbols-outlined text-sm">schedule</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Rent Overdue - Unit 105</p>
-                                            <p class="text-[#9dabb8] text-xs mt-1">Alice Smith is 5 days late</p>
-                                            <div class="mt-2 flex gap-2">
-                                                <button class="text-xs bg-primary/20 hover:bg-primary/30 text-primary px-2 py-1 rounded transition-colors">Send Reminder</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Recent Communications -->
-                            <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6 flex-1">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="text-white text-base font-bold">Recent Messages</h3>
-                                    <span class="material-symbols-outlined text-[#9dabb8] text-sm cursor-pointer">mail</span>
-                                </div>
-                                <div class="space-y-4">
-                                    <div class="flex items-start gap-3">
-                                        <div class="size-8 rounded-full bg-cover bg-center shrink-0" data-alt="Female tenant portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD-6zF9Jt6J0-sXFA16KAD1H-q92RLM2YxkKJZT9mYMnmpS_bfeWCbtFCXqgjls2H4-X5YA7BoCpYeFfTsTBktfxUFMt4P4m7wzQeTTX5N1ayuzOJmrCkZ4FKvVWcz7pjJk6VdgE13cCfyypm1sKGms-bds5woRMxsCfi48jDw_gOOWplyDwH_gwRChm9foA2qSC_fvPxXX6ZiQU-dI79Cd8DG5XZiS1C4dxWfXmnlR1AYNSedFTWit97QNZzRN16sEbXJtYgk-DDlG');"></div>
-                                        <div>
-                                            <div class="flex justify-between w-full">
-                                                <p class="text-sm font-medium text-white">Sarah Connor</p>
-                                                <span class="text-[10px] text-[#9dabb8]">10m ago</span>
-                                            </div>
-                                            <p class="text-xs text-[#9dabb8] mt-0.5 line-clamp-2">Hi Hassam, just wanted to check if the parking spot is available for next month?</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="size-8 rounded-full bg-cover bg-center shrink-0" data-alt="Male tenant portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD8_iGKsI3ofZ9SLsOs8FZSmBTXqyOeqypNwNTHEJ09BuvC5AjPDep9obUlDyVQSJ_jh0CaHaGOrH5s-8BPpo3dMrC4Tdzcbsk2lvvz2JAWsecuoDIaIBRWfeLmFTxXlm5Ek4ThO8Y5gru-i4koAJb4ICxCO967rR3S5OgNn0a_4QncOjR0Hs7E5prUgcWcXKRB-G_1vX-3_YUnX-kvsrEElEYUnUTn9NWGjQnRR88cOLhdeE5AyK6l4xm3bT9i8ivAR49yTrlsZC4t');"></div>
-                                        <div>
-                                            <div class="flex justify-between w-full">
-                                                <p class="text-sm font-medium text-white">David Miller</p>
-                                                <span class="text-[10px] text-[#9dabb8]">2h ago</span>
-                                            </div>
-                                            <p class="text-xs text-[#9dabb8] mt-0.5 line-clamp-2">Thanks for fixing the heater so quickly! Much appreciated.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="w-full mt-4 py-2 text-sm text-[#9dabb8] hover:text-white border border-[#293038] hover:bg-[#293038] rounded-lg transition-colors">
-                                    View All Messages
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
+    <div class="flex items-center gap-4">
+        <!-- Mobile Menu Button (Visible only on small screens) -->
+        <button class="md:hidden text-white p-2">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h2 class="text-lg font-bold text-white hidden sm:block">Dashboard Overview</h2>
     </div>
-</body>
-</html>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+        <!-- Search -->
+        <div class="hidden sm:flex items-center max-w-md flex-1 mx-4">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9dabb8]">
+                    <span class="material-symbols-outlined text-[20px]">search</span>
+                </div>
+                <input class="block w-full rounded-lg border-0 py-2 pl-10 bg-[#1e252b] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary focus:bg-[#293038] sm:text-sm sm:leading-6 transition-all" placeholder="Search properties, tenants..." type="text" />
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+            <button class="relative p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-background-dark"></span>
+            </button>
+            <button class="p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
+                <span class="material-symbols-outlined">help</span>
+            </button>
+       
+            <a asp-controller="Leases" asp-action="Index" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                <span class="hidden sm:inline">Assign Property</span>
+            </a>
+          
+        </div>
+    </div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+    <div class="max-w-7xl mx-auto space-y-6 pb-10">
+        <!-- Welcome Section -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Good Morning, Hassam 👋</h2>
+                <p class="text-[#9dabb8] mt-1">Here's what's happening with your properties today.</p>
+            </div>
+            <div class="flex items-center gap-2 bg-[#1e252b] rounded-lg p-1 border border-[#293038]">
+                <button class="px-3 py-1.5 text-sm font-medium rounded text-white bg-[#293038] shadow-sm">Last 30 Days</button>
+                <button class="px-3 py-1.5 text-sm font-medium rounded text-[#9dabb8] hover:text-white hover:bg-[#293038]/50">Last Quarter</button>
+                <button class="px-3 py-1.5 text-sm font-medium rounded text-[#9dabb8] hover:text-white hover:bg-[#293038]/50">Last Year</button>
+            </div>
+        </div>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Revenue -->
+            <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 rounded-lg bg-green-500/10 text-green-500">
+                        <span class="material-symbols-outlined">attach_money</span>
+                    </div>
+                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
+                        +5.2%
+                    </span>
+                </div>
+                <p class="text-[#9dabb8] text-sm font-medium">Total Revenue</p>
+                <h3 class="text-2xl font-bold text-white mt-1">$45,200</h3>
+            </div>
+            <!-- Occupancy -->
+            <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                        <span class="material-symbols-outlined">apartment</span>
+                    </div>
+                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
+                        +1.0%
+                    </span>
+                </div>
+                <p class="text-[#9dabb8] text-sm font-medium">Occupancy Rate</p>
+                <h3 class="text-2xl font-bold text-white mt-1">94%</h3>
+            </div>
+            <!-- Pending Rent -->
+            <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+                        <span class="material-symbols-outlined">pending_actions</span>
+                    </div>
+                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_down</span>
+                        -12.5%
+                    </span>
+                </div>
+                <p class="text-[#9dabb8] text-sm font-medium">Pending Rent</p>
+                <h3 class="text-2xl font-bold text-white mt-1">$3,400</h3>
+            </div>
+            <!-- Active Maintenance -->
+            <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 rounded-lg bg-red-500/10 text-red-500">
+                        <span class="material-symbols-outlined">plumbing</span>
+                    </div>
+                    <span class="flex items-center text-xs font-semibold text-red-500 bg-red-500/10 px-2 py-1 rounded-full">
+                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
+                        +2 new
+                    </span>
+                </div>
+                <p class="text-[#9dabb8] text-sm font-medium">Active Maintenance</p>
+                <h3 class="text-2xl font-bold text-white mt-1">5</h3>
+            </div>
+        </div>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Rent Status Chart -->
+            <div class="bg-[#1e252b] p-6 rounded-xl border border-[#293038] flex flex-col">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-white text-base font-bold">Rent Status</h3>
+                    <button class="text-[#9dabb8] hover:text-white">
+                        <span class="material-symbols-outlined">more_horiz</span>
+                    </button>
+                </div>
+                <div class="flex-1 flex flex-col gap-4">
+                    <div class="relative pt-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-medium text-[#9dabb8]">Collected</span>
+                            <span class="text-sm font-bold text-white">$45.2k (80%)</span>
+                        </div>
+                        <div class="w-full bg-[#293038] rounded-full h-2.5">
+                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="relative pt-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-medium text-[#9dabb8]">Pending</span>
+                            <span class="text-sm font-bold text-white">$2.8k (15%)</span>
+                        </div>
+                        <div class="w-full bg-[#293038] rounded-full h-2.5">
+                            <div class="bg-orange-500 h-2.5 rounded-full" style="width: 15%"></div>
+                        </div>
+                    </div>
+                    <div class="relative pt-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-medium text-[#9dabb8]">Overdue</span>
+                            <span class="text-sm font-bold text-white">$0.6k (5%)</span>
+                        </div>
+                        <div class="w-full bg-[#293038] rounded-full h-2.5">
+                            <div class="bg-red-500 h-2.5 rounded-full" style="width: 5%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-[#293038] flex justify-between items-center text-sm">
+                    <span class="text-[#9dabb8]">Total Expected</span>
+                    <span class="font-bold text-white">$48,600</span>
+                </div>
+            </div>
+            <!-- Cash Flow Graph -->
+            <div class="bg-[#1e252b] p-6 rounded-xl border border-[#293038] lg:col-span-2 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-white text-base font-bold">Cash Flow Overview</h3>
+                        <p class="text-xs text-[#9dabb8]">Last 6 months revenue vs expenses</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#293038]/50">
+                            <span class="size-2 rounded-full bg-primary"></span>
+                            <span class="text-xs text-white">Income</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#293038]/50">
+                            <span class="size-2 rounded-full bg-[#9dabb8]"></span>
+                            <span class="text-xs text-white">Expense</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 min-h-[200px] w-full relative flex items-end justify-between gap-2 pt-8 pb-2 px-2">
+                    <!-- Chart Bars -->
+                    <!-- Month 1 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[60%] relative"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">Jan</span>
+                    </div>
+                    <!-- Month 2 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[75%]"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[40%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">Feb</span>
+                    </div>
+                    <!-- Month 3 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[50%]"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[45%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">Mar</span>
+                    </div>
+                    <!-- Month 4 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[85%]"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[35%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">Apr</span>
+                    </div>
+                    <!-- Month 5 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[90%]"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">May</span>
+                    </div>
+                    <!-- Month 6 -->
+                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[80%]"></div>
+                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[25%]"></div>
+                        </div>
+                        <span class="text-xs text-[#9dabb8] font-medium">Jun</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Grid: Property List & Recent Activity -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <!-- Properties Table -->
+            <div class="xl:col-span-2 bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
+                <div class="p-6 border-b border-[#293038] flex items-center justify-between">
+                    <h3 class="text-white text-base font-bold">Top Properties</h3>
+                    <a class="text-sm text-primary hover:text-primary/80 font-medium" href="#">View All</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-[#293038]/50 text-[#9dabb8] text-xs uppercase tracking-wider">
+                                <th class="px-6 py-3 font-semibold">Property</th>
+                                <th class="px-6 py-3 font-semibold">Status</th>
+                                <th class="px-6 py-3 font-semibold">Tenant</th>
+                                <th class="px-6 py-3 font-semibold text-right">Rent</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#293038]">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-[#293038]/30 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern white house with garden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBJ69YHJdjH3qmKHfjquqDbPhg4zY9tS6IPCjaGspz_Nt2tDRm500Fy6YGddFpZ0X3hcc4LvigA4N55uJ576sB0hFn7vZnVJIM5b5HSYHU7tEkN4BftcZjL1RXOaIEEmmgr_eA6aUW6BeNhMbMIbnSQwTYgTWaAfZtzSMnDCD-sFjEmFH9D-qc7HkQFXeED2olCGQtEyOBou2wgllxbUeb0ccAmmVqMhiumHS9VFep71ruHG5EL7oLxTTcQn7HhEyj7n5cvtns4gj8v');"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Sunset Apartments</p>
+                                            <p class="text-[#9dabb8] text-xs">Unit 402</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+                                        Occupied
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">JD</div>
+                                        <span class="text-white text-sm">John Doe</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-white text-sm font-medium">$2,400</span>
+                                    <span class="block text-[#9dabb8] text-xs">Paid</span>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-[#293038]/30 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern apartment interior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfncPSnBFZXDyRfokAZgOaJ-0sBS3BXtSCiuX8pcrBFiYNII9mGfZQeAe9j8CpYkOaK72W7dyVZX6CzNcyXwescek93V68wQADcwo9m_s2jYPaqtmFSBGekm85nrdQhQZzD4jkxP8j5XSyzbtbvMnOe-mwop9ZlWtcMZiwqaoGC8PTlFaFzW9BQyOP84LsS4ns8kyO38vIHwTyZ5OqBLla5IYR0Wuc5U5JxKbMpXFquPWHMb-dmcUcZUt1xMjjomZGXbSSJB-255Ux');"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Highland Towers</p>
+                                            <p class="text-[#9dabb8] text-xs">Unit 105</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500">
+                                        Pending
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">AS</div>
+                                        <span class="text-white text-sm">Alice Smith</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-white text-sm font-medium">$1,850</span>
+                                    <span class="block text-orange-500 text-xs">Due in 2 days</span>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-[#293038]/30 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Suburban family house" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAsj5XhO7qFWzMkCLuc-xBnyFVpm0KEHFtvkpnFqDMJaJ7bswFiDmGOhyRX3WcHRWOE-WqOvLPYRAxMSCAF5b7V8anJ_QX1xtL10iYBciCy3hPuMITGwuYvYgeAYYraN0dYt0J9EWiiwC2Dowg2RE-F_9wkSfjQi_RsTDxPRr3PN61wzMZKJih8InAMoet1ieH5nN5JCrzROhbEUc8yLSSPO6nCmk51mJyn9isqYeau6toK_CE-6YACZeWChIBgzeTodMjkAS7pr6sU');"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Lakeside Manor</p>
+                                            <p class="text-[#9dabb8] text-xs">Unit 12B</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
+                                        Vacant
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-[#9dabb8] text-sm">-</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-white text-sm font-medium">$3,100</span>
+                                    <span class="block text-[#9dabb8] text-xs">Listed</span>
+                                </td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr class="hover:bg-[#293038]/30 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern house exterior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAltMm1rMKksd83oHl2Y9D76NNC-m9F_65VeaF9Pqc5aLcuUE0Wjyka1JdPGFzJ_FK0XNRxHKAi6seKWQIOId_hG2MKWyjU7bVXLhEAxpk82ckfSljWyLgkTUjvGcUopgon8oxs6mSSbKY2ORdzTS28zQWVg0MEZOHGVR_FiFAY5itCkhcQw9xnK9TVcnYnOo18C-H5FPRy6IkQnHF_C0R0D0RK2uwS_GwJRCvQ5HOmpsBW1l-caJXsEJaJlXArHk62hPyWg_RWLt_F');"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Urban Loft</p>
+                                            <p class="text-[#9dabb8] text-xs">Unit 301</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+                                        Occupied
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">MK</div>
+                                        <span class="text-white text-sm">Mike K.</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-white text-sm font-medium">$2,100</span>
+                                    <span class="block text-[#9dabb8] text-xs">Paid</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Recent Activity & Notifications -->
+            <div class="flex flex-col gap-6">
+                <!-- Maintenance Alerts -->
+                <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6">
+                    <h3 class="text-white text-base font-bold mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-red-500">warning</span>
+                        Attention Required
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Item 1 -->
+                        <div class="flex gap-3 items-start pb-4 border-b border-[#293038]">
+                            <div class="size-8 rounded bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-sm">plumbing</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-medium">Water Leak - Unit 402</p>
+                                <p class="text-[#9dabb8] text-xs mt-1">Reported 2 hours ago by John Doe</p>
+                                <div class="mt-2 flex gap-2">
+                                    <button class="text-xs bg-[#293038] hover:bg-[#363f4a] text-white px-2 py-1 rounded transition-colors">View Ticket</button>
+                                    <button class="text-xs text-[#9dabb8] hover:text-white px-2 py-1 transition-colors">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="flex gap-3 items-start">
+                            <div class="size-8 rounded bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-sm">schedule</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-medium">Rent Overdue - Unit 105</p>
+                                <p class="text-[#9dabb8] text-xs mt-1">Alice Smith is 5 days late</p>
+                                <div class="mt-2 flex gap-2">
+                                    <button class="text-xs bg-primary/20 hover:bg-primary/30 text-primary px-2 py-1 rounded transition-colors">Send Reminder</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recent Communications -->
+                <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6 flex-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white text-base font-bold">Recent Messages</h3>
+                        <span class="material-symbols-outlined text-[#9dabb8] text-sm cursor-pointer">mail</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="size-8 rounded-full bg-cover bg-center shrink-0" data-alt="Female tenant portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD-6zF9Jt6J0-sXFA16KAD1H-q92RLM2YxkKJZT9mYMnmpS_bfeWCbtFCXqgjls2H4-X5YA7BoCpYeFfTsTBktfxUFMt4P4m7wzQeTTX5N1ayuzOJmrCkZ4FKvVWcz7pjJk6VdgE13cCfyypm1sKGms-bds5woRMxsCfi48jDw_gOOWplyDwH_gwRChm9foA2qSC_fvPxXX6ZiQU-dI79Cd8DG5XZiS1C4dxWfXmnlR1AYNSedFTWit97QNZzRN16sEbXJtYgk-DDlG');"></div>
+                            <div>
+                                <div class="flex justify-between w-full">
+                                    <p class="text-sm font-medium text-white">Sarah Connor</p>
+                                    <span class="text-[10px] text-[#9dabb8]">10m ago</span>
+                                </div>
+                                <p class="text-xs text-[#9dabb8] mt-0.5 line-clamp-2">Hi Hassam, just wanted to check if the parking spot is available for next month?</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="size-8 rounded-full bg-cover bg-center shrink-0" data-alt="Male tenant portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD8_iGKsI3ofZ9SLsOs8FZSmBTXqyOeqypNwNTHEJ09BuvC5AjPDep9obUlDyVQSJ_jh0CaHaGOrH5s-8BPpo3dMrC4Tdzcbsk2lvvz2JAWsecuoDIaIBRWfeLmFTxXlm5Ek4ThO8Y5gru-i4koAJb4ICxCO967rR3S5OgNn0a_4QncOjR0Hs7E5prUgcWcXKRB-G_1vX-3_YUnX-kvsrEElEYUnUTn9NWGjQnRR88cOLhdeE5AyK6l4xm3bT9i8ivAR49yTrlsZC4t');"></div>
+                            <div>
+                                <div class="flex justify-between w-full">
+                                    <p class="text-sm font-medium text-white">David Miller</p>
+                                    <span class="text-[10px] text-[#9dabb8]">2h ago</span>
+                                </div>
+                                <p class="text-xs text-[#9dabb8] mt-0.5 line-clamp-2">Thanks for fixing the heater so quickly! Much appreciated.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 py-2 text-sm text-[#9dabb8] hover:text-white border border-[#293038] hover:bg-[#293038] rounded-lg transition-colors">
+                        View All Messages
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
