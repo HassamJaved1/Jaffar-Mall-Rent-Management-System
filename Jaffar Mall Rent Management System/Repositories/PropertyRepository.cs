@@ -12,16 +12,24 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<int> GetTotalPropertiesCountAsync()
+        public async Task<int> GetTotalPropertiesCountAsync(string? searchTerm = null)
         {
             try
             {
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
-                const string sql = @"
+                
+                var sql = @"
                 SELECT COUNT(*) 
-                FROM properties";
-                int count = await connection.ExecuteScalarAsync<int>(sql);
+                FROM properties
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm)";
+                }
+
+                int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
                 return count;
             }
             catch (Exception ex)
@@ -114,6 +122,53 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+        }
+
+        public async Task<IEnumerable<Property>> GetAllPropertiesAsync(int skip, int take, string? searchTerm = null)
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var sql = @"
+                SELECT
+                    id,
+                    name,
+                    description,
+                    property_type AS ""PropertyType"",
+                    property_code AS ""PropertyCode"",
+                    status AS ""Status"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
+                    created_at AS ""CreatedAt"",
+                    updated_at AS ""UpdatedAt""
+                FROM properties
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm)";
+                }
+
+                sql += @"
+                ORDER BY id
+                OFFSET @Skip LIMIT @Take";
+
+                var properties = await connection.QueryAsync<Property>(sql, new 
+                { 
+                    Skip = skip, 
+                    Take = take,
+                    SearchTerm = $"%{searchTerm}%"
+                });
+                return properties;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Property>();
             }
         }
 

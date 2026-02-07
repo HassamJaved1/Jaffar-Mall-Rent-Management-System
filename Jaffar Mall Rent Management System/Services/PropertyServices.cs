@@ -32,7 +32,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 return new BackendResponse<bool>
                 {
                     Message = isAdded ? "Property added successful." : "Unable to add property.",
-                    Data = isAdded ,
+                    Data = isAdded,
                     Code = isAdded ? 200 : 401
                 };
             }
@@ -48,6 +48,23 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     Code = 500
                 };
             }
+        }
+
+        public async Task<Models.ViewModels.PaginatedViewModel<Property>> GetAllPropertiesAsync(int page, int pageSize, string? searchTerm = null)
+        {
+            // Calculate skip
+            var skip = (page - 1) * pageSize;
+
+            // Run tasks in parallel for efficiency
+            var countTask = _propertyRepository.GetTotalPropertiesCountAsync(searchTerm);
+            var itemsTask = _propertyRepository.GetAllPropertiesAsync(skip, pageSize, searchTerm);
+
+            await Task.WhenAll(countTask, itemsTask);
+
+            var totalCount = await countTask;
+            var items = await itemsTask;
+
+            return new Models.ViewModels.PaginatedViewModel<Property>(items, totalCount, page, pageSize);
         }
     }
 }

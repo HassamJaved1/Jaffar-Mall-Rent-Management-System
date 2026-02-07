@@ -1,0 +1,80 @@
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@using Jaffar_Mall_Rent_Management_System.Models
+@model PaginatedViewModel<Property>
+
+<div class="max-w-[1400px] mx-auto flex flex-col gap-4">
+    @if (Model != null && Model.Items != null && Model.Items.Any())
+    {
+        @foreach (var property in Model.Items)
+        {
+            <!-- Property Item -->
+            <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
+                 <!-- Image Placeholder -->
+                 <div class="w-full md:w-32 h-48 md:h-24 shrink-0 rounded-lg bg-cover bg-center bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
+                     <span class="material-symbols-outlined text-4xl">home</span>
+                 </div>
+                <!-- Details -->
+                <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-[#111418] dark:text-white truncate">@property.Name</h3>
+                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8]">@property.PropertyType</span>
+                    </div>
+                    <p class="text-sm text-[#637588] dark:text-[#9dabb8]">@property.Address, @property.City, @property.Country</p>
+                    <p class="text-xs text-[#637588] dark:text-[#9dabb8]">@property.Description</p>
+                </div>
+                
+               <!-- Actions -->
+                <div class="flex items-center justify-end md:pl-2">
+                    <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
+                        <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="flex flex-col items-center justify-center p-10 text-center">
+            <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">gite</span>
+            <h3 class="text-xl font-bold text-[#111418] dark:text-white">No Properties Found</h3>
+            <p class="text-[#637588] dark:text-[#9dabb8] mt-2">Get started by adding your first property.</p>
+             <a href="@Url.Action("AddProperty", "Property")" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-600 transition-colors">
+                Add Property
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Footer / Pagination -->
+@if (Model != null && Model.TotalPages > 0)
+{
+    <div class="max-w-[1400px] mx-auto mt-8 flex items-center justify-between border-t border-[#dce0e5] dark:border-[#293038] pt-4 pb-8">
+        <p class="text-sm text-[#637588] dark:text-[#9dabb8]">
+            Showing <span class="font-bold text-[#111418] dark:text-white">@((Model.PageIndex - 1) * 10 + 1) - @Math.Min(Model.PageIndex * 10, Model.TotalCount)</span> of <span class="font-bold text-[#111418] dark:text-white">@Model.TotalCount</span> properties
+        </p>
+        <div class="flex items-center gap-2">
+            @if (Model.HasPreviousPage)
+            {
+                <a href="@Url.Action("Index", new { page = Model.PageIndex - 1, search = ViewBag.CurrentSearch })" class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038]">Previous</a>
+            }
+            else
+            {
+                <span class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] opacity-50 cursor-not-allowed">Previous</span>
+            }
+            
+            <!-- Simplified Page Numbers -->
+            <div class="flex gap-1">
+                <span class="px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold flex items-center justify-center">@Model.PageIndex</span>
+            </div>
+
+            @if (Model.HasNextPage)
+            {
+                <a href="@Url.Action("Index", new { page = Model.PageIndex + 1, search = ViewBag.CurrentSearch })" class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038]">Next</a>
+            }
+            else
+            {
+                <span class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] opacity-50 cursor-not-allowed">Next</span>
+            }
+        </div>
+    </div>
+}

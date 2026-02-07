@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Jaffar_Mall_Rent_Management_System.Models
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@model PaginatedViewModel<Property>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
 
 <html class="dark" lang="en">
 <head>
@@ -72,24 +78,25 @@
                             <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">All Properties</h1>
                             <p class="text-[#637588] dark:text-[#9dabb8] text-base font-normal">Manage your listings, track occupancy, and monitor rent status.</p>
                         </div>
+                        <!-- Add Property Button -->
                         <div class="flex items-center gap-3">
-                            <button class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                            <a href="@Url.Action("AddProperty", "Property")" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
                                 <span class="material-symbols-outlined text-[20px] mr-2">add</span>
                                 <span class="truncate">New Property</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                     <!-- Search and Filters Bar -->
                     <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-                        <!-- Search -->
-                        <div class="relative w-full lg:max-w-[480px]">
-                            <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
-                                <div class="flex items-center justify-center pl-4 pr-2">
-                                    <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
-                                </div>
-                                <input class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search properties by address, tenant..." value="" />
-                            </div>
+                    <!-- Search -->
+                    <form method="get" class="relative w-full lg:max-w-[480px]">
+                        <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
+                            <button type="submit" class="flex items-center justify-center pl-4 pr-2 outline-none">
+                                <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
+                            </button>
+                            <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search properties by address, name..." />
                         </div>
+                    </form>
                         <!-- Filter Chips -->
                         <div class="flex flex-wrap gap-2">
                             <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
@@ -110,193 +117,61 @@
             </header>
             <!-- Scrollable List Area -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-8">
-                <div class="max-w-[1400px] mx-auto flex flex-col gap-4">
-                    <!-- Property Item 1 -->
-                    <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
-                        <!-- Image -->
-                        <div class="w-full md:w-32 h-48 md:h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Modern apartment exterior with balcony" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA3kHfR25RqDQpuLvSmYOkSXErP66gQdnFFvL7yox_1pYFUKhOE8d1nCnTBRfQYyR25afqsa6pxTKBXBHiXPqJS95bl5Bxqk6d4pkfUpVZsQZ3845FfbzU03NhdvcrxJHn3kUHtFvjHorjMCaSe5nYOd1_DxyAuPIizqZbsLerc4Rc7WgSCYY2fw9i4B5e9ZnEs-qL38csbMq0mfNAXFmGJBm5JKEDQY681mkMk-EzNtwWKp1E2nTid0OMyDDIvGTPot8KuEs9jTv7v')"></div>
-                        <!-- Details -->
-                        <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold text-[#111418] dark:text-white truncate">123 Maple Avenue, Apt 4B</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8]">Unit 4B</span>
-                            </div>
-                            <p class="text-sm text-[#637588] dark:text-[#9dabb8]">Downtown District • 2 Bed, 2 Bath • 1,200 sqft</p>
-                            <div class="flex md:hidden mt-2 gap-2">
-                                <!-- Mobile only status chips -->
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Occupied</span>
-                            </div>
-                        </div>
-                        <!-- Tenant Info (Desktop) -->
-                        <div class="hidden md:flex w-64 items-center gap-3 border-l border-[#dce0e5] dark:border-[#293038] pl-6 py-1">
-                            <div class="relative">
-                                <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white dark:border-[#1a1d23]" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGJSmV8inrkokPrQnbln6gIHk3rRCtxVK5WLD9NQmoj4zYcY5SIhXjn31a0-8ndreZcVN4MpJtMGFEaHXzEXpLH8V1Mh-ILZPgdmc_y2qq4AadVt4nWpzxBbV2MCFBBOUfX_9pMU6fMa3vIRdfDfrTsBYWylFZY2R4uXjskkmg33HbRlh4GutVG0OFZI_bvQ3vG-3sHutUkVsV4FjyxfJYSlqIg1hwt47imhGPFrWSek2RvY93L00Tu3W6I5MC9JrIVNzrZzxOWty6')"></div>
-                                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#1a1d23] rounded-full"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-bold text-[#111418] dark:text-white">Sarah Jenkins</p>
-                                <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Tenant since 2021</p>
-                            </div>
-                        </div>
-                        <!-- Rent & Status -->
-                        <div class="flex flex-row md:flex-col justify-between w-full md:w-auto md:items-end gap-1 md:border-l border-[#dce0e5] dark:border-[#293038] pl-0 md:pl-6">
-                            <div class="flex flex-col items-start md:items-end">
-                                <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">$2,400<span class="text-sm font-normal text-[#637588] dark:text-[#9dabb8]">/mo</span></p>
-                                <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                                    <span class="material-symbols-outlined text-[16px] filled">check_circle</span>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Paid</span>
-                                </div>
-                            </div>
-                            <span class="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mt-1">
-                                Occupied
-                            </span>
-                        </div>
-                        <!-- Actions -->
-                        <div class="flex items-center justify-end md:pl-2">
-                            <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
-                                <span class="material-symbols-outlined">more_vert</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Property Item 2 -->
-                    <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
-                        <div class="w-full md:w-32 h-48 md:h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Modern house with garden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDiVG6hOrnJRtBzKvBFgwmJB0H26jv3VS8COFoLJms7ORqR0vvDmusDRe3X5tfurQ-dnQEu4moW_rpv3nC-zh12-IHEK53Y7pPB-Q-rqhkBAOtFnAV4I6Qp_RicMdYQUIHOZBn9WT2RYPE6dqphFT3VmWye-g-S_VM9EDHNeDjV_nWbDojb0L8lgrhmezmTTFoV4YjvMOHBoKgMzTQ_PKaGsAnid-qiyQjsSYWn2g2QSeEErNncXRMaepGtjt-to-hYX05k1xpddYAT')"></div>
-                        <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold text-[#111418] dark:text-white truncate">88 Highland Drive</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8]">House</span>
-                            </div>
-                            <p class="text-sm text-[#637588] dark:text-[#9dabb8]">Suburban Area • 4 Bed, 3 Bath • 2,400 sqft</p>
-                            <div class="flex md:hidden mt-2 gap-2">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">Maintenance</span>
-                            </div>
-                        </div>
-                        <!-- Empty Tenant State -->
-                        <div class="hidden md:flex w-64 items-center gap-3 border-l border-[#dce0e5] dark:border-[#293038] pl-6 py-1 opacity-50">
-                            <div class="w-10 h-10 rounded-full bg-[#f0f2f4] dark:bg-[#293038] flex items-center justify-center">
-                                <span class="material-symbols-outlined text-[#9dabb8]">person_off</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#111418] dark:text-white">Vacant</p>
-                                <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Looking for tenant</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-row md:flex-col justify-between w-full md:w-auto md:items-end gap-1 md:border-l border-[#dce0e5] dark:border-[#293038] pl-0 md:pl-6">
-                            <div class="flex flex-col items-start md:items-end">
-                                <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">$3,850<span class="text-sm font-normal text-[#637588] dark:text-[#9dabb8]">/mo</span></p>
-                                <div class="flex items-center gap-1 text-[#637588] dark:text-[#9dabb8]">
-                                    <span class="material-symbols-outlined text-[16px]">remove_circle_outline</span>
-                                    <span class="text-xs font-medium uppercase tracking-wider">No Due</span>
-                                </div>
-                            </div>
-                            <span class="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 mt-1">
-                                Maintenance
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-end md:pl-2">
-                            <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
-                                <span class="material-symbols-outlined">more_vert</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Property Item 3 -->
-                    <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
-                        <div class="w-full md:w-32 h-48 md:h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Brick loft interior living room" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxUPqzEyFMl59HRjlxnTHqsfm_Q_2OlNLd1kBgjg0XaJwIq0_Zpda1BOsSK92HORzgvnf-IuT254nxq9-Igg5UIaNnyFIoExdX5zHy4azdUTA5Hanstv-DTX1ptx4nu4rfvUr2p8E8ACRxBIhMh-Pugd6_Wj0_VFHrheF5k5Tik1cOZEvf0kC_hyzyNb2x82g3fLGKEsA5J_uR1AuXRk-S15yHfzMxOKHl_tHrCF1M0LoRzeEqSAITYUZiuEtU7V5x3MY5fUfXZK3W')"></div>
-                        <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold text-[#111418] dark:text-white truncate">450 West Side Lofts, #204</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8]">Loft</span>
-                            </div>
-                            <p class="text-sm text-[#637588] dark:text-[#9dabb8]">Arts District • 1 Bed, 1.5 Bath • 950 sqft</p>
-                            <div class="flex md:hidden mt-2 gap-2">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Occupied</span>
-                            </div>
-                        </div>
-                        <div class="hidden md:flex w-64 items-center gap-3 border-l border-[#dce0e5] dark:border-[#293038] pl-6 py-1">
-                            <div class="relative">
-                                <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white dark:border-[#1a1d23]" data-alt="Portrait of Michael Chen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPmJx_E1AXXsapu-VlQS9GC1D2-z8h4xistX3a2Sw2vTGFnVKY47MxwBjZdb29800Amj3tklqJwf0vWZDf4sm30f4hegPCq4CP1RrQPAcrioG_zs3odXxgsSyYW_KO6m9teGiJVEN2ztp5zr30hbsxYl-kvRD9khykxYt27ZMZCHIaFuDTznWbyRw1Kp4jUcVO2KJuaCHeP8JAKBMXFu-h9GztGTSj15hqex9t_-lJePSByA1ihDeIa1AABKjrxRnjQuqU8log4wbI')"></div>
-                                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 border-2 border-white dark:border-[#1a1d23] rounded-full"></div>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-bold text-[#111418] dark:text-white">Michael Chen</p>
-                                <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Tenant since 2022</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-row md:flex-col justify-between w-full md:w-auto md:items-end gap-1 md:border-l border-[#dce0e5] dark:border-[#293038] pl-0 md:pl-6">
-                            <div class="flex flex-col items-start md:items-end">
-                                <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">$1,950<span class="text-sm font-normal text-[#637588] dark:text-[#9dabb8]">/mo</span></p>
-                                <div class="flex items-center gap-1 text-red-500">
-                                    <span class="material-symbols-outlined text-[16px] filled">error</span>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Overdue</span>
-                                </div>
-                            </div>
-                            <span class="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mt-1">
-                                Occupied
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-end md:pl-2">
-                            <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
-                                <span class="material-symbols-outlined">more_vert</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Property Item 4 -->
-                    <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
-                        <div class="w-full md:w-32 h-48 md:h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Suburban family home exterior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA18BsU8ujtv4BUuU3fGJI6RQZytPbgXhkqrvMCtZC9VmRvnZvHlbxVS0ZVt---ZvKRsgKFRZlfVm8nKChq9jr3k8Pu69ASybZqWFDLB9I6aESxyynllkbS_iJS6NJWJxjwACUOQSfpHugtXXs6PaZ_syVij5A-lVHO6PUI702eouunSUgNeMmqf-Rxn7Tk1p60oM80XpLKBhnjY92P8yLx6r8eatvkzrgv_Df0EbUCuw9C81J1eeOwbUTUDQYZz9QoDSJQZeKTfh0C')"></div>
-                        <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold text-[#111418] dark:text-white truncate">221B Baker Street</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8]">Townhouse</span>
-                            </div>
-                            <p class="text-sm text-[#637588] dark:text-[#9dabb8]">West End • 3 Bed, 2 Bath • 1,800 sqft</p>
-                            <div class="flex md:hidden mt-2 gap-2">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#637588]/10 text-[#637588] dark:text-[#9dabb8] border border-[#637588]/20">Vacant</span>
-                            </div>
-                        </div>
-                        <!-- Vacant State -->
-                        <div class="hidden md:flex w-64 items-center gap-3 border-l border-[#dce0e5] dark:border-[#293038] pl-6 py-1 opacity-50">
-                            <div class="w-10 h-10 rounded-full bg-[#f0f2f4] dark:bg-[#293038] flex items-center justify-center">
-                                <span class="material-symbols-outlined text-[#9dabb8]">person_off</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#111418] dark:text-white">Vacant</p>
-                                <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Last tenant left Dec 2023</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-row md:flex-col justify-between w-full md:w-auto md:items-end gap-1 md:border-l border-[#dce0e5] dark:border-[#293038] pl-0 md:pl-6">
-                            <div class="flex flex-col items-start md:items-end">
-                                <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">$3,100<span class="text-sm font-normal text-[#637588] dark:text-[#9dabb8]">/mo</span></p>
-                                <div class="flex items-center gap-1 text-[#637588] dark:text-[#9dabb8]">
-                                    <span class="material-symbols-outlined text-[16px]">pending</span>
-                                    <span class="text-xs font-medium uppercase tracking-wider">Unlisted</span>
-                                </div>
-                            </div>
-                            <span class="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#637588]/10 text-[#637588] dark:text-[#9dabb8] border border-[#637588]/20 mt-1">
-                                Vacant
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-end md:pl-2">
-                            <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
-                                <span class="material-symbols-outlined">more_vert</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer / Pagination -->
-                <div class="max-w-[1400px] mx-auto mt-8 flex items-center justify-between border-t border-[#dce0e5] dark:border-[#293038] pt-4 pb-8">
-                    <p class="text-sm text-[#637588] dark:text-[#9dabb8]">Showing <span class="font-bold text-[#111418] dark:text-white">1-4</span> of <span class="font-bold text-[#111418] dark:text-white">28</span> properties</p>
-                    <div class="flex items-center gap-2">
-                        <button class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] disabled:opacity-50">Previous</button>
-                        <div class="flex gap-1">
-                            <button class="w-8 h-8 rounded-lg bg-primary text-white text-sm font-bold flex items-center justify-center">1</button>
-                            <button class="w-8 h-8 rounded-lg text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] text-sm font-medium flex items-center justify-center">2</button>
-                            <button class="w-8 h-8 rounded-lg text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] text-sm font-medium flex items-center justify-center">3</button>
-                        </div>
-                        <button class="px-3 py-1.5 rounded-lg border border-[#dce0e5] dark:border-[#293038] text-sm font-medium text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038]">Next</button>
-                    </div>
+                <div id="property-list-container">
+                    <partial name="_PropertyListPartial" model="Model" />
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let debounceTimer;
+            const searchInput = document.querySelector('input[name="search"]');
+            const listContainer = document.getElementById('property-list-container');
+            const form = searchInput.closest('form');
+
+            // Prevent default form submission on enter
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                performSearch(searchInput.value);
+            });
+
+            searchInput.addEventListener('input', function (e) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300); // 300ms debounce
+            });
+
+            function performSearch(query) {
+                // Construct URL with query parameters
+                // Using a relative path helper or base URL logic
+                const url = new URL(window.location.origin + '@Url.Action("Index", "Property")');
+                if (query) {
+                    url.searchParams.set('search', query);
+                }
+                url.searchParams.set('page', 1); // Reset to page 1 on search
+
+                // Update browser history
+                window.history.pushState({}, '', url);
+
+                // Fetch data
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    listContainer.innerHTML = html;
+                })
+                .catch(error => console.error('Error fetching properties:', error));
+            }
+        });
+    </script>
 </body>
 </html>
