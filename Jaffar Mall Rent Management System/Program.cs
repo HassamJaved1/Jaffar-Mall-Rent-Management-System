@@ -10,30 +10,29 @@ builder.Services.AddControllersWithViews();
 
 
 // Inject connection string from appsettings.json
-builder.Services.AddScoped<UserAuthRepository>(provider =>
+builder.Services.AddScoped(provider =>
 {
     var connString = builder.Configuration.GetConnectionString("DefaultConnection");
     return new UserAuthRepository(connString!);
 });
 
-builder.Services.AddScoped<PropertyRepository>(provider =>
+builder.Services.AddScoped(provider =>
 {
     var connString = builder.Configuration.GetConnectionString("DefaultConnection");
     return new PropertyRepository(connString!);
 });
 
-builder.Services.AddScoped<TenantRepository>(provider =>
+builder.Services.AddScoped(provider =>
 {
     var connString = builder.Configuration.GetConnectionString("DefaultConnection");
     return new TenantRepository(connString!);
 });
 
-
-
 // Inject the service
 builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();
 builder.Services.AddScoped<TenantServices>();
+builder.Services.AddScoped<LeaseServices>();
 
 var app = builder.Build();
 

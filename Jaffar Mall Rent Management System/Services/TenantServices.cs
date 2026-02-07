@@ -31,7 +31,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                 return new BackendResponse<bool>
                 {
-                    Message = isAdded ? "Property added successful." : "Unable to add property.",
+                    Message = isAdded ? "Tenant added successful." : "Unable to add Tenant.",
                     Data = isAdded,
                     Code = isAdded ? 200 : 401
                 };

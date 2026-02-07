@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Property Assignment Screen - RentManager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#197fe6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
+    <!-- Top Navigation -->
+    <div class="border-b border-gray-200 dark:border-[#293038] bg-white dark:bg-[#111418]">
+        <div class="px-4 md:px-10 py-3 flex items-center justify-between max-w-7xl mx-auto w-full">
+            <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+                <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                    <span class="material-symbols-outlined text-[20px]">apartment</span>
+                </div>
+                <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">RentManager</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="hidden md:flex items-center gap-9">
+                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Dashboard</a>
+                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Properties</a>
+                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Tenants</a>
+                    <a class="text-sm font-medium leading-normal text-slate-900 dark:text-white" href="#">Leases</a>
+                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Settings</a>
+                </div>
+                <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-gray-200 dark:ring-[#293038]" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEBrxnMVsnxL6m63VHAgLG_P99TIZibq6BzBAKbFjVPoqYXer9thbpmtlU3KkMe2XL7-QGNWcx2lKGYDV_-BostdBV6VuGE1qDCThiun6-m0ykch4TIvRIrN91v-om5xjp7rmHNvU6VUsCurBTDJExy2IriOteEnp8SlE2t10sewr1vzHyMEk66P6AL6XFaTGSsLSn80meTIM0QhXEQ6Q7piuvvQlT9QLXCWI3RAl-225jF3DhyO1joKeJgWAFVZeoDUDCGNsR4pYn");'></div>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex justify-center py-8 px-4 md:px-10">
+        <div class="flex flex-col max-w-5xl flex-1 w-full gap-8">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Home</a>
+                <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
+                <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Leases</a>
+                <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
+                <span class="text-slate-900 dark:text-white font-medium">New Assignment</span>
+            </div>
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between gap-6 md:items-end">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Assign Property to Tenant</h1>
+                    <p class="text-gray-600 dark:text-[#9dabb8] text-base font-normal">Create a new lease agreement and officially assign a unit.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="flex items-center justify-center h-10 px-4 rounded-lg bg-gray-200 dark:bg-[#293038] text-slate-900 dark:text-white text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#3c4753] transition-colors">
+                        Cancel
+                    </button>
+                    <button class="flex items-center justify-center h-10 px-6 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+                        Create Assignment
+                    </button>
+                </div>
+            </div>
+            <!-- Form Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Form Column (Left 2/3) -->
+                <div class="lg:col-span-2 flex flex-col gap-6">
+                    <!-- Section: Parties -->
+                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">groups</span>
+                            Lease Parties
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Tenant Select -->
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Tenant</span>
+                                <div class="relative">
+                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                        <option disabled="" selected="" value="">Search for a tenant...</option>
+                                        <option value="1">Sarah Jenkins</option>
+                                        <option value="2">Michael Chen</option>
+                                        <option value="3">Elena Rodriguez</option>
+                                        <option value="3">Elesna Rodriguez</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <!-- Property Select -->
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Property</span>
+                                <div class="relative">
+                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                        <option disabled="" selected="" value="">Search by address...</option>
+                                        <option value="1">1204 Sunset Blvd, Apt 4B</option>
+                                        <option value="2">880 Highland Ave, Unit 12</option>
+                                        <option value="3">45 Main St, Penthouse</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <!-- Added By -->
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Added By</span>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                        <span class="material-symbols-outlined text-[20px]">person</span>
+                                    </div>
+                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-100 dark:bg-[#293038] pl-10 px-4 py-3 text-gray-500 dark:text-gray-400 focus:outline-none cursor-not-allowed" readonly="" type="text" value="Admin User" />
+                                </div>
+                            </label>
+                            <!-- Status -->
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Agreement Status</span>
+                                <div class="relative">
+                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                        <option value="active">Active</option>
+                                        <option selected="" value="pending">Pending Signature</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Section: Terms & Description -->
+                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">description</span>
+                            Details &amp; Notes
+                        </h3>
+                        <div class="flex flex-col gap-6">
+                            <!-- Lease Duration -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <label class="flex flex-col flex-1 gap-2 group">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Duration (Months)</span>
+                                    <div class="relative">
+                                        <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" max="120" min="1" type="number" value="12" />
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 text-sm">
+                                            months
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="flex flex-col flex-1 gap-2 group">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Start Date</span>
+                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="date" />
+                                </label>
+                            </div>
+                            <!-- Description -->
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Description / Notes</span>
+<textarea class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all" placeholder="Add any special conditions or notes about this assignment..." rows="3"></textarea>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- Financials Sidebar (Right 1/3) -->
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm h-fit sticky top-6">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">payments</span>
+                            Financials
+                        </h3>
+                        <div class="flex flex-col gap-5">
+                            <!-- Rent Amount -->
+                            <label class="flex flex-col gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Monthly Rent</span>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
+                                    </div>
+                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                </div>
+                            </label>
+                            <!-- Security Deposit -->
+                            <label class="flex flex-col gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Deposit</span>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
+                                    </div>
+                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                </div>
+                            </label>
+                            <hr class="border-gray-200 dark:border-[#293038] my-2" />
+                            <!-- Summary -->
+                            <div class="flex flex-col gap-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Term Length</span>
+                                    <span class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Est. Total Value</span>
+                                    <span class="text-lg font-bold text-primary">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 dark:bg-[#111921] rounded-lg p-3 mt-2 border border-blue-100 dark:border-[#293038]">
+                                <div class="flex gap-2">
+                                    <span class="material-symbols-outlined text-primary text-sm mt-0.5">info</span>
+                                    <p class="text-xs text-slate-600 dark:text-gray-400 leading-normal">
+                                        A refundable security deposit is typically collected before move-in. Ensure this matches the lease agreement.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
