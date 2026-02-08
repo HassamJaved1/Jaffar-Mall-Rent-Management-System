@@ -93,9 +93,62 @@
             })
             .then(html => {
                 listContainer.innerHTML = html;
+                currentOpenDropdown = null;
             })
             .catch(error => console.error('Error fetching tenants:', error));
         }
+
+        // Dropdown Logic
+        let currentOpenDropdown = null;
+
+        window.toggleDropdown = function(event, id) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('dropdown-' + id);
+            
+            // Close currently open if different
+            if (currentOpenDropdown && currentOpenDropdown !== dropdown) {
+                currentOpenDropdown.classList.add('hidden');
+            }
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                currentOpenDropdown = dropdown;
+            } else {
+                dropdown.classList.add('hidden');
+                currentOpenDropdown = null;
+            }
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (currentOpenDropdown) {
+                currentOpenDropdown.classList.add('hidden');
+                currentOpenDropdown = null;
+            }
+        });
+
+        window.deleteTenant = async function(id) {
+             try {
+                 const response = await fetch('/Tenant/DeleteTenant?id=' + id, { 
+                     method: 'DELETE',
+                     headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                     }
+                 });
+                 
+                 const result = await response.json();
+                 
+                 if (response.ok && result.code === 200) { 
+                     // Refresh the list
+                     performSearch(document.querySelector('input[name="search"]').value); 
+                 } else {
+                     alert('Failed to delete tenant: ' + (result.message || 'Unknown error'));
+                 }
+             } catch (error) {
+                 console.error('Error:', error);
+                 alert('An error occurred while deleting the tenant.');
+             }
+        };
     });
 </script>
 }

@@ -1,0 +1,142 @@
+@model Jaffar_Mall_Rent_Management_System.Models.Tenant
+@{
+    ViewData["Title"] = "ant";
+}
+
+<header class="w-full bg-background-light dark:bg-background-dark border-b border-border-dark shrink-0 z-10">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Edit Tenant</h1>
+            <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">Update tenant details.</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="window.history.back()" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+                Cancel
+            </button>
+            <button id="btnSaveTenant" class="px-5 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                Update Tenant
+            </button>
+        </div>
+    </div>
+</header>
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-5xl mx-auto flex flex-col gap-6 pb-20">
+        <input type="hidden" id="Id" value="@Model.Id" />
+        <div class="grid grid-cols-1">
+            <div class="flex flex-col gap-6">
+                <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">General Information</h3>
+                    <div class="flex flex-col gap-5">
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Full Name</span>
+                            <input id="Name" value="@Model.Name" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="John Doe" type="text" />
+                        </label>
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Mobile Number</span>
+                            <input id="Phone_No" value="@Model.Phone_No" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="+92 334 1234567" type="tel" />
+                        </label>
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">ID Card Number (CNIC)</span>
+                            <input id="CardNumber" value="@Model.CardNumber" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="42101-XXXXXXX-X" type="text" />
+                        </label>
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Description / Notes</span>
+                            <textarea id="Description" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" placeholder="Enter any additional details..." rows="4">@Model.Description</textarea>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Additional Details</h3>
+                    <div class="flex flex-col gap-5">
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Permanent Address</span>
+                            <input id="Address" value="@Model.Address" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="House #, Street name" type="text" />
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <label class="flex flex-col gap-1.5">
+                                <span class="text-slate-700 dark:text-white text-sm font-medium">City</span>
+                                <input id="City" value="@Model.City" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="City Name" type="text" />
+                            </label>
+                            <label class="flex flex-col gap-1.5">
+                                <span class="text-slate-700 dark:text-white text-sm font-medium">Country</span>
+                                <input id="Country" value="@Model.Country" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Pakistan" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnSave = document.getElementById('btnSaveTenant');
+
+            btnSave.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                // 1. Map UI fields to your C# Tenant Model properties
+                const tenantData = {
+                    Id: document.getElementById('Id').value,
+                    Name: document.getElementById('Name').value,
+                    Description: document.getElementById('Description').value,
+                    Phone_No: document.getElementById('Phone_No').value,
+                    CardNumber: document.getElementById('CardNumber').value,
+                    Address: document.getElementById('Address').value,
+                    City: document.getElementById('City').value,
+                    Country: document.getElementById('Country').value
+                };
+
+                // Simple Validation
+                if (!tenantData.Name || !tenantData.Phone_No) {
+                    alert("Name and Phone Number are required.");
+                    return;
+                }
+
+                // UI Feedback: Loading State
+                const originalContent = btnSave.innerHTML;
+                btnSave.disabled = true;
+                btnSave.classList.add('opacity-50', 'text-slate-300');
+                btnSave.textContent = 'Updating...';
+
+                try {
+                    // 2. Fetch API Request
+                    const response = await fetch('/Tenant/EditTenant', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(tenantData)
+                    });
+
+                    // Parse the JSON body from the response
+                    const result = await response.json();
+
+                    // Log the custom BackendResponse to console
+                    console.log("Server Response Object:", result);
+
+                    // Check both HTTP status and your custom 'Code' property
+                    if (response.ok && result.code === 200) {
+                        alert(result.message);
+                        window.location.href = '/Tenant/Index';
+                    } else {
+                        alert("Failed: " + (result.message || "Unknown error occurred"));
+                    }
+
+                } catch (error) {
+                    console.error("Network or Runtime Error:", error);
+                    alert("A network error occurred. Please check the console.");
+                } finally {
+                    // Restore button state
+                    btnSave.disabled = false;
+                    btnSave.classList.remove('opacity-50', 'text-slate-300');
+                    btnSave.innerHTML = originalContent;
+                }
+            });
+        });
+    </script>
+}

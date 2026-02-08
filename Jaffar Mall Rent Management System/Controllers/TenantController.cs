@@ -50,5 +50,44 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             return BackendResponse<bool>.Failure(response.Message, response.Code)
                                         .ToActionResult();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditTenant(long id)
+        {
+            var tenant = await _tenantServices.GetTenantByIdAsync(id);
+            if (tenant == null)
+            {
+                return NotFound();
+            }
+
+            return View(tenant);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTenant([FromBody] Tenant tenant)
+        {
+            var response = await _tenantServices.UpdateTenantAsync(tenant);
+            if (response.Data)
+            {
+                return BackendResponse<bool>.Success(true, response.Message)
+                                            .ToActionResult();
+            }
+
+            return BackendResponse<bool>.Failure(response.Message, response.Code)
+                                        .ToActionResult();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTenant(long id)
+        {
+            var response = await _tenantServices.DeleteTenantAsync(id);
+            if (response.Data)
+            {
+                return BackendResponse<bool>.Success(true, response.Message)
+                                            .ToActionResult();
+            }
+             return BackendResponse<bool>.Failure(response.Message, response.Code)
+                                        .ToActionResult();
+        }
     }
 }
