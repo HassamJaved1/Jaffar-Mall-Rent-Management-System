@@ -12,14 +12,24 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<int> GetTotalTenantsCountAsync()
+        public async Task<int> GetTotalTenantsCountAsync(string? searchTerm = null)
         {
             try
             {
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
-                const string sql = @"SELECT COUNT(*) FROM tenants";
-                int count = await connection.ExecuteScalarAsync<int>(sql);
+                
+                var sql = @"
+                SELECT COUNT(*) 
+                FROM tenants
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm)";
+                }
+
+                int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
                 return count;
             }
             catch (Exception ex)
@@ -79,6 +89,53 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
+        public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int skip, int take, string? searchTerm = null)
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var sql = @"
+                SELECT
+                    id,
+                    name,
+                    description,
+                    phone_no AS ""Phone_No"",
+                    card_number AS ""CardNumber"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
+                    created_at AS ""CreatedAt"",
+                    updated_at AS ""UpdatedAt""
+                FROM tenants
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm)";
+                }
+
+                sql += @"
+                ORDER BY id
+                OFFSET @Skip LIMIT @Take";
+
+                var tenants = await connection.QueryAsync<Tenant>(sql, new 
+                { 
+                    Skip = skip, 
+                    Take = take,
+                    SearchTerm = $"%{searchTerm}%"
+                });
+                return tenants;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Tenant>();
+            }
+        }
+
+        // Overload for getting all tenants (used by dropdowns)
         public async Task<IEnumerable<Tenant>> GetAllTenantsAsync()
         {
             try
@@ -167,7 +224,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     card_number = @CardNumber,
                     address = @Address,
                     city = @City,
-                    country = @Country
+                    country = @Country,
+                    updated_at = @UpdatedAt
                 WHERE id = @Id";
 
                 var parameters = new
@@ -179,7 +237,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     CardNumber = tenant.CardNumber,
                     Address = tenant.Address,
                     City = tenant.City,
-                    Country = tenant.Country
+                    Country = tenant.Country,
+                    UpdatedAt = tenant.UpdatedAt
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);

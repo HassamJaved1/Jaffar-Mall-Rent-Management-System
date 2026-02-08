@@ -1,64 +1,63 @@
-﻿@{
-    ViewData["Title"] = "Add New Property";
+@model Jaffar_Mall_Rent_Management_System.Models.Property
+@{
+    ViewData["Title"] = "Edit Property";
 }
 
 <header class="w-full bg-background-light dark:bg-background-dark border-b border-border-dark shrink-0 z-10">
     <div class="max-w-5xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl md:text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Add New Property</h1>
-            <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">Fill in the details below to list a new rental unit.</p>
+            <h1 class="text-2xl md:text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Edit Property</h1>
+            <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">Update the property details below.</p>
         </div>
         <div class="flex gap-3">
-            <button type="button" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+            <button onclick="window.history.back()" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
                 Cancel
             </button>
             <button id="btnSaveProperty" class="px-5 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
                 <span class="material-symbols-outlined text-[18px]">save</span>
-                Save Property
+                Update Property
             </button>
         </div>
     </div>
 </header>
-
 <div class="flex-1 overflow-y-auto p-6">
     <div class="max-w-5xl mx-auto flex flex-col gap-6 pb-20">
+        <input type="hidden" id="propId" value="@Model.Id" />
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 flex flex-col gap-6">
-                <div style="border-color: rgb(60 71 83 )" class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
+                <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">General Information</h3>
                     <div class="flex flex-col gap-5">
                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Property Name</span>
-                            <input id="propName" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. Sunset Heights Apartments" type="text" />
+                            <input id="propName" value="@Model.Name" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary" placeholder="e.g. Sunset Heights Apartments" type="text" />
                         </label>
-                        <label class="flex flex-col gap-1.5 w-full">
+                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Property Description</span>
-                            <textarea id="propDesc" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" rows="5"></textarea>
+                            <textarea id="propDesc" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" rows="5">@Model.Description</textarea>
                         </label>
                     </div>
                 </div>
-
                 <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Location Details</h3>
                     <div class="flex flex-col gap-5">
                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Address</span>
-                            <input id="propAddress" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. 123 Main St" type="text" />
+                            <input id="propAddress" value="@Model.Address" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-text-secondary" placeholder="e.g. 123 Main St" type="text" />
                         </label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <label class="flex flex-col gap-1.5">
                                 <span class="text-slate-700 dark:text-white text-sm font-medium">City</span>
-                                <input id="propCity" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="New York" type="text" />
+                                <input id="propCity" value="@Model.City" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="New York" type="text" />
                             </label>
                             <label class="flex flex-col gap-1.5">
                                 <span class="text-slate-700 dark:text-white text-sm font-medium">Country</span>
-                                <input id="propCountry" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="United States" type="text" />
+                                <input id="propCountry" value="@Model.Country" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="United States" type="text" />
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="flex flex-col gap-6">
                 <div class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-border-dark shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-border-dark">Classification</h3>
@@ -88,12 +87,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const btnSave = document.getElementById('btnSaveProperty');
+            
+            // Set selected value for dropdown
+            const propTypeSelect = document.getElementById('propType');
+            const currentPropType = "@Html.Raw(Model.PropertyType)"; // Use Html.Raw for safety if needed
+            
+            // Iterate options to find match (or just set value if values match text)
+            for(let i=0; i < propTypeSelect.options.length; i++) {
+                if(propTypeSelect.options[i].value === currentPropType || propTypeSelect.options[i].text === currentPropType) {
+                    propTypeSelect.selectedIndex = i;
+                    break;
+                }
+            }
 
             btnSave.addEventListener('click', async (e) => {
                 e.preventDefault();
 
                 // 1. Map UI fields
                 const propertyData = {
+                    Id: document.getElementById('propId').value,
                     Name: document.getElementById('propName').value,
                     Address: document.getElementById('propAddress').value,
                     City: document.getElementById('propCity').value,
@@ -101,6 +113,8 @@
                     Description: document.getElementById('propDesc').value,
                     PropertyType: document.getElementById('propType').value
                 };
+
+                console.log("Sending data:", propertyData);
 
                 // Simple Validation
                 if (!propertyData.Name) {
@@ -112,11 +126,11 @@
                 btnSave.disabled = true;
                 btnSave.classList.add('opacity-50');
                 const originalHtml = btnSave.innerHTML;
-                btnSave.textContent = 'Saving...';
+                btnSave.textContent = 'Updating...';
 
                 try {
                     // 2. Fetch API POST Request
-                    const response = await fetch('/Property/AddProperty', {
+                    const response = await fetch('/Property/EditProperty', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -124,18 +138,14 @@
                         body: JSON.stringify(propertyData)
                     });
 
-                    console.log(response);
-
                     // Parse JSON response
                     const result = await response.json();
-
-                    // console logging as requested
+                    
                     console.log("Response Object:", result);
 
                     if (response.ok && result.code === 200) {
                         alert(result.message);
-                        // Optional: clear form
-                        // document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                        window.location.href = '/Property/Index';
                     } else {
                         alert(`Error: ${result.message || 'Something went wrong'}`);
                     }

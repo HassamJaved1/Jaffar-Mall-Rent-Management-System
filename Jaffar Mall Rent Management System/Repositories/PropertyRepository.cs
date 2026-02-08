@@ -112,7 +112,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     PropertyType = property.PropertyType,
                     Address = property.Address,
                     City = property.City,
-                    Country = property.Country
+                    Country = property.Country,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);

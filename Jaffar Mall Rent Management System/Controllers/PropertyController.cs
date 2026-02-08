@@ -38,7 +38,6 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProperty([FromBody] Property property)
         {
-            // repository will set timestamps
             var response = await _propertyServices.AddPropertyAsync(property);
             if (response.Data)
             {
@@ -48,9 +47,45 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
 
             return BackendResponse<bool>.Failure(response.Message, response.Code)
                                         .ToActionResult();
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> EditProperty(long id)
+        {
+            var property = await _propertyServices.GetPropertyByIdAsync(id);
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            return View(property);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProperty([FromBody] Property property)
+        {
+            var response = await _propertyServices.UpdatePropertyAsync(property);
+            if (response.Data)
+            {
+                return BackendResponse<bool>.Success(true, response.Message)
+                                            .ToActionResult();
+            }
+
+            return BackendResponse<bool>.Failure(response.Message, response.Code)
+                                        .ToActionResult();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProperty(long id)
+        {
+            var response = await _propertyServices.DeletePropertyAsync(id);
+            if (response.Data)
+            {
+                return BackendResponse<bool>.Success(true, response.Message)
+                                            .ToActionResult();
+            }
+             return BackendResponse<bool>.Failure(response.Message, response.Code)
+                                        .ToActionResult();
         }
     }
 }
-
-

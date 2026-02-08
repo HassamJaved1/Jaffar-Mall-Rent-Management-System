@@ -103,9 +103,62 @@
             })
             .then(html => {
                 listContainer.innerHTML = html;
+                currentOpenDropdown = null;
             })
             .catch(error => console.error('Error fetching properties:', error));
         }
+
+        // Dropdown Logic
+        let currentOpenDropdown = null;
+
+        window.toggleDropdown = function(event, id) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('dropdown-' + id);
+            
+            // Close currently open if different
+            if (currentOpenDropdown && currentOpenDropdown !== dropdown) {
+                currentOpenDropdown.classList.add('hidden');
+            }
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                currentOpenDropdown = dropdown;
+            } else {
+                dropdown.classList.add('hidden');
+                currentOpenDropdown = null;
+            }
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (currentOpenDropdown) {
+                currentOpenDropdown.classList.add('hidden');
+                currentOpenDropdown = null;
+            }
+        });
+
+        window.deleteProperty = async function(id) {
+             try {
+                 const response = await fetch('/Property/DeleteProperty?id=' + id, { 
+                     method: 'DELETE',
+                     headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                     }
+                 });
+                 
+                 const result = await response.json();
+                 
+                 if (response.ok && result.code === 200) { // Check for success code
+                     // Refresh the list
+                     performSearch(document.querySelector('input[name="search"]').value); 
+                 } else {
+                     alert('Failed to delete property: ' + (result.message || 'Unknown error'));
+                 }
+             } catch (error) {
+                 console.error('Error:', error);
+                 alert('An error occurred while deleting the property.');
+             }
+        };
     });
 </script>
 }

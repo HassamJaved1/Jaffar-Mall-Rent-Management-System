@@ -25,9 +25,22 @@
                 
                <!-- Actions -->
                 <div class="flex items-center justify-end md:pl-2">
-                    <button class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
+                <div class="relative">
+                    <button onclick="toggleDropdown(event, '@property.Id')" class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
                         <span class="material-symbols-outlined">more_vert</span>
                     </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-@property.Id" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a1d23] rounded-lg shadow-lg border border-[#dce0e5] dark:border-[#293038] z-20 overflow-hidden">
+                        <a href="@Url.Action("EditProperty", "Property", new { id = property.Id })" class="flex items-center gap-2 px-4 py-3 text-sm text-[#111418] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#293038] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                            Edit
+                        </a>
+                        <button onclick="if(confirm('Are you sure you want to delete this property?')) deleteProperty(@property.Id)" class="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-[#f0f2f4] dark:hover:bg-[#293038] transition-colors text-left">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                            Delete
+                        </button>
+                    </div>
+                 </div>
                 </div>
             </div>
         }
@@ -40,7 +53,7 @@
             <p class="text-[#637588] dark:text-[#9dabb8] mt-2">Get started by adding your first property.</p>
              <a href="@Url.Action("AddProperty", "Property")" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-600 transition-colors">
                 Add Property
-            </a>
+             </a>
         </div>
     }
 </div>

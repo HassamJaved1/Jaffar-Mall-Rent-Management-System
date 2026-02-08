@@ -12,9 +12,21 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             _tenantServices = tenantServices;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null)
         {
-            return View();
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
+            var viewModel = await _tenantServices.GetAllTenantsAsync(page, pageSize, search);
+
+            ViewBag.CurrentSearch = search;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_TenantListPartial", viewModel);
+            }
+
+            return View(viewModel);
         }
 
 
