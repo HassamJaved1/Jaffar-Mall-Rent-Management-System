@@ -138,28 +138,31 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 var sql = @"
                 SELECT
-                    id,
-                    name,
-                    description,
-                    property_type AS ""PropertyType"",
-                    property_code AS ""PropertyCode"",
-                    property_number AS ""PropertyNumber"",
-                    status AS ""Status"",
-                    address AS ""Address"",
-                    city AS ""City"",
-                    country AS ""Country"",
-                    created_at AS ""CreatedAt"",
-                    updated_at AS ""UpdatedAt""
-                FROM properties
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
                 WHERE 1=1";
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm OR property_number ILIKE @SearchTerm)";
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm)";
                 }
 
                 sql += @"
-                ORDER BY id
+                ORDER BY p.id
                 OFFSET @Skip LIMIT @Take";
 
                 var properties = await connection.QueryAsync<Property>(sql, new 
@@ -186,20 +189,23 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 SELECT
-                    id,
-                    name,
-                    description,
-                    property_type AS ""PropertyType"",
-                    property_code AS ""PropertyCode"",
-                    property_number AS ""PropertyNumber"",
-                    status AS ""Status"",
-                    address AS ""Address"",
-                    city AS ""City"",
-                    country AS ""Country"",
-                    created_at AS ""CreatedAt"",
-                    updated_at AS ""UpdatedAt""
-                FROM properties
-                ORDER BY id";
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                ORDER BY p.id";
 
                 var properties = await connection.QueryAsync<Property>(sql);
                 return properties;
@@ -222,20 +228,23 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 SELECT
-                    id,
-                    name,
-                    description,
-                    property_type AS ""PropertyType"",
-                    property_code AS ""PropertyCode"",
-                    property_number AS ""PropertyNumber"",
-                    status AS ""Status"",
-                    address AS ""Address"",
-                    city AS ""City"",
-                    country AS ""Country"",
-                    created_at AS ""CreatedAt"",
-                    updated_at AS ""UpdatedAt""
-                FROM properties
-                WHERE id = @Id";
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                WHERE p.id = @Id";
 
                 var property = await connection.QuerySingleOrDefaultAsync<Property?>(sql, new { Id = id });
                 return property;

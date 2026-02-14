@@ -25,7 +25,20 @@
                 </div>
                 
                <!-- Actions -->
-                <div class="flex items-center justify-end md:pl-2">
+                <div class="flex items-center justify-end md:pl-2 gap-3">
+                    <div class="flex flex-col items-end">
+                        @if (!string.IsNullOrEmpty(property.TenantName))
+                        {
+                            <span class="text-xs text-[#637588] dark:text-[#9dabb8]">Assigned to</span>
+                            <span class="text-sm font-bold text-[#111418] dark:text-white">@property.TenantName</span>
+                        }
+                        else
+                        {
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                Vacant
+                            </span>
+                        }
+                    </div>
                 <div class="relative">
                     <button onclick="toggleDropdown(event, '@property.Id')" class="p-2 text-[#637588] dark:text-[#9dabb8] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] hover:text-[#111418] dark:hover:text-white rounded-full transition-colors">
                         <span class="material-symbols-outlined">more_vert</span>

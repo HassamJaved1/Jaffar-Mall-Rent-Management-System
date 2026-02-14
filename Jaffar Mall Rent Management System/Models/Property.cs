@@ -22,6 +22,8 @@
 
         public string? Country { get; set; }
 
+        public string? TenantName { get; set; }
+
         //public PropertyStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
