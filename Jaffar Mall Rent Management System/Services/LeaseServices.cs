@@ -69,5 +69,10 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 return BackendResponse<bool>.Failure("An error occurred while creating the lease.", 500);
             }
         }
+        
+        public async Task<IEnumerable<PropertyLease>> GetAllLeasesAsync() 
+        {
+            return await _leasesRepository.GetAllLeasesAsync();
+        }
     }
 }

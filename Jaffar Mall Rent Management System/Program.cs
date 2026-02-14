@@ -40,6 +40,13 @@ builder.Services.AddScoped<PropertyServices>();
 builder.Services.AddScoped<TenantServices>();
 builder.Services.AddScoped<LeaseServices>();
 
+builder.Services.AddScoped(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new RentRepository(connString!);
+});
+builder.Services.AddScoped<RentServices>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

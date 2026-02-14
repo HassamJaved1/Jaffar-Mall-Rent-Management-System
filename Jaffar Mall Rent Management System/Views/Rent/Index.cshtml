@@ -1,0 +1,114 @@
+@model IEnumerable<Jaffar_Mall_Rent_Management_System.Models.ViewModels.RentStatusViewModel>
+
+@{
+    ViewData["Title"] = "Rent Status";
+}
+
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
+    <div class="flex items-center gap-4">
+        <h2 class="text-lg font-bold text-white">Rent Status</h2>
+    </div>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+        <a asp-controller="Rent" asp-action="Add" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span class="hidden sm:inline">Add Payment</span>
+        </a>
+    </div>
+</header>
+
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+    <div class="max-w-7xl mx-auto space-y-6 pb-10">
+        
+        <!-- Rent Status Table -->
+        <div class="bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
+            <div class="p-6 border-b border-[#293038] flex items-center justify-between">
+                <h3 class="text-white text-base font-bold">Active Leases & Payment Status</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-[#293038]/50 text-[#9dabb8] text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 font-semibold">Tenant</th>
+                            <th class="px-6 py-3 font-semibold">Property</th>
+                            <th class="px-6 py-3 font-semibold text-right">Monthly Rent</th>
+                            <th class="px-6 py-3 font-semibold text-right">Expected</th>
+                            <th class="px-6 py-3 font-semibold text-right">Paid</th>
+                            <th class="px-6 py-3 font-semibold text-right">Balance</th>
+                            <th class="px-6 py-3 font-semibold text-center">Status</th>
+                            <th class="px-6 py-3 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#293038]">
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr class="hover:bg-[#293038]/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <p class="text-white text-sm font-medium">@item.TenantName</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="text-white text-sm font-medium">@item.PropertyName</p>
+                                        <p class="text-[#9dabb8] text-xs">@item.PropertyNumber</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@item.MonthlyRent.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@item.TotalRentExpected.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-green-400 text-sm">@item.TotalAmountPaid.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        @if(item.Balance > 0)
+                                        {
+                                            <span class="text-red-500 text-sm font-bold">@item.Balance.ToString("C")</span>
+                                        }
+                                        else if(item.Balance < 0)
+                                        {
+                                            <span class="text-green-500 text-sm font-medium">@item.Balance.ToString("C") (Overpaid)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-[#9dabb8] text-sm">0.00</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if (item.Status == "Paid")
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">Paid</span>
+                                        }
+                                        else if (item.Status == "Pending")
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500">Pending</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-500">@item.Status</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 text-right flex items-center justify-end gap-2">
+                                        <a asp-action="Add" asp-route-leaseId="@item.LeaseId" class="text-primary hover:text-white transition-colors text-sm font-medium">Pay</a>
+                                        <span class="text-[#293038]">|</span>
+                                        <a asp-action="History" asp-route-leaseId="@item.LeaseId" class="text-[#9dabb8] hover:text-white transition-colors text-sm font-medium" title="View History">
+                                            <span class="material-symbols-outlined text-[18px] align-middle">history</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="px-6 py-8 text-center text-[#9dabb8]">No active leases found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

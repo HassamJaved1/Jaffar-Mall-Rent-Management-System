@@ -1,0 +1,112 @@
+@model IEnumerable<Jaffar_Mall_Rent_Management_System.Models.ViewModels.RentStatusViewModel>
+
+@{
+    ViewData["Title"] = "Add Rent Payment";
+    var rentPayment = new Jaffar_Mall_Rent_Management_System.Models.RentPayment();
+}
+
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
+    <div class="flex items-center gap-4">
+        <h2 class="text-lg font-bold text-white">Add Rent Payment</h2>
+    </div>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+        <a asp-action="Index" class="text-[#9dabb8] hover:text-white transition-colors text-sm font-medium">Cancel</a>
+    </div>
+</header>
+
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+    <div class="max-w-2xl mx-auto space-y-6 pb-10">
+        
+        <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6">
+            <h3 class="text-white text-base font-bold mb-6">Payment Details</h3>
+            
+            <form asp-action="Create" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#9dabb8] mb-1">Select Lease</label>
+                    <select name="LeaseId" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required>
+                        <option value="">-- Select Active Lease --</option>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <option value="@item.LeaseId">
+                                    @item.TenantName - @item.PropertyName (@item.PropertyNumber) | Balance: @item.Balance.ToString("C")
+                                </option>
+                            }
+                        }
+                    </select>
+                    <p class="mt-1 text-xs text-[#9dabb8]">Select the tenant and property for this payment.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Amount</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-[#9dabb8] sm:text-sm">$</span>
+                            </div>
+                            <input type="number" step="0.01" name="Amount" class="block w-full rounded-lg border-0 py-2.5 pl-7 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" placeholder="0.00" required />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Payment Date</label>
+                        <input type="datetime-local" name="PaymentDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#9dabb8] mb-1">Payment Method</label>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                         <label class="cursor-pointer">
+                            <input type="radio" name="PaymentMethod" value="Cash" class="peer sr-only" checked />
+                            <div class="rounded-lg border border-[#293038] bg-[#293038]/50 p-3 hover:bg-[#293038] peer-checked:border-primary peer-checked:bg-primary/10 transition-all text-center">
+                                <p class="text-white text-sm font-medium">Cash</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="PaymentMethod" value="Bank Transfer" class="peer sr-only" />
+                            <div class="rounded-lg border border-[#293038] bg-[#293038]/50 p-3 hover:bg-[#293038] peer-checked:border-primary peer-checked:bg-primary/10 transition-all text-center">
+                                <p class="text-white text-sm font-medium">Bank Transfer</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="PaymentMethod" value="Mobile Transfer" class="peer sr-only" />
+                            <div class="rounded-lg border border-[#293038] bg-[#293038]/50 p-3 hover:bg-[#293038] peer-checked:border-primary peer-checked:bg-primary/10 transition-all text-center">
+                                <p class="text-white text-sm font-medium">Mobile Transfer</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="PaymentMethod" value="Cheque" class="peer sr-only" />
+                            <div class="rounded-lg border border-[#293038] bg-[#293038]/50 p-3 hover:bg-[#293038] peer-checked:border-primary peer-checked:bg-primary/10 transition-all text-center">
+                                <p class="text-white text-sm font-medium">Cheque</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#9dabb8] mb-1">Remarks (Optional)</label>
+                    <textarea name="Remarks" rows="3" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all"></textarea>
+                </div>
+
+                <div class="pt-4 flex gap-4">
+                    <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+                        Confirm Payment
+                    </button>
+                    <a asp-action="Index" class="px-6 py-2.5 rounded-lg border border-[#293038] text-white hover:bg-[#293038] transition-colors font-medium">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
