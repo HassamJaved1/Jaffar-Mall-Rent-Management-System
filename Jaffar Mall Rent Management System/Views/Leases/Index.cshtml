@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@model LeasesDropdown
+@{
     ViewData["Title"] = "Property Assignment Screen";
 }
 
@@ -7,9 +9,7 @@
     <div class="flex flex-col max-w-5xl flex-1 w-full gap-8 pb-10">
         <!-- Breadcrumbs -->
         <div class="flex flex-wrap gap-2 items-center text-sm">
-            <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Home</a>
-            <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
-            <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Leases</a>
+            <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="@Url.Action("Index", "Home")">Home</a>
             <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
             <span class="text-slate-900 dark:text-white font-medium">New Assignment</span>
         </div>
@@ -20,10 +20,10 @@
                 <p class="text-gray-600 dark:text-[#9dabb8] text-base font-normal">Create a new lease agreement and officially assign a unit.</p>
             </div>
             <div class="flex gap-3">
-                <button class="flex items-center justify-center h-10 px-4 rounded-lg bg-gray-200 dark:bg-[#293038] text-slate-900 dark:text-white text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#3c4753] transition-colors">
+                <button type="button" onclick="history.back()" class="flex items-center justify-center h-10 px-4 rounded-lg bg-gray-200 dark:bg-[#293038] text-slate-900 dark:text-white text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#3c4753] transition-colors">
                     Cancel
                 </button>
-                <button class="flex items-center justify-center h-10 px-6 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+                <button id="btnCreateAssignment" class="flex items-center justify-center h-10 px-6 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
                     Create Assignment
                 </button>
             </div>
@@ -43,12 +43,19 @@
                         <label class="flex flex-col flex-1 gap-2 group">
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Tenant</span>
                             <div class="relative">
-                                <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                    <option disabled="" selected="" value="">Search for a tenant...</option>
-                                    <option value="1">Sarah Jenkins</option>
-                                    <option value="2">Michael Chen</option>
-                                    <option value="3">Elena Rodriguez</option>
-                                    <option value="3">Elesna Rodriguez</option>
+                                <select id="TenantId" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option disabled selected value="">Select a tenant...</option>
+                                    @if (Model != null && Model.Tenants.Any())
+                                    {
+                                        foreach (var tenant in Model.Tenants)
+                                        {
+                                            <option value="@tenant.Id">@tenant.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No tenants found</option>
+                                    }
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
                                     <span class="material-symbols-outlined text-[20px]">expand_more</span>
@@ -59,11 +66,19 @@
                         <label class="flex flex-col flex-1 gap-2 group">
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Property</span>
                             <div class="relative">
-                                <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                    <option disabled="" selected="" value="">Search by address...</option>
-                                    <option value="1">1204 Sunset Blvd, Apt 4B</option>
-                                    <option value="2">880 Highland Ave, Unit 12</option>
-                                    <option value="3">45 Main St, Penthouse</option>
+                                <select id="PropertyId" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option disabled selected value="">Select a property...</option>
+                                    @if (Model != null && Model.Properties.Any())
+                                    {
+                                        foreach (var property in Model.Properties)
+                                        {
+                                            <option value="@property.Id">@property.Name - @property.PropertyNumber</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No properties found</option>
+                                    }
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
                                     <span class="material-symbols-outlined text-[20px]">expand_more</span>
@@ -77,17 +92,17 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                     <span class="material-symbols-outlined text-[20px]">person</span>
                                 </div>
-                                <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-100 dark:bg-[#293038] pl-10 px-4 py-3 text-gray-500 dark:text-gray-400 focus:outline-none cursor-not-allowed" readonly="" type="text" value="Admin User" />
+                                <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-100 dark:bg-[#293038] pl-10 px-4 py-3 text-gray-500 dark:text-gray-400 focus:outline-none cursor-not-allowed" readonly type="text" value="Admin User" />
                             </div>
                         </label>
                         <!-- Status -->
                         <label class="flex flex-col flex-1 gap-2 group">
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Agreement Status</span>
                             <div class="relative">
-                                <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                    <option value="active">Active</option>
-                                    <option selected="" value="pending">Pending Signature</option>
-                                    <option value="draft">Draft</option>
+                                <select id="Status" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option value="2">Active</option>
+                                    <option selected value="1">Pending Signature</option>
+                                    <option value="3">Terminated</option>
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
                                     <span class="material-symbols-outlined text-[20px]">expand_more</span>
@@ -100,7 +115,7 @@
                 <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">description</span>
-                        Details &amp; Notes
+                        Details & Notes
                     </h3>
                     <div class="flex flex-col gap-6">
                         <!-- Lease Duration -->
@@ -108,21 +123,22 @@
                             <label class="flex flex-col flex-1 gap-2 group">
                                 <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Duration (Months)</span>
                                 <div class="relative">
-                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" max="120" min="1" type="number" value="12" />
+                                    <input id="Months" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" max="120" min="1" type="number" value="12" />
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 text-sm">
                                         months
                                     </div>
                                 </div>
                             </label>
-                            <label class="flex flex-col flex-1 gap-2 group">
+                            @* TODO: Start Date is not in the model right now, skipping for simplicity or can add to Description *@
+                           @* <label class="flex flex-col flex-1 gap-2 group">
                                 <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Start Date</span>
                                 <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="date" />
-                            </label>
+                            </label>*@
                         </div>
                         <!-- Description -->
                         <label class="flex flex-col flex-1 gap-2 group">
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Description / Notes</span>
-                            <textarea class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all" placeholder="Add any special conditions or notes about this assignment..." rows="3"></textarea>
+                            <textarea id="Description" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all" placeholder="Add any special conditions or notes about this assignment..." rows="3"></textarea>
                         </label>
                     </div>
                 </div>
@@ -142,7 +158,7 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
                                 </div>
-                                <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                <input id="RentAmount" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
                             </div>
                         </label>
                         <!-- Security Deposit -->
@@ -152,7 +168,7 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
                                 </div>
-                                <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                <input id="SecurityDeposit" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
                             </div>
                         </label>
                         <hr class="border-gray-200 dark:border-[#293038] my-2" />
@@ -160,11 +176,11 @@
                         <div class="flex flex-col gap-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Term Length</span>
-                                <span class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
+                                <span id="TermLengthDisplay" class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Est. Total Value</span>
-                                <span class="text-lg font-bold text-primary">$0.00</span>
+                                <span id="TotalValueDisplay" class="text-lg font-bold text-primary">$0.00</span>
                             </div>
                         </div>
                         <div class="bg-blue-50 dark:bg-[#111921] rounded-lg p-3 mt-2 border border-blue-100 dark:border-[#293038]">
@@ -181,3 +197,89 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elMonths = document.getElementById('Months');
+            const elRent = document.getElementById('RentAmount');
+            const elTermDisplay = document.getElementById('TermLengthDisplay');
+            const elTotalDisplay = document.getElementById('TotalValueDisplay');
+            const btnCreate = document.getElementById('btnCreateAssignment');
+
+            function updateCalculations() {
+                const months = parseInt(elMonths.value) || 0;
+                const rent = parseFloat(elRent.value) || 0;
+
+                elTermDisplay.textContent = months + " Months";
+                const total = months * rent;
+                
+                // Format currency
+                elTotalDisplay.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total);
+            }
+
+            // Listen for changes
+            elMonths.addEventListener('input', updateCalculations);
+            elRent.addEventListener('input', updateCalculations);
+
+            btnCreate.addEventListener('click', async () => {
+                const tenantId = document.getElementById('TenantId').value;
+                const propertyId = document.getElementById('PropertyId').value;
+                const status = document.getElementById('Status').value;
+                const months = document.getElementById('Months').value;
+                const rentAmount = document.getElementById('RentAmount').value;
+                const securityDeposit = document.getElementById('SecurityDeposit').value;
+                const description = document.getElementById('Description').value;
+
+                if (!tenantId || !propertyId || !rentAmount) {
+                    alert("Please select a Tenant, Property and enter Rent Amount.");
+                    return;
+                }
+
+                const leaseData = {
+                    TenantId: parseInt(tenantId),
+                    PropertyId: parseInt(propertyId),
+                    Status: parseInt(status),
+                    Months: parseInt(months),
+                    RentAmount: parseFloat(rentAmount),
+                    SecurityDeposit: securityDeposit ? parseFloat(securityDeposit) : 0,
+                    Description: description
+                };
+
+                const originalText = btnCreate.textContent;
+                btnCreate.disabled = true;
+                btnCreate.textContent = "Creating...";
+
+                try {
+                    const response = await fetch('/Leases/CreateLease', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(leaseData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.code === 200) {
+                        alert(result.message);
+                        // Redirect or reset
+                        window.location.reload(); 
+                    } else {
+                        alert("Error: " + (result.message || "Failed to create lease."));
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    alert("An error occurred.");
+                } finally {
+                    btnCreate.disabled = false;
+                    btnCreate.textContent = originalText;
+                }
+            });
+
+            // Init
+            updateCalculations();
+        });
+    </script>
+}

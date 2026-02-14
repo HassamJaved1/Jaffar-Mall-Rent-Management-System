@@ -28,6 +28,12 @@ builder.Services.AddScoped(provider =>
     return new TenantRepository(connString!);
 });
 
+builder.Services.AddScoped(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new LeasesRepository(connString!);
+});
+
 // Inject the service
 builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();

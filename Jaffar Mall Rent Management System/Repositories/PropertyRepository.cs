@@ -26,7 +26,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm)";
+                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm OR property_number ILIKE @SearchTerm)";
                 }
 
                 int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
@@ -50,9 +50,9 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 INSERT INTO properties
-                    (name, description, property_type, property_code,address, city, country)
+                    (name, description, property_type, property_code, property_number, address, city, country)
                 VALUES
-                    (@Name, @Description,@PropertyType,@PropertyCode,@Address,@City,@Country)
+                    (@Name, @Description, @PropertyType, @PropertyCode, @PropertyNumber, @Address, @City, @Country)
                 RETURNING id";
 
                 var parameters = new
@@ -61,6 +61,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Description = property.Description,
                     PropertyType = property.PropertyType,
                     PropertyCode = Guid.NewGuid(),
+                    PropertyNumber = property.PropertyNumber,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country
@@ -98,6 +99,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SET name = @Name,
                     description = @Description,
                     property_type = @PropertyType,
+                    property_number = @PropertyNumber,
                     address = @Address,
                     city = @City,
                     country = @Country,
@@ -110,6 +112,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = property.Name,
                     Description = property.Description,
                     PropertyType = property.PropertyType,
+                    PropertyNumber = property.PropertyNumber,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country,
@@ -140,6 +143,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     property_type AS ""PropertyType"",
                     property_code AS ""PropertyCode"",
+                    property_number AS ""PropertyNumber"",
                     status AS ""Status"",
                     address AS ""Address"",
                     city AS ""City"",
@@ -151,7 +155,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm)";
+                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm OR property_number ILIKE @SearchTerm)";
                 }
 
                 sql += @"
@@ -187,6 +191,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     property_type AS ""PropertyType"",
                     property_code AS ""PropertyCode"",
+                    property_number AS ""PropertyNumber"",
                     status AS ""Status"",
                     address AS ""Address"",
                     city AS ""City"",
@@ -222,6 +227,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     property_type AS ""PropertyType"",
                     property_code AS ""PropertyCode"",
+                    property_number AS ""PropertyNumber"",
                     status AS ""Status"",
                     address AS ""Address"",
                     city AS ""City"",

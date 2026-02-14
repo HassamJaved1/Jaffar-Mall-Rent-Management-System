@@ -13,6 +13,8 @@
 
         public Guid PropertyCode { get; set; }
 
+        public string PropertyNumber { get; set; } = string.Empty;
+
         // New fields (match new DB schema)
         public string? Address { get; set; }
 
