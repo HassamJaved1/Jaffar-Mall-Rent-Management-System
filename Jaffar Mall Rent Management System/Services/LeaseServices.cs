@@ -22,7 +22,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             var response = new BackendResponse<LeasesDropdown>();
             try
             {
-                var propertiesTask = _propertyRepository.GetAllPropertiesAsync();
+                var propertiesTask = _propertyRepository.GetVacantPropertiesAsync();
                 var tenantsTask = _tenantRepository.GetAllTenantsAsync();
 
                 await Task.WhenAll(propertiesTask, tenantsTask);

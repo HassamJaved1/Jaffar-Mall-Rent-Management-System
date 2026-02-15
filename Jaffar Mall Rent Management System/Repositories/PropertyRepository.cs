@@ -278,5 +278,39 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 return false;
             }
         }
+        public async Task<IEnumerable<Property>> GetVacantPropertiesAsync()
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                const string sql = @"
+                SELECT
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                WHERE pl.id IS NULL
+                ORDER BY p.name";
+
+                return await connection.QueryAsync<Property>(sql);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Property>();
+            }
+        }
     }
 }
