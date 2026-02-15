@@ -129,6 +129,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                      TenantName = leaseStatus?.TenantName ?? "Unknown",
                      PropertyName = leaseStatus?.PropertyName ?? "Unknown",
                      PropertyNumber = leaseStatus?.PropertyNumber ?? "Unknown",
+                     FloorNumber = leaseStatus?.FloorNumber ?? 0,
                      TotalRentDue = leaseStatus?.TotalRentExpected ?? 0
                  };
                  

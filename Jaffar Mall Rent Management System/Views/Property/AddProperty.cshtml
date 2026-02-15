@@ -35,6 +35,10 @@
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Property Number</span>
                             <input id="propNumber" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. A-101" type="text" />
                         </label>
+                         <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Floor Number</span>
+                            <input id="propFloorNumber" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. 1, 2, 5" type="number" />
+                        </label>
                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Property Description</span>
                             <textarea id="propDesc" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" rows="5"></textarea>
@@ -100,6 +104,7 @@
                 const propertyData = {
                     Name: document.getElementById('propName').value,
                     PropertyNumber: document.getElementById('propNumber').value,
+                    FloorNumber: parseInt(document.getElementById('propFloorNumber').value) || 0,
                     Address: document.getElementById('propAddress').value,
                     City: document.getElementById('propCity').value,
                     Country: document.getElementById('propCountry').value,

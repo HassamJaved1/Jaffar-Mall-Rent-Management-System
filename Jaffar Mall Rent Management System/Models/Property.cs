@@ -15,9 +15,11 @@
 
         public string PropertyNumber { get; set; } = string.Empty;
 
+        public int FloorNumber { get; set; }
+
         // New fields (match new DB schema)
         public string? Address { get; set; }
-
+        
         public string? City { get; set; }
 
         public string? Country { get; set; }

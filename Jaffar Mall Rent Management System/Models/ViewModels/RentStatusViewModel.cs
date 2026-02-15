@@ -6,6 +6,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         public string TenantName { get; set; } = string.Empty;
         public string PropertyName { get; set; } = string.Empty;
         public string PropertyNumber { get; set; } = string.Empty;
+        public int FloorNumber { get; set; }
         
         public decimal MonthlyRent { get; set; }
         public int LeaseDurationMonths { get; set; }

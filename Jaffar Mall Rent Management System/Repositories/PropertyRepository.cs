@@ -50,9 +50,9 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 INSERT INTO properties
-                    (name, description, property_type, property_code, property_number, address, city, country)
+                    (name, description, property_type, property_code, property_number, floor_number, address, city, country)
                 VALUES
-                    (@Name, @Description, @PropertyType, @PropertyCode, @PropertyNumber, @Address, @City, @Country)
+                    (@Name, @Description, @PropertyType, @PropertyCode, @PropertyNumber, @FloorNumber, @Address, @City, @Country)
                 RETURNING id";
 
                 var parameters = new
@@ -62,6 +62,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     PropertyType = property.PropertyType,
                     PropertyCode = Guid.NewGuid(),
                     PropertyNumber = property.PropertyNumber,
+                    FloorNumber = property.FloorNumber,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country
@@ -100,6 +101,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description = @Description,
                     property_type = @PropertyType,
                     property_number = @PropertyNumber,
+                    floor_number = @FloorNumber,
                     address = @Address,
                     city = @City,
                     country = @Country,
@@ -113,6 +115,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Description = property.Description,
                     PropertyType = property.PropertyType,
                     PropertyNumber = property.PropertyNumber,
+                    FloorNumber = property.FloorNumber,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country,
@@ -144,6 +147,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.property_type AS ""PropertyType"",
                     p.property_code AS ""PropertyCode"",
                     p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
                     p.status AS ""Status"",
                     p.address AS ""Address"",
                     p.city AS ""City"",
@@ -195,6 +199,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.property_type AS ""PropertyType"",
                     p.property_code AS ""PropertyCode"",
                     p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
                     p.status AS ""Status"",
                     p.address AS ""Address"",
                     p.city AS ""City"",
@@ -234,6 +239,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.property_type AS ""PropertyType"",
                     p.property_code AS ""PropertyCode"",
                     p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
                     p.status AS ""Status"",
                     p.address AS ""Address"",
                     p.city AS ""City"",
@@ -293,6 +299,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.property_type AS ""PropertyType"",
                     p.property_code AS ""PropertyCode"",
                     p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
                     p.status AS ""Status"",
                     p.address AS ""Address"",
                     p.city AS ""City"",

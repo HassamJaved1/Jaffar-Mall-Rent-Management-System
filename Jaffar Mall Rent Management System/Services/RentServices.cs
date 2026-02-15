@@ -126,6 +126,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         TenantName = tenant.Name,
                         PropertyName = property.Name,
                         PropertyNumber = property.PropertyNumber,
+                        FloorNumber = property.FloorNumber,
                         MonthlyRent = lease.RentAmount,
                         LeaseDurationMonths = lease.Months,
                         LeaseStartDate = startDate,
