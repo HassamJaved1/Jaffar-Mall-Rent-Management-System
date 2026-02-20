@@ -128,5 +128,10 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
             return new PaginatedViewModel<Property>(items, totalCount, page, pageSize);
         }
+
+        public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
+        {
+            return await _propertyRepository.GetAllPropertiesAsync();
+        }
     }
 }

@@ -154,7 +154,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.country AS ""Country"",
                     p.created_at AS ""CreatedAt"",
                     p.updated_at AS ""UpdatedAt"",
-                    t.name AS ""TenantName""
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
                 LEFT JOIN tenants t ON pl.tenant_id = t.id
@@ -206,7 +209,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.country AS ""Country"",
                     p.created_at AS ""CreatedAt"",
                     p.updated_at AS ""UpdatedAt"",
-                    t.name AS ""TenantName""
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
                 LEFT JOIN tenants t ON pl.tenant_id = t.id
@@ -246,7 +252,10 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     p.country AS ""Country"",
                     p.created_at AS ""CreatedAt"",
                     p.updated_at AS ""UpdatedAt"",
-                    t.name AS ""TenantName""
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
                 LEFT JOIN tenants t ON pl.tenant_id = t.id

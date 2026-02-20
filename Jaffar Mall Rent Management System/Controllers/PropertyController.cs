@@ -87,5 +87,17 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
              return BackendResponse<bool>.Failure(response.Message, response.Code)
                                         .ToActionResult();
         }
+
+        public IActionResult Visualize()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPropertiesForVisualization()
+        {
+            var properties = await _propertyServices.GetAllPropertiesAsync();
+            return Json(properties);
+        }
     }
 }

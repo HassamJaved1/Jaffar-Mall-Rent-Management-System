@@ -26,6 +26,12 @@
 
         public string? TenantName { get; set; }
 
+        public decimal RentAmount { get; set; }
+
+        public int LeaseMonths { get; set; }
+
+        public decimal TotalPaid { get; set; }
+
         //public PropertyStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
