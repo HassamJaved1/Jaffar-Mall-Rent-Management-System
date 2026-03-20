@@ -1,4 +1,4 @@
-﻿@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
 @model LeasesDropdown
 @{
     ViewData["Title"] = "Property Assignment Screen";
@@ -156,9 +156,9 @@
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Monthly Rent</span>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">PKR</span>
                                 </div>
-                                <input id="RentAmount" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                <input id="RentAmount" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-12 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
                             </div>
                         </label>
                         <!-- Security Deposit -->
@@ -166,9 +166,9 @@
                             <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Deposit</span>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">PKR</span>
                                 </div>
-                                <input id="SecurityDeposit" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+                                <input id="SecurityDeposit" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-12 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
                             </div>
                         </label>
                         <hr class="border-gray-200 dark:border-[#293038] my-2" />
@@ -180,7 +180,7 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Est. Total Value</span>
-                                <span id="TotalValueDisplay" class="text-lg font-bold text-primary">$0.00</span>
+                                <span id="TotalValueDisplay" class="text-lg font-bold text-primary">PKR 0.00</span>
                             </div>
                         </div>
                         <div class="bg-blue-50 dark:bg-[#111921] rounded-lg p-3 mt-2 border border-blue-100 dark:border-[#293038]">
@@ -215,7 +215,7 @@
                 const total = months * rent;
                 
                 // Format currency
-                elTotalDisplay.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total);
+                elTotalDisplay.textContent = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(total);
             }
 
             // Listen for changes

@@ -2,6 +2,12 @@ using Jaffar_Mall_Rent_Management_System.Backend_Logics;
 using Jaffar_Mall_Rent_Management_System.Repositories;
 using Jaffar_Mall_Rent_Management_System.Services;
 using Jaffar_Mall_Rent_Management_System.Utilities;
+using System.Globalization;
+
+var cultureInfo = new CultureInfo("en-PK");
+cultureInfo.NumberFormat.CurrencySymbol = "PKR";
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 var builder = WebApplication.CreateBuilder(args);
 
