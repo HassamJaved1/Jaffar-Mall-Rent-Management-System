@@ -1,4 +1,4 @@
-﻿namespace Jaffar_Mall_Rent_Management_System.Models
+namespace Jaffar_Mall_Rent_Management_System.Models
 {
     public class Tenant
     {
@@ -6,6 +6,7 @@
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Phone_No { get; set; } = string.Empty;
+        public string? Email { get; set; }
 
         // New fields added based on your UI
         public string? CardNumber { get; set; }

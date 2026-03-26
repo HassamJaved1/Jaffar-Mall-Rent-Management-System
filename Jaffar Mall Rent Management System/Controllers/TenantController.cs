@@ -1,4 +1,5 @@
-﻿using Jaffar_Mall_Rent_Management_System.Models;
+using Jaffar_Mall_Rent_Management_System.Models;
+using Jaffar_Mall_Rent_Management_System.Models.ViewModels;
 using Jaffar_Mall_Rent_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +8,16 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
     public class TenantController : Controller
     {
         private readonly TenantServices _tenantServices;
-        public TenantController(TenantServices tenantServices)
+        private readonly LeaseServices _leaseServices;
+        private readonly PropertyServices _propertyServices;
+        private readonly RentServices _rentServices;
+
+        public TenantController(TenantServices tenantServices, LeaseServices leaseServices, PropertyServices propertyServices, RentServices rentServices)
         {
             _tenantServices = tenantServices;
+            _leaseServices = leaseServices;
+            _propertyServices = propertyServices;
+            _rentServices = rentServices;
         }
 
         public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null)
@@ -88,6 +96,37 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             }
              return BackendResponse<bool>.Failure(response.Message, response.Code)
                                         .ToActionResult();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(long id)
+        {
+            var tenant = await _tenantServices.GetTenantByIdAsync(id);
+            if (tenant == null) return NotFound();
+
+            var leases = await _leaseServices.GetLeasesByTenantIdAsync(id);
+            
+            var viewModel = new TenantDetailsViewModel 
+            {
+                Tenant = tenant,
+                Leases = leases ?? new List<PropertyLease>(),
+                Properties = new Dictionary<long, Property>(),
+                Payments = new Dictionary<long, IEnumerable<RentPayment>>()
+            };
+
+            if (leases != null)
+            {
+                foreach (var lease in leases) 
+                {
+                     var property = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
+                     if (property != null) viewModel.Properties[lease.Id] = property;
+
+                     var payments = await _rentServices.GetPaymentsByLeaseIdAsync(lease.Id);
+                     if (payments.Data != null) viewModel.Payments[lease.Id] = payments.Data;
+                }
+            }
+
+            return View(viewModel);
         }
     }
 }

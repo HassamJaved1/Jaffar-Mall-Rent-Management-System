@@ -10,8 +10,10 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         
         public decimal MonthlyRent { get; set; }
         public int LeaseDurationMonths { get; set; }
+        public decimal? SecurityDeposit { get; set; }
         
         public DateTime LeaseStartDate { get; set; }
+        public DateTime? LeaseEndDate { get; set; }
         
         // Calculated fields
         public decimal TotalRentExpected { get; set; } // Based on current date vs start date

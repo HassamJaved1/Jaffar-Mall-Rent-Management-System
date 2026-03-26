@@ -1,4 +1,4 @@
-﻿using Jaffar_Mall_Rent_Management_System.Models;
+using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Models.ViewModels;
 using Jaffar_Mall_Rent_Management_System.Repositories;
 
@@ -73,6 +73,16 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         public async Task<IEnumerable<PropertyLease>> GetAllLeasesAsync() 
         {
             return await _leasesRepository.GetAllLeasesAsync();
+        }
+
+        public async Task<IEnumerable<PropertyLease>> GetLeasesByPropertyIdAsync(long propertyId)
+        {
+            return await _leasesRepository.GetLeasesByPropertyIdAsync(propertyId);
+        }
+
+        public async Task<IEnumerable<PropertyLease>> GetLeasesByTenantIdAsync(long tenantId)
+        {
+            return await _leasesRepository.GetLeasesByTenantIdAsync(tenantId);
         }
     }
 }

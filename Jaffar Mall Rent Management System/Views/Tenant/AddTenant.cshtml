@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Add New Tenant";
 }
 
@@ -34,6 +34,10 @@
                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Mobile Number</span>
                             <input id="Phone_No" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="+92 334 1234567" type="tel" />
+                        </label>
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">Email Address</span>
+                            <input id="Email" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="john@example.com" type="email" />
                         </label>
                         <label class="flex flex-col gap-1.5 w-full">
                             <span class="text-slate-700 dark:text-white text-sm font-medium">ID Card Number (CNIC)</span>
@@ -83,6 +87,7 @@
                     Name: document.getElementById('Name').value,
                     Description: document.getElementById('Description').value,
                     Phone_No: document.getElementById('Phone_No').value,
+                    Email: document.getElementById('Email').value,
                     CardNumber: document.getElementById('CardNumber').value,
                     Address: document.getElementById('Address').value,
                     City: document.getElementById('City').value,

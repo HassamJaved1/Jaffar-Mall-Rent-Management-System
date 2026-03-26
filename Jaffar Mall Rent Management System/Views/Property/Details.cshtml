@@ -1,0 +1,167 @@
+@model Jaffar_Mall_Rent_Management_System.Models.ViewModels.PropertyDetailsViewModel
+@{
+    ViewData["Title"] = "Property Details - " + Model.Property.Name;
+}
+
+<header class="w-full bg-background-light dark:bg-background-dark border-b border-border-dark shrink-0 z-10">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">@Model.Property.Name Details</h1>
+            <p class="text-slate-500 dark:text-text-secondary text-sm mt-1">Property No: @Model.Property.PropertyNumber | Floor: @Model.Property.FloorNumber</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="window.history.back()" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+                <span class="material-symbols-outlined align-middle text[18px] mr-1">arrow_back</span> Back
+            </button>
+            <a href="/Property/EditProperty/@Model.Property.Id" class="px-4 py-2 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">edit</span> Edit Property
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-[#111418]">
+    <div class="max-w-7xl mx-auto flex flex-col gap-6 pb-20">
+        
+        <!-- Property Info Card -->
+        <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-slate-200 dark:border-border-dark">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">General Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500 dark:text-text-secondary uppercase tracking-wider mb-1">Property Type</span>
+                    <span class="text-sm font-medium text-slate-900 dark:text-white">@Model.Property.PropertyType</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500 dark:text-text-secondary uppercase tracking-wider mb-1">City</span>
+                    <span class="text-sm font-medium text-slate-900 dark:text-white">@Model.Property.City</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500 dark:text-text-secondary uppercase tracking-wider mb-1">Address</span>
+                    <span class="text-sm font-medium text-slate-900 dark:text-white">@Model.Property.Address</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500 dark:text-text-secondary uppercase tracking-wider mb-1">Status</span>
+                    @{
+                        bool isVacant = string.IsNullOrEmpty(Model.Property.TenantName);
+                        string statusColor = isVacant ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
+                                             "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400";
+                        string statusText = isVacant ? "Vacant" : "Occupied";
+                    }
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold @statusColor">
+                        @statusText
+                    </span>
+                </div>
+                <div class="lg:col-span-4">
+                    <span class="block text-xs font-semibold text-slate-500 dark:text-text-secondary uppercase tracking-wider mb-1">Description</span>
+                    <p class="text-sm text-slate-700 dark:text-slate-300">@(string.IsNullOrEmpty(Model.Property.Description) ? "N/A" : Model.Property.Description)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment / Lease History -->
+        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-border-dark overflow-hidden">
+            <div class="p-6 border-b border-slate-100 dark:border-border-dark">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Lease & Assignment History</h3>
+                <p class="text-xs text-slate-500 dark:text-text-secondary mt-1">Showing all tenants assigned to this property and their payment history.</p>
+            </div>
+            
+            <div class="p-0">
+                @if (Model.Leases == null || !Model.Leases.Any())
+                {
+                    <div class="p-10 text-center flex flex-col items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">assignment_ind</span>
+                        <p class="text-slate-500 dark:text-text-secondary font-medium">No tenants have been assigned to this property yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="divide-y divide-slate-100 dark:divide-border-dark">
+                        @foreach (var lease in Model.Leases)
+                        {
+                            var tenant = Model.Tenants.ContainsKey(lease.Id) ? Model.Tenants[lease.Id] : null;
+                            var payments = Model.Payments.ContainsKey(lease.Id) ? Model.Payments[lease.Id] : new List<Jaffar_Mall_Rent_Management_System.Models.RentPayment>();
+                            
+                            <div class="p-6">
+                                <!-- Lease Header -->
+                                <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+                                    <div>
+                                        <h4 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                                            @(tenant?.Name ?? "Unknown Tenant")
+                                        </h4>
+                                        <div class="text-sm text-slate-500 dark:text-text-secondary mt-1 flex gap-4">
+                                            <span><strong>Rent:</strong> PKR @lease.RentAmount.ToString("N2")/mo</span>
+                                            <span><strong>Start Date:</strong> @(lease.StartDate?.ToString("MMM dd, yyyy") ?? "-")</span>
+                                            <span><strong>Deadline:</strong> @(lease.EndDate?.ToString("MMM dd, yyyy") ?? "-")</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        @{
+                                            string leaseStatusColor = lease.Status == Jaffar_Mall_Rent_Management_System.Models.LeaseStatus.Active ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
+                                                               lease.Status == Jaffar_Mall_Rent_Management_System.Models.LeaseStatus.Pending ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" :
+                                                               "bg-slate-100 text-slate-700 dark:bg-slate-500/20 dark:text-slate-400";
+                                        }
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold @leaseStatusColor border @(leaseStatusColor.Replace("bg-", "border-").Replace("100", "200"))">
+                                            @lease.Status.ToString()
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment History for this Lease -->
+                                <div class="bg-slate-50 dark:bg-background-dark rounded-lg p-4 border border-slate-100 dark:border-border-dark">
+                                    <h5 class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wider flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">receipt_long</span> Payment Records
+                                    </h5>
+                                    
+                                    @if (!payments.Any())
+                                    {
+                                        <p class="text-sm text-slate-500 dark:text-text-secondary italic">No payments recorded for this lease.</p>
+                                    }
+                                    else
+                                    {
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                                <thead>
+                                                    <tr class="text-slate-500 dark:text-text-secondary border-b border-slate-200 dark:border-border-dark">
+                                                        <th class="pb-2 font-medium">Date</th>
+                                                        <th class="pb-2 font-medium">Amount</th>
+                                                        <th class="pb-2 font-medium">Method</th>
+                                                        <th class="pb-2 font-medium">Remarks</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-slate-100 dark:divide-border-dark">
+                                                    @foreach (var payment in payments)
+                                                    {
+                                                        <tr>
+                                                            <td class="py-2 text-slate-900 dark:text-white">@payment.PaymentDate.ToString("MMM dd, yyyy")</td>
+                                                            <td class="py-2 font-bold text-green-600 dark:text-green-400">PKR @payment.Amount.ToString("N2")</td>
+                                                            <td class="py-2 text-slate-600 dark:text-slate-300">
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-200 dark:bg-surface-dark text-slate-800 dark:text-slate-200">
+                                                                    @payment.PaymentMethod
+                                                                </span>
+                                                            </td>
+                                                            <td class="py-2 text-slate-500 dark:text-text-secondary truncate max-w-[200px]" title="@payment.Remarks">
+                                                                @(string.IsNullOrEmpty(payment.Remarks) ? "-" : payment.Remarks)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="border-t border-slate-200 dark:border-border-dark">
+                                                        <td class="pt-2 font-bold text-slate-900 dark:text-white text-right">Total Paid:</td>
+                                                        <td class="pt-2 font-bold text-green-600 dark:text-green-400" colspan="3">PKR @payments.Sum(p => p.Amount).ToString("N2")</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

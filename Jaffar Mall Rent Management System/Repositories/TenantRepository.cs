@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Jaffar_Mall_Rent_Management_System.Models;
 
 namespace Jaffar_Mall_Rent_Management_System.Repositories
@@ -52,11 +52,15 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE tenants ADD COLUMN IF NOT EXISTS email VARCHAR(255);");
+                } catch { }
+
                 const string sql = @"
                 INSERT INTO tenants
-                    (name, description, phone_no, card_number, address, city, country, created_at, updated_at)
+                    (name, description, phone_no, email, card_number, address, city, country, created_at, updated_at)
                 VALUES
-                    (@Name, @Description, @Phone_No, @CardNumber, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
+                    (@Name, @Description, @Phone_No, @Email, @CardNumber, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
                 RETURNING id";
 
                 var parameters = new
@@ -64,6 +68,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = tenant.Name,
                     Description = tenant.Description,
                     Phone_No = tenant.Phone_No,
+                    Email = tenant.Email,
                     CardNumber = tenant.CardNumber,
                     Address = tenant.Address,
                     City = tenant.City,
@@ -102,6 +107,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    email AS ""Email"",
                     card_number AS ""CardNumber"",
                     address AS ""Address"",
                     city AS ""City"",
@@ -149,6 +155,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    email AS ""Email"",
                     card_number AS ""CardNumber"",
                     address AS ""Address"",
                     city AS ""City"",
@@ -183,6 +190,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    email AS ""Email"",
                     card_number AS ""CardNumber"",
                     address AS ""Address"",
                     city AS ""City"",
@@ -221,6 +229,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name = @Name,
                     description = @Description,
                     phone_no = @Phone_No,
+                    email = @Email,
                     card_number = @CardNumber,
                     address = @Address,
                     city = @City,
@@ -234,6 +243,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = tenant.Name,
                     Description = tenant.Description,
                     Phone_No = tenant.Phone_No,
+                    Email = tenant.Email,
                     CardNumber = tenant.CardNumber,
                     Address = tenant.Address,
                     City = tenant.City,

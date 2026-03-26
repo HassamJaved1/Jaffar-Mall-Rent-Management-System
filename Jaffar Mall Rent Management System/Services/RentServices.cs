@@ -62,7 +62,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             {
                 // 1. Get all active leases
                 var allLeases = await _leasesRepository.GetAllLeasesAsync();
-                var activeLeases = allLeases.Where(l => l.Status == LeaseStatus.Active).ToList();
+                var activeLeases = allLeases.Where(l => l.Status == LeaseStatus.Active || l.Status == LeaseStatus.Pending).ToList();
                 
                 var rentStatusList = new List<RentStatusViewModel>();
 
@@ -78,7 +78,8 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     // Logic: Find how many months have passed since lease creation (or some start date).
                     // For now, assuming lease created date is start date.
                     
-                    var startDate = lease.CreatedAt;
+                    var startDate = lease.StartDate ?? lease.CreatedAt;
+                    var endDate = lease.EndDate;
                     var today = DateTime.Now;
                     
                     // Simple month difference calculation
@@ -89,21 +90,22 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     if (monthsPassed < 0) monthsPassed = 0;
                     
                     // Add 1 because rent is usually due at start of month
-                    // (Adjust logic based on user Requirement: "User lease period is 3 months. It means user have to pay rent after 3 months" -> slightly ambiguous)
-                    // Interpreting "It means that the user would have to pay rent after 3 months" as a duration? 
-                    // Or implies payment schedule?
-                    // User Request: "Property A Assigned to User B and lease period is 3 months. It means user would have to pay rent after 3 months."
-                    // This creates ambiguity. Does it mean rent is collected quarterly?
-                    // Or lease is ONLY for 3 months?
-                    // I will assume standard monthly rent for now, but accumulated over time.
-                    // If lease says "3 Months" (duration), and months passed > 3, it might be expired.
-                    
-                    // Calculating total expected rent till date based on MONTHS passed * Monthly Rent
-                    // Assuming payment is due every month.
                     int dueMonths = monthsPassed + 1; // Current month is due
                     
-                    // If lease is old, limit due months to lease duration?
-                    if (lease.Months > 0 && dueMonths > lease.Months) 
+                    // Ensure dueMonths doesn't exceed total expected months in the lease
+                    if (endDate.HasValue) 
+                    {
+                        int totalLeaseMonths = ((endDate.Value.Year - startDate.Year) * 12) + endDate.Value.Month - startDate.Month;
+                        if (endDate.Value.Day >= startDate.Day) totalLeaseMonths++;
+                        
+                        // We also respect lease.Months if it's there as a fallback
+                        int maxMonths = lease.Months > 0 ? lease.Months : totalLeaseMonths;
+                        if (dueMonths > maxMonths) 
+                        {
+                            dueMonths = maxMonths;
+                        }
+                    } 
+                    else if (lease.Months > 0 && dueMonths > lease.Months) 
                     {
                         dueMonths = lease.Months;
                     }
@@ -129,7 +131,9 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         FloorNumber = property.FloorNumber,
                         MonthlyRent = lease.RentAmount,
                         LeaseDurationMonths = lease.Months,
+                        SecurityDeposit = lease.SecurityDeposit,
                         LeaseStartDate = startDate,
+                        LeaseEndDate = endDate,
                         TotalRentExpected = totalExpected,
                         TotalAmountPaid = totalPaid,
                         Balance = balance,

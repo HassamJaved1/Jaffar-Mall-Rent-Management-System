@@ -45,6 +45,7 @@ builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();
 builder.Services.AddScoped<TenantServices>();
 builder.Services.AddScoped<LeaseServices>();
+builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddScoped(provider =>
 {

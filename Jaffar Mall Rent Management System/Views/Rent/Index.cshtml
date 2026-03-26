@@ -32,6 +32,9 @@
                         <tr class="bg-[#293038]/50 text-[#9dabb8] text-xs uppercase tracking-wider">
                             <th class="px-6 py-3 font-semibold">Tenant</th>
                             <th class="px-6 py-3 font-semibold">Property</th>
+                            <th class="px-6 py-3 font-semibold text-right">Start Date</th>
+                            <th class="px-6 py-3 font-semibold text-right">Deadline</th>
+                            <th class="px-6 py-3 font-semibold text-right">Security deposit</th>
                             <th class="px-6 py-3 font-semibold text-right">Monthly Rent</th>
                             <th class="px-6 py-3 font-semibold text-right">Expected</th>
                             <th class="px-6 py-3 font-semibold text-right">Paid</th>
@@ -52,6 +55,15 @@
                                     <td class="px-6 py-4">
                                         <p class="text-white text-sm font-medium">@item.PropertyName</p>
                                         <p class="text-[#9dabb8] text-xs">@item.PropertyNumber</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@item.LeaseStartDate.ToString("MMM dd, yyyy")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@(item.LeaseEndDate.HasValue ? item.LeaseEndDate.Value.ToString("MMM dd, yyyy") : "N/A")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@(item.SecurityDeposit.HasValue ? item.SecurityDeposit.Value.ToString("C") : "0.00")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@item.MonthlyRent.ToString("C")</span>

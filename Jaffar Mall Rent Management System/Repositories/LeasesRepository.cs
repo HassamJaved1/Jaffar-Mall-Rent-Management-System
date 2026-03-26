@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Jaffar_Mall_Rent_Management_System.Models;
 
 namespace Jaffar_Mall_Rent_Management_System.Repositories
@@ -39,11 +39,17 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Auto migrate start_date and end_date
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                } catch { }
+
                 const string sql = @"
                 INSERT INTO property_leases
-                    (tenant_id, property_id, description, status, rent_amount,months, security_deposit, added_by)
+                    (tenant_id, property_id, description, status, rent_amount,months, start_date, end_date, security_deposit, added_by)
                 VALUES
-                    (@TenantId, @PropertyId, @Description, @Status, @RentAmount,@Months, @SecurityDeposit, @AddedBy)
+                    (@TenantId, @PropertyId, @Description, @Status, @RentAmount,@Months, @StartDate, @EndDate, @SecurityDeposit, @AddedBy)
                 RETURNING id";
 
                 var parameters = new
@@ -55,6 +61,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     RentAmount = lease.RentAmount,
                     SecurityDeposit = lease.SecurityDeposit,
                     Months = lease.Months,
+                    StartDate = lease.StartDate,
+                    EndDate = lease.EndDate,
                     AddedBy = lease.AddedBy
                 };
 
@@ -82,6 +90,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Ensure columns exist before selection
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                } catch { }
+
                 const string sql = @"
                 SELECT
                     id,
@@ -91,6 +105,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
                     months AS ""Months"",
+                    start_date::timestamp AS ""StartDate"",
+                    end_date::timestamp AS ""EndDate"",
                     security_deposit AS ""SecurityDeposit"",
                     added_by AS ""AddedBy"",
                     created_at AS ""CreatedAt"",
@@ -125,6 +141,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     months AS ""Months"",
+                    start_date::timestamp AS ""StartDate"",
+                    end_date::timestamp AS ""EndDate"",
                     rent_amount AS ""RentAmount"",
                     security_deposit AS ""SecurityDeposit"",
                     added_by AS ""AddedBy"",
@@ -132,6 +150,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
                 WHERE id = @Id";
+
+                // Ensure columns exist (fallback in case it's a direct ID lookup)
+                try {
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                } catch { }
 
                 var lease = await connection.QuerySingleOrDefaultAsync<PropertyLease?>(sql, new { Id = id });
                 return lease;
@@ -160,9 +184,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
+                    months AS ""Months"",
+                    start_date::timestamp AS ""StartDate"",
+                    end_date::timestamp AS ""EndDate"",
                     security_deposit AS ""SecurityDeposit"",
                     added_by AS ""AddedBy"",
-                    months AS ""Months"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
@@ -195,9 +221,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
+                    months AS ""Months"",
+                    start_date::timestamp AS ""StartDate"",
+                    end_date::timestamp AS ""EndDate"",
                     security_deposit AS ""SecurityDeposit"",
                     added_by AS ""AddedBy"",
-                    months AS ""Months"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
@@ -232,6 +260,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description = @Description,
                     status = @Status,
                     months = @Months,
+                    start_date = @StartDate,
+                    end_date = @EndDate,
                     rent_amount = @RentAmount,
                     security_deposit = @SecurityDeposit,
                     added_by = @AddedBy,
@@ -247,6 +277,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)lease.Status,
                     RentAmount = lease.RentAmount,
                     Months = lease.Months,
+                    StartDate = lease.StartDate,
+                    EndDate = lease.EndDate,
                     SecurityDeposit = lease.SecurityDeposit,
                     AddedBy = lease.AddedBy,
                     UpdatedAt = lease.UpdatedAt
