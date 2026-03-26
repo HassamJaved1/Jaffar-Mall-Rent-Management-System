@@ -70,5 +70,78 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                 return BackendResponse<bool>.Failure(result.Message, result.Code).ToActionResult();
             }
         }
+        public async Task<IActionResult> Manage()
+        {
+            var list = await _leaseServices.GetLeaseManagementListAsync();
+            return View(list);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditLease(long id)
+        {
+            var lease = await _leaseServices.GetLeaseByIdAsync(id);
+            if (lease == null) return NotFound();
+
+            var dropdowns = await _leaseServices.PopulateDropdowns();
+            // We need to add the current property to the vacant list if it's currently assigned to this lease
+            var currentProperty = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
+            if (currentProperty != null && !dropdowns.Data.Properties.Any(p => p.Id == currentProperty.Id))
+            {
+                dropdowns.Data.Properties.Add(currentProperty);
+            }
+
+            ViewBag.Lease = lease;
+            return View("Index", dropdowns.Data); // Reuse Index view but with Edit mode
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateLease([FromBody] PropertyLease lease)
+        {
+            var result = await _leaseServices.UpdateLeaseAsync(lease);
+            if (result.Data)
+            {
+                // Send Status Update Email
+                _ = Task.Run(async () =>
+                {
+                    try {
+                        var tenant = await _tenantServices.GetTenantByIdAsync(lease.TenantId);
+                        var property = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
+                        if (tenant != null && !string.IsNullOrEmpty(tenant.Email) && property != null)
+                        {
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, lease.Status.ToString());
+                        }
+                    } catch { }
+                });
+
+                return BackendResponse<bool>.Success(true, result.Message).ToActionResult();
+            }
+            return BackendResponse<bool>.Failure(result.Message, result.Code).ToActionResult();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TerminateLease(long id)
+        {
+            var lease = await _leaseServices.GetLeaseByIdAsync(id);
+            var result = await _leaseServices.TerminateLeaseAsync(id);
+
+            if (result.Data && lease != null)
+            {
+                // Send Termination Email
+                _ = Task.Run(async () =>
+                {
+                    try {
+                        var tenant = await _tenantServices.GetTenantByIdAsync(lease.TenantId);
+                        var property = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
+                        if (tenant != null && !string.IsNullOrEmpty(tenant.Email) && property != null)
+                        {
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, "Terminated");
+                        }
+                    } catch { }
+                });
+
+                return BackendResponse<bool>.Success(true, result.Message).ToActionResult();
+            }
+            return BackendResponse<bool>.Failure(result.Message, result.Code).ToActionResult();
+        }
     }
 }

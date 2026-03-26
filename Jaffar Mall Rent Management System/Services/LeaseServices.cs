@@ -84,5 +84,66 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         {
             return await _leasesRepository.GetLeasesByTenantIdAsync(tenantId);
         }
+
+        public async Task<PropertyLease?> GetLeaseByIdAsync(long id)
+        {
+            return await _leasesRepository.GetLeaseByIdAsync(id);
+        }
+
+        public async Task<BackendResponse<bool>> UpdateLeaseAsync(PropertyLease lease)
+        {
+            if (lease == null || lease.Id <= 0) return BackendResponse<bool>.Failure("Invalid lease data.", 400);
+
+            try
+            {
+                var result = await _leasesRepository.UpdateLeaseAsync(lease);
+                return result ? BackendResponse<bool>.Success(true, "Lease updated successfully.") : BackendResponse<bool>.Failure("Failed to update lease.", 500);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BackendResponse<bool>.Failure("An error occurred.", 500);
+            }
+        }
+
+        public async Task<BackendResponse<bool>> TerminateLeaseAsync(long id)
+        {
+            try
+            {
+                var lease = await _leasesRepository.GetLeaseByIdAsync(id);
+                if (lease == null) return BackendResponse<bool>.Failure("Lease not found.", 404);
+
+                lease.Status = LeaseStatus.Terminated;
+                var result = await _leasesRepository.UpdateLeaseAsync(lease);
+                return result ? BackendResponse<bool>.Success(true, "Lease terminated. Property is now vacant.") : BackendResponse<bool>.Failure("Failed to terminate lease.", 500);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BackendResponse<bool>.Failure("An error occurred.", 500);
+            }
+        }
+
+        public async Task<IEnumerable<LeaseListItemViewModel>> GetLeaseManagementListAsync()
+        {
+            var leases = await _leasesRepository.GetAllLeasesAsync();
+            var list = new List<LeaseListItemViewModel>();
+
+            foreach (var lease in leases)
+            {
+                var tenant = await _tenantRepository.GetTenantByIdAsync(lease.TenantId);
+                var property = await _propertyRepository.GetPropertyByIdAsync(lease.PropertyId);
+
+                list.Add(new LeaseListItemViewModel
+                {
+                    Lease = lease,
+                    TenantName = tenant?.Name ?? "Unknown",
+                    PropertyName = property?.Name ?? "Unknown",
+                    PropertyNumber = property?.PropertyNumber ?? "N/A"
+                });
+            }
+
+            return list;
+        }
     }
 }

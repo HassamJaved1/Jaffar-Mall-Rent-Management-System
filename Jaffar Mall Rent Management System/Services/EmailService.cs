@@ -101,5 +101,75 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 Console.WriteLine($"Error sending email: {ex.Message}");
             }
         }
+
+        public async Task SendLeaseStatusUpdateEmailAsync(string toEmail, string tenantName, string propertyName, string newStatus)
+        {
+            try
+            {
+                var smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUser = _configuration["EmailSettings:SmtpUser"] ?? "your_email@gmail.com";
+                var smtpPass = _configuration["EmailSettings:SmtpPass"] ?? "your_password";
+
+                var fromAddress = new MailAddress(smtpUser, "Jaffar Mall Management");
+                var toAddress = new MailAddress(toEmail, tenantName);
+
+                string subject = $"Lease Status Update - {propertyName}";
+                string statusColor = newStatus.ToLower().Contains("terminated") ? "#ef4444" : "#f59e0b";
+                
+                string body = $@"
+                    <html>
+                    <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+                        <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                            <h2 style='color: #2563eb;'>Lease Status Update</h2>
+                            <p>Dear <strong>{tenantName}</strong>,</p>
+                            <p>This is to inform you that the status of your lease for <strong>{propertyName}</strong> has been updated.</p>
+                            
+                            <div style='background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid {statusColor}; margin: 20px 0;'>
+                                <strong>New Status:</strong> <span style='color: {statusColor}; font-weight: bold; text-transform: uppercase;'>{newStatus}</span>
+                            </div>
+
+                            <p>If this was unexpected or if you have any questions, please contact the management office immediately.</p>
+                            
+                            <br/>
+                            <p>Best regards,</p>
+                            <div style='margin-top: 15px; font-family: Arial, sans-serif; line-height: 1.5;'>
+                                <strong style='color: #eab308; font-size: 18px;'>Manager</strong><br/>
+                                <strong style='color: #1e3a8a; font-size: 15px;'>Jaffar Mall Management Office</strong><br/>
+                                <strong style='color: #1e3a8a; font-size: 14px;'>Contact us: +92 310 3709000</strong><br/>
+                                <strong style='color: #1e3a8a; font-size: 14px;'>Main GT Road, Jhelum, Punjab, Pakistan</strong>
+                            </div>
+                        </div>
+                    </body>
+                    </html>";
+
+                using var smtp = new SmtpClient
+                {
+                    Host = smtpServer,
+                    Port = smtpPort,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromAddress.Address, smtpPass)
+                };
+
+                using var message = new MailMessage(fromAddress, toAddress)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+
+                if (smtpUser != "your_email@gmail.com") 
+                {
+                    await smtp.SendMailAsync(message);
+                    Console.WriteLine($"[STATUS EMAIL SENT] To: {toEmail}, Status: {newStatus}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending status email: {ex.Message}");
+            }
+        }
     }
 }
