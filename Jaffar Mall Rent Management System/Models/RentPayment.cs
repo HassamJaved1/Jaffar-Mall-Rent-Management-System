@@ -19,6 +19,11 @@ namespace Jaffar_Mall_Rent_Management_System.Models
         [Required]
         public string PaymentMethod { get; set; } = "Cash"; // Cash, Bank Transfer, Mobile Transfer
 
+        [Required]
+        public string PaymentType { get; set; } = "Rent"; // Rent, Security Fee
+
+        public int RelaxationDays { get; set; } = 0;
+
         public string? Remarks { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;

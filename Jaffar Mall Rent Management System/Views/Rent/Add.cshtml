@@ -20,26 +20,46 @@
     <div class="max-w-2xl mx-auto space-y-6 pb-10">
         
         <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6">
-            <h3 class="text-white text-base font-bold mb-6">Payment Details</h3>
+            <h3 class="text-white text-base font-bold mb-4">Payment Details</h3>
+            
+            <!-- Tabs -->
+            <div class="flex gap-4 border-b border-[#293038] mb-6">
+                <button type="button" id="tabRent" class="px-4 py-3 text-sm font-bold border-b-2 border-primary text-white transition-all" onclick="switchTab('Rent')">Rent Payment</button>
+                <button type="button" id="tabSecurity" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-[#9dabb8] hover:text-white transition-all" onclick="switchTab('Security Fee')">Security Fee</button>
+            </div>
+
             
             <form asp-action="Create" method="post" class="space-y-6">
                 <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
 
                 <div>
                     <label class="block text-sm font-medium text-[#9dabb8] mb-1">Select Lease</label>
-                    <select name="LeaseId" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required>
+                    <select name="LeaseId" id="LeaseIdSelect" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required onchange="updateBalanceInfo()">
                         <option value="">-- Select Active Lease --</option>
                         @if (Model != null)
                         {
                             foreach (var item in Model)
                             {
-                                <option value="@item.LeaseId">
-                                    @item.TenantName - @item.PropertyName (@item.PropertyNumber) | Balance: @item.Balance.ToString("C")
+                                <option value="@item.LeaseId" data-rent-bal="@item.Balance" data-sec-bal="@item.SecurityBalance">
+                                    @item.TenantName - @item.PropertyName (@item.PropertyNumber)
                                 </option>
                             }
                         }
                     </select>
-                    <p class="mt-1 text-xs text-[#9dabb8]">Select the tenant and property for this payment.</p>
+                    <div id="balanceInfo" class="mt-2 text-xs font-semibold space-y-1 hidden">
+                        <p id="rentBalContainer" class="text-blue-400">Rent Balance Remaining: <span id="rentBalDisplay">PKR 0.00</span></p>
+                        <p id="secBalContainer" class="text-yellow-400 hidden">Security Fee Remaining: <span id="secBalDisplay">PKR 0.00</span></p>
+                    </div>
+                </div>
+
+                <input type="hidden" name="PaymentType" id="PaymentTypeInput" value="Rent" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Relaxation Days (Grace Period)</label>
+                        <input type="number" name="RelaxationDays" value="0" min="0" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" />
+                        <p class="mt-1 text-[10px] text-[#9dabb8]">Days allowed to pay the remaining balance.</p>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -109,4 +129,56 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let currentTab = 'Rent';
+
+        function switchTab(type) {
+            currentTab = type;
+            document.getElementById('PaymentTypeInput').value = type;
+            
+            const tabRent = document.getElementById('tabRent');
+            const tabSec = document.getElementById('tabSecurity');
+            
+            if (type === 'Rent') {
+                tabRent.className = "px-4 py-3 text-sm font-bold border-b-2 border-primary text-white transition-all";
+                tabSec.className = "px-4 py-3 text-sm font-medium border-b-2 border-transparent text-[#9dabb8] hover:text-white transition-all";
+            } else {
+                tabSec.className = "px-4 py-3 text-sm font-bold border-b-2 border-yellow-500 text-white transition-all";
+                tabRent.className = "px-4 py-3 text-sm font-medium border-b-2 border-transparent text-[#9dabb8] hover:text-white transition-all";
+            }
+            
+            updateBalanceInfo();
+        }
+
+        function updateBalanceInfo() {
+            const select = document.getElementById('LeaseIdSelect');
+            const balanceInfo = document.getElementById('balanceInfo');
+            const rentBalDisplay = document.getElementById('rentBalDisplay');
+            const secBalDisplay = document.getElementById('secBalDisplay');
+            const rentBalContainer = document.getElementById('rentBalContainer');
+            const secBalContainer = document.getElementById('secBalContainer');
+            
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption.value) {
+                const rentBal = parseFloat(selectedOption.getAttribute('data-rent-bal')) || 0;
+                const secBal = parseFloat(selectedOption.getAttribute('data-sec-bal')) || 0;
+                
+                rentBalDisplay.textContent = 'PKR ' + rentBal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                secBalDisplay.textContent = 'PKR ' + secBal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                if (currentTab === 'Rent') {
+                    rentBalContainer.classList.remove('hidden');
+                    secBalContainer.classList.add('hidden');
+                } else {
+                    secBalContainer.classList.remove('hidden');
+                    rentBalContainer.classList.add('hidden');
+                }
+                
+                balanceInfo.classList.remove('hidden');
+            } else {
+                balanceInfo.classList.add('hidden');
+            }
+        }
+    </script>
 }

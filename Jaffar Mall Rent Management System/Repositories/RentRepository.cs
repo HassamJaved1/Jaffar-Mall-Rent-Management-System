@@ -20,6 +20,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             {
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Manual migration for payment_type if table exists
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE rent_payments ADD COLUMN IF NOT EXISTS payment_type VARCHAR(50) NOT NULL DEFAULT 'Rent';");
+                } catch { }
                 
                 // Using PostgreSQL syntax
                 const string sql = @"
@@ -29,6 +34,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     amount DECIMAL(18, 2) NOT NULL,
                     payment_date TIMESTAMP NOT NULL DEFAULT NOW(),
                     payment_method VARCHAR(100) NOT NULL,
+                    payment_type VARCHAR(50) NOT NULL DEFAULT 'Rent',
                     remarks TEXT,
                     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
                     CONSTRAINT fk_lease
@@ -56,9 +62,9 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 INSERT INTO rent_payments
-                    (lease_id, amount, payment_date, payment_method, remarks, created_at)
+                    (lease_id, amount, payment_date, payment_method, payment_type, remarks, created_at)
                 VALUES
-                    (@LeaseId, @Amount, @PaymentDate, @PaymentMethod, @Remarks, @CreatedAt)
+                    (@LeaseId, @Amount, @PaymentDate, @PaymentMethod, @PaymentType, @Remarks, @CreatedAt)
                 RETURNING id";
 
                 var parameters = new
@@ -67,6 +73,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Amount = payment.Amount,
                     PaymentDate = payment.PaymentDate,
                     PaymentMethod = payment.PaymentMethod,
+                    PaymentType = payment.PaymentType,
                     Remarks = payment.Remarks,
                     CreatedAt = payment.CreatedAt
                 };
@@ -104,6 +111,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     amount,
                     payment_date AS ""PaymentDate"",
                     payment_method AS ""PaymentMethod"",
+                    payment_type AS ""PaymentType"",
                     remarks,
                     created_at AS ""CreatedAt""
                 FROM rent_payments
@@ -156,6 +164,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     amount,
                     payment_date AS ""PaymentDate"",
                     payment_method AS ""PaymentMethod"",
+                    payment_type AS ""PaymentType"",
                     remarks,
                     created_at AS ""CreatedAt""
                 FROM rent_payments

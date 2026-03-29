@@ -35,10 +35,12 @@
                             <th class="px-6 py-3 font-semibold text-right">Start Date</th>
                             <th class="px-6 py-3 font-semibold text-right">Deadline</th>
                             <th class="px-6 py-3 font-semibold text-right">Security deposit</th>
+                            <th class="px-6 py-3 font-semibold text-right">Paid Security</th>
+                            <th class="px-6 py-3 font-semibold text-right">Security Bal</th>
                             <th class="px-6 py-3 font-semibold text-right">Monthly Rent</th>
-                            <th class="px-6 py-3 font-semibold text-right">Expected</th>
-                            <th class="px-6 py-3 font-semibold text-right">Paid</th>
-                            <th class="px-6 py-3 font-semibold text-right">Balance</th>
+                            <th class="px-6 py-3 font-semibold text-right">Expected Rent</th>
+                            <th class="px-6 py-3 font-semibold text-right">Paid Rent</th>
+                            <th class="px-6 py-3 font-semibold text-right">Rent Bal</th>
                             <th class="px-6 py-3 font-semibold text-center">Status</th>
                             <th class="px-6 py-3 font-semibold text-right">Actions</th>
                         </tr>
@@ -64,6 +66,12 @@
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@(item.SecurityDeposit.HasValue ? item.SecurityDeposit.Value.ToString("C") : "0.00")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm">@item.PaidSecurityDeposit.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-yellow-500 text-sm font-bold">@item.SecurityBalance.ToString("C")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@item.MonthlyRent.ToString("C")</span>
@@ -115,7 +123,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="px-6 py-8 text-center text-[#9dabb8]">No active leases found.</td>
+                                <td colspan="11" class="px-6 py-8 text-center text-[#9dabb8]">No active leases found.</td>
                             </tr>
                         }
                     </tbody>

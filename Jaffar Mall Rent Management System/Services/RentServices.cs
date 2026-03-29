@@ -15,13 +15,17 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             RentRepository rentRepository,
             LeasesRepository leasesRepository,
             TenantRepository tenantRepository,
-            PropertyRepository propertyRepository)
+            PropertyRepository propertyRepository,
+            EmailService emailService)
         {
             _rentRepository = rentRepository;
             _leasesRepository = leasesRepository;
             _tenantRepository = tenantRepository;
             _propertyRepository = propertyRepository;
+            _emailService = emailService;
         }
+        
+        private readonly EmailService _emailService;
 
         public async Task<BackendResponse<bool>> AddRentAsync(RentPayment payment)
         {
@@ -38,12 +42,45 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                 if (payment.Amount <= 0)
                 {
-                    return BackendResponse<bool>.Failure("Rent amount must be greater than zero.", 400);
+                    return BackendResponse<bool>.Failure("Amount must be greater than zero.", 400);
+                }
+
+                // Handle Security Fee payment
+                if (payment.PaymentType == "Security Fee")
+                {
+                    lease.PaidSecurityDeposit += payment.Amount;
+                    await _leasesRepository.UpdateLeaseAsync(lease);
                 }
 
                 bool success = await _rentRepository.AddRentPaymentAsync(payment);
                 if (success)
                 {
+                    // Trigger confirmation email
+                    var tenant = await _tenantRepository.GetTenantByIdAsync(lease.TenantId);
+                    var property = await _propertyRepository.GetPropertyByIdAsync(lease.PropertyId);
+                    
+                    if (tenant != null && property != null)
+                    {
+                        // Calculate remaining balance for the notification
+                        var statusSummary = await GetRentStatusSummaryAsync();
+                        var currentStatus = statusSummary.Data.FirstOrDefault(s => s.LeaseId == lease.Id);
+                        decimal balance = currentStatus?.Balance ?? 0;
+                        decimal securityBalance = currentStatus?.SecurityBalance ?? 0;
+                        
+                        // Use relaxation days from the payment record
+                        int relaxationDays = payment.RelaxationDays; 
+
+                        await _emailService.SendPaymentConfirmationEmailAsync(
+                            tenant.Email ?? "", 
+                            tenant.Name, 
+                            property.Name, 
+                            payment.Amount, 
+                            balance, 
+                            payment.PaymentType, 
+                            relaxationDays,
+                            securityBalance);
+                    }
+
                     return BackendResponse<bool>.Success(true, "Rent payment added successfully.");
                 }
 
@@ -132,11 +169,14 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         MonthlyRent = lease.RentAmount,
                         LeaseDurationMonths = lease.Months,
                         SecurityDeposit = lease.SecurityDeposit,
+                        RentDueDays = lease.RentDueDays,
                         LeaseStartDate = startDate,
                         LeaseEndDate = endDate,
                         TotalRentExpected = totalExpected,
                         TotalAmountPaid = totalPaid,
                         Balance = balance,
+                        PaidSecurityDeposit = lease.PaidSecurityDeposit,
+                        SecurityBalance = (lease.SecurityDeposit ?? 0) - lease.PaidSecurityDeposit,
                         Status = status
                     });
                 }

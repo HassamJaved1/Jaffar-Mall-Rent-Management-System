@@ -54,6 +54,12 @@ builder.Services.AddScoped(provider =>
 });
 builder.Services.AddScoped<RentServices>();
 
+builder.Services.AddScoped(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new MaintenanceRepository(connString!);
+});
+builder.Services.AddScoped<MaintenanceServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

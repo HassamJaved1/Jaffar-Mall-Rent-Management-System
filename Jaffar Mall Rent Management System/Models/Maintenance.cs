@@ -23,6 +23,11 @@ namespace Jaffar_Mall_Rent_Management_System.Models
         public DateTime UpdatedAt { get; set; }
 
         public DateTime? ResolvedAt { get; set; }
+
+        public decimal RepairCost { get; set; } = 0;
+        public decimal AmountPaid { get; set; } = 0;
+        public string? RepairerName { get; set; }
+        public string? RepairerDetails { get; set; }
     }
 
     public enum MaintenanceStatus : short

@@ -1,0 +1,108 @@
+@model IEnumerable<Jaffar_Mall_Rent_Management_System.Models.Maintenance>
+
+@{
+    ViewData["Title"] = "Maintenance Records";
+    var properties = ViewBag.Properties as IEnumerable<Jaffar_Mall_Rent_Management_System.Models.Property> 
+                     ?? Enumerable.Empty<Jaffar_Mall_Rent_Management_System.Models.Property>();
+                     
+    string GetPropertyName(long id)
+    {
+        var prop = properties.FirstOrDefault(p => p.Id == id);
+        return prop != null ? $"{prop.Name} ({prop.PropertyNumber})" : $"Unknown Property ({id})";
+    }
+}
+
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
+    <div class="flex items-center gap-4">
+        <h2 class="text-lg font-bold text-white">Maintenance Records</h2>
+    </div>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+        <a asp-controller="Maintenance" asp-action="Add" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span class="hidden sm:inline">Add Repair Voucher</span>
+        </a>
+    </div>
+</header>
+
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+    <div class="max-w-7xl mx-auto space-y-6 pb-10">
+        
+        <div class="bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
+            <div class="p-6 border-b border-[#293038] flex items-center justify-between">
+                <h3 class="text-white text-base font-bold">Maintenance & Repairs</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-[#293038]/50 text-[#9dabb8] text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 font-semibold">Date</th>
+                            <th class="px-6 py-3 font-semibold">Property</th>
+                            <th class="px-6 py-3 font-semibold">Issue Title</th>
+                            <th class="px-6 py-3 font-semibold">Repairer</th>
+                            <th class="px-6 py-3 font-semibold text-right">Cost</th>
+                            <th class="px-6 py-3 font-semibold text-right">Amount Paid</th>
+                            <th class="px-6 py-3 font-semibold text-center">Status</th>
+                            <th class="px-6 py-3 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#293038]">
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr class="hover:bg-[#293038]/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <span class="text-white text-sm">@item.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-white text-sm font-medium">@GetPropertyName(item.PropertyId)</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-white text-sm">@item.Title</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-white text-sm">@(string.IsNullOrEmpty(item.RepairerName) ? "Manager / Handyman" : item.RepairerName)</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-red-400 text-sm font-bold">@item.RepairCost.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-green-400 text-sm font-bold">@item.AmountPaid.ToString("C")</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if (item.Status == (byte)Jaffar_Mall_Rent_Management_System.Models.MaintenanceStatus.Resolved)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">Resolved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500">Pending</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 text-right flex items-center justify-end gap-3">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium flex items-center gap-1" title="Edit Voucher">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                            Edit
+                                        </a>
+                                        <a asp-action="Voucher" asp-route-id="@item.Id" class="text-primary hover:text-white transition-colors text-sm font-medium flex items-center gap-1" title="Print Voucher">
+                                            <span class="material-symbols-outlined text-[18px]">print</span>
+                                            Voucher
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="px-6 py-8 text-center text-[#9dabb8]">No maintenance records found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

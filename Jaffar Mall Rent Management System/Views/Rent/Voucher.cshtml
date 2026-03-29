@@ -15,7 +15,7 @@
 
         <!-- Header -->
         <div class="text-center mb-8 border-b-2 border-black pb-4">
-            <h1 class="text-4xl font-bold uppercase tracking-widest mb-2">Rent Receipt</h1>
+            <h1 class="text-4xl font-bold uppercase tracking-widest mb-2">@Model.Payment.PaymentType Receipt</h1>
             <p class="text-sm">Jaffar Mall Rent Management System</p>
             <p class="text-sm">123 Mall Avenue, Commercial Center</p>
         </div>
@@ -63,7 +63,7 @@
                 </thead>
                 <tbody>
                     <tr class="border-b border-gray-200">
-                        <td class="py-4">Rent Payment</td>
+                        <td class="py-4">@Model.Payment.PaymentType</td>
                         <td class="text-right py-4 font-bold text-xl">@Model.Payment.Amount.ToString("C")</td>
                     </tr>
                     @if(!string.IsNullOrEmpty(Model.Payment.Remarks))

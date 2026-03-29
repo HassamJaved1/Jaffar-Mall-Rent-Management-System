@@ -11,6 +11,8 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         public decimal MonthlyRent { get; set; }
         public int LeaseDurationMonths { get; set; }
         public decimal? SecurityDeposit { get; set; }
+        public decimal PaidSecurityDeposit { get; set; }
+        public int RentDueDays { get; set; }
         
         public DateTime LeaseStartDate { get; set; }
         public DateTime? LeaseEndDate { get; set; }
@@ -18,7 +20,8 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         // Calculated fields
         public decimal TotalRentExpected { get; set; } // Based on current date vs start date
         public decimal TotalAmountPaid { get; set; }
-        public decimal Balance { get; set; } // Expected - Paid
+        public decimal Balance { get; set; } // Expected Rent - Paid Rent
+        public decimal SecurityBalance { get; set; } // Total Security - Paid Security
         
         public string Status { get; set; } = "Pending"; // Pending, Paid, Overdue
     }
