@@ -3,6 +3,10 @@ using Jaffar_Mall_Rent_Management_System.Repositories;
 using Jaffar_Mall_Rent_Management_System.Services;
 using Jaffar_Mall_Rent_Management_System.Utilities;
 using System.Globalization;
+using QuestPDF.Infrastructure;
+
+// Set QuestPDF License
+QuestPDF.Settings.License = LicenseType.Community;
 
 var cultureInfo = new CultureInfo("en-PK");
 cultureInfo.NumberFormat.CurrencySymbol = "PKR";
@@ -45,6 +49,7 @@ builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();
 builder.Services.AddScoped<TenantServices>();
 builder.Services.AddScoped<LeaseServices>();
+builder.Services.AddScoped<PdfService>();
 builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddScoped(provider =>
@@ -60,6 +65,10 @@ builder.Services.AddScoped(provider =>
     return new MaintenanceRepository(connString!);
 });
 builder.Services.AddScoped<MaintenanceServices>();
+builder.Services.AddScoped<DashboardServices>();
+
+// Automated rent reminder background service (runs every 24 hours)
+builder.Services.AddHostedService<RentReminderService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

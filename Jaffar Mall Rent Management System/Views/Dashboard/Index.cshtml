@@ -1,3 +1,5 @@
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@model DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard Overview";
 }
@@ -12,15 +14,14 @@
         <h2 class="text-lg font-bold text-white hidden sm:block">Dashboard Overview</h2>
     </div>
     <div class="flex items-center gap-4 flex-1 justify-end">
-        <!-- Search -->
-        <div class="hidden sm:flex items-center max-w-md flex-1 mx-4">
+        <form asp-controller="Property" asp-action="Index" method="get" class="hidden sm:flex items-center max-w-md flex-1 mx-4">
             <div class="relative w-full">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9dabb8]">
                     <span class="material-symbols-outlined text-[20px]">search</span>
                 </div>
-                <input class="block w-full rounded-lg border-0 py-2 pl-10 bg-[#1e252b] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary focus:bg-[#293038] sm:text-sm sm:leading-6 transition-all" placeholder="Search properties, tenants..." type="text" />
+                <input name="search" class="block w-full rounded-lg border-0 py-2 pl-10 bg-[#1e252b] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary focus:bg-[#293038] sm:text-sm sm:leading-6 transition-all" placeholder="Search properties, tenants..." type="text" />
             </div>
-        </div>
+        </form>
         <!-- Actions -->
         <div class="flex items-center gap-3">
             <button class="relative p-2 rounded-lg text-[#9dabb8] hover:text-white hover:bg-[#293038] transition-colors">
@@ -45,7 +46,7 @@
         <!-- Welcome Section -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-white tracking-tight">Good Morning, Hassam 👋</h2>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Good Morning, @Model.ManagerName 👋</h2>
                 <p class="text-[#9dabb8] mt-1">Here's what's happening with your properties today.</p>
             </div>
             <div class="flex items-center gap-2 bg-[#1e252b] rounded-lg p-1 border border-[#293038]">
@@ -62,13 +63,9 @@
                     <div class="p-2 rounded-lg bg-green-500/10 text-green-500">
                         <span class="material-symbols-outlined">attach_money</span>
                     </div>
-                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                        +5.2%
-                    </span>
                 </div>
                 <p class="text-[#9dabb8] text-sm font-medium">Total Revenue</p>
-                <h3 class="text-2xl font-bold text-white mt-1">PKR 45,200</h3>
+                <h3 class="text-2xl font-bold text-white mt-1">PKR @Model.TotalRevenue.ToString("N0")</h3>
             </div>
             <!-- Occupancy -->
             <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
@@ -76,27 +73,23 @@
                     <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
                         <span class="material-symbols-outlined">apartment</span>
                     </div>
-                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                        +1.0%
-                    </span>
                 </div>
                 <p class="text-[#9dabb8] text-sm font-medium">Occupancy Rate</p>
-                <h3 class="text-2xl font-bold text-white mt-1">94%</h3>
+                <h3 class="text-2xl font-bold text-white mt-1">@Model.OccupancyRate.ToString("F1")%</h3>
             </div>
-            <!-- Pending Rent -->
+            <!-- Pending Payments -->
             <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
                 <div class="flex justify-between items-start mb-4">
                     <div class="p-2 rounded-lg bg-orange-500/10 text-orange-500">
                         <span class="material-symbols-outlined">pending_actions</span>
                     </div>
-                    <span class="flex items-center text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_down</span>
-                        -12.5%
-                    </span>
                 </div>
-                <p class="text-[#9dabb8] text-sm font-medium">Pending Rent</p>
-                <h3 class="text-2xl font-bold text-white mt-1">PKR 3,400</h3>
+                <p class="text-[#9dabb8] text-sm font-medium">Pending Payments</p>
+                <h3 class="text-2xl font-bold text-white mt-1">PKR @((Model.PendingRentAmount + Model.PendingSecurityAmount).ToString("N0"))</h3>
+                <div class="flex gap-2 mt-2">
+                    <span class="text-[10px] text-[#9dabb8]">Rent: @Model.PendingRentAmount.ToString("N0")</span>
+                    <span class="text-[10px] text-[#9dabb8]">Security: @Model.PendingSecurityAmount.ToString("N0")</span>
+                </div>
             </div>
             <!-- Active Maintenance -->
             <div class="bg-[#1e252b] p-5 rounded-xl border border-[#293038] hover:border-primary/30 transition-colors group">
@@ -104,13 +97,9 @@
                     <div class="p-2 rounded-lg bg-red-500/10 text-red-500">
                         <span class="material-symbols-outlined">plumbing</span>
                     </div>
-                    <span class="flex items-center text-xs font-semibold text-red-500 bg-red-500/10 px-2 py-1 rounded-full">
-                        <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                        +2 new
-                    </span>
                 </div>
                 <p class="text-[#9dabb8] text-sm font-medium">Active Maintenance</p>
-                <h3 class="text-2xl font-bold text-white mt-1">5</h3>
+                <h3 class="text-2xl font-bold text-white mt-1">@Model.ActiveMaintenanceCount</h3>
             </div>
         </div>
         <!-- Charts Section -->
@@ -124,33 +113,18 @@
                     </button>
                 </div>
                 <div class="flex-1 flex flex-col gap-4">
-                    <div class="relative pt-2">
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-sm font-medium text-[#9dabb8]">Collected</span>
-                            <span class="text-sm font-bold text-white">PKR 45.2k (80%)</span>
+                    @foreach (var item in Model.RentStatus ?? new List<RentStatusItem>())
+                    {
+                        <div class="relative pt-2">
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-sm font-medium text-[#9dabb8]">@item.Label</span>
+                                <span class="text-sm font-bold text-white">PKR @item.Amount.ToString("N0") (@item.Percentage.ToString("F0")%)</span>
+                            </div>
+                            <div class="w-full bg-[#293038] rounded-full h-2.5">
+                                <div class="@item.Color h-2.5 rounded-full" style="width: @item.Percentage%"></div>
+                            </div>
                         </div>
-                        <div class="w-full bg-[#293038] rounded-full h-2.5">
-                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="relative pt-2">
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-sm font-medium text-[#9dabb8]">Pending</span>
-                            <span class="text-sm font-bold text-white">PKR 2.8k (15%)</span>
-                        </div>
-                        <div class="w-full bg-[#293038] rounded-full h-2.5">
-                            <div class="bg-orange-500 h-2.5 rounded-full" style="width: 15%"></div>
-                        </div>
-                    </div>
-                    <div class="relative pt-2">
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-sm font-medium text-[#9dabb8]">Overdue</span>
-                            <span class="text-sm font-bold text-white">PKR 0.6k (5%)</span>
-                        </div>
-                        <div class="w-full bg-[#293038] rounded-full h-2.5">
-                            <div class="bg-red-500 h-2.5 rounded-full" style="width: 5%"></div>
-                        </div>
-                    </div>
+                    }
                 </div>
                 <div class="mt-6 pt-6 border-t border-[#293038] flex justify-between items-center text-sm">
                     <span class="text-[#9dabb8]">Total Expected</span>
@@ -176,55 +150,16 @@
                     </div>
                 </div>
                 <div class="flex-1 min-h-[200px] w-full relative flex items-end justify-between gap-2 pt-8 pb-2 px-2">
-                    <!-- Chart Bars -->
-                    <!-- Month 1 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[60%] relative"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
+                    @foreach (var item in Model.MonthlyCashFlow ?? new List<MonthlyCashFlowItem>())
+                    {
+                        <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
+                            <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
+                                <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all relative" style="height: @item.IncomePercentage%"></div>
+                                <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all" style="height: @item.ExpensePercentage%"></div>
+                            </div>
+                            <span class="text-xs text-[#9dabb8] font-medium">@item.Month</span>
                         </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">Jan</span>
-                    </div>
-                    <!-- Month 2 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[75%]"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[40%]"></div>
-                        </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">Feb</span>
-                    </div>
-                    <!-- Month 3 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[50%]"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[45%]"></div>
-                        </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">Mar</span>
-                    </div>
-                    <!-- Month 4 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[85%]"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[35%]"></div>
-                        </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">Apr</span>
-                    </div>
-                    <!-- Month 5 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[90%]"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[30%]"></div>
-                        </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">May</span>
-                    </div>
-                    <!-- Month 6 -->
-                    <div class="flex flex-col gap-1 w-full items-center group cursor-pointer">
-                        <div class="w-full max-w-[40px] flex gap-1 h-[140px] items-end">
-                            <div class="w-1/2 bg-primary/80 group-hover:bg-primary rounded-t-sm transition-all h-[80%]"></div>
-                            <div class="w-1/2 bg-[#9dabb8]/50 group-hover:bg-[#9dabb8]/80 rounded-t-sm transition-all h-[25%]"></div>
-                        </div>
-                        <span class="text-xs text-[#9dabb8] font-medium">Jun</span>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -234,7 +169,7 @@
             <div class="xl:col-span-2 bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
                 <div class="p-6 border-b border-[#293038] flex items-center justify-between">
                     <h3 class="text-white text-base font-bold">Top Properties</h3>
-                    <a class="text-sm text-primary hover:text-primary/80 font-medium" href="#">View All</a>
+                    <a class="text-sm text-primary hover:text-primary/80 font-medium" href="@Url.Action("Index", "Property")">View All</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
@@ -247,111 +182,42 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#293038]">
-                            <!-- Row 1 -->
-                            <tr class="hover:bg-[#293038]/30 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern white house with garden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBJ69YHJdjH3qmKHfjquqDbPhg4zY9tS6IPCjaGspz_Nt2tDRm500Fy6YGddFpZ0X3hcc4LvigA4N55uJ576sB0hFn7vZnVJIM5b5HSYHU7tEkN4BftcZjL1RXOaIEEmmgr_eA6aUW6BeNhMbMIbnSQwTYgTWaAfZtzSMnDCD-sFjEmFH9D-qc7HkQFXeED2olCGQtEyOBou2wgllxbUeb0ccAmmVqMhiumHS9VFep71ruHG5EL7oLxTTcQn7HhEyj7n5cvtns4gj8v');"></div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Sunset Apartments</p>
-                                            <p class="text-[#9dabb8] text-xs">Unit 402</p>
+                        @if (!(Model.TopProperties?.Any() ?? false)) {
+                                <tr>
+                                    <td colspan="4" class="px-6 py-10 text-center text-[#9dabb8]">No active assignments found.</td>
+                                </tr>
+                            }
+                            @foreach (var p in Model.TopProperties ?? new List<LeaseListItemViewModel>())
+                            {
+                                <tr class="hover:bg-[#293038]/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-lg bg-gray-700 flex items-center justify-center text-white font-bold">
+                                                <span class="material-symbols-outlined">apartment</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-white text-sm font-medium">@p.PropertyName</p>
+                                                <p class="text-[#9dabb8] text-xs">Unit @p.PropertyNumber</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
-                                        Occupied
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">JD</div>
-                                        <span class="text-white text-sm">John Doe</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="text-white text-sm font-medium">PKR 2,400</span>
-                                    <span class="block text-[#9dabb8] text-xs">Paid</span>
-                                </td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr class="hover:bg-[#293038]/30 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern apartment interior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfncPSnBFZXDyRfokAZgOaJ-0sBS3BXtSCiuX8pcrBFiYNII9mGfZQeAe9j8CpYkOaK72W7dyVZX6CzNcyXwescek93V68wQADcwo9m_s2jYPaqtmFSBGekm85nrdQhQZzD4jkxP8j5XSyzbtbvMnOe-mwop9ZlWtcMZiwqaoGC8PTlFaFzW9BQyOP84LsS4ns8kyO38vIHwTyZ5OqBLla5IYR0Wuc5U5JxKbMpXFquPWHMb-dmcUcZUt1xMjjomZGXbSSJB-255Ux');"></div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Highland Towers</p>
-                                            <p class="text-[#9dabb8] text-xs">Unit 105</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+                                            Occupied
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">@(p.TenantName != null ? p.TenantName.Substring(0, Math.Min(2, p.TenantName.Length)).ToUpper() : "??")</div>
+                                            <span class="text-white text-sm">@(p.TenantName ?? "N/A")</span>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500">
-                                        Pending
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">AS</div>
-                                        <span class="text-white text-sm">Alice Smith</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="text-white text-sm font-medium">PKR 1,850</span>
-                                    <span class="block text-orange-500 text-xs">Due in 2 days</span>
-                                </td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr class="hover:bg-[#293038]/30 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Suburban family house" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAsj5XhO7qFWzMkCLuc-xBnyFVpm0KEHFtvkpnFqDMJaJ7bswFiDmGOhyRX3WcHRWOE-WqOvLPYRAxMSCAF5b7V8anJ_QX1xtL10iYBciCy3hPuMITGwuYvYgeAYYraN0dYt0J9EWiiwC2Dowg2RE-F_9wkSfjQi_RsTDxPRr3PN61wzMZKJih8InAMoet1ieH5nN5JCrzROhbEUc8yLSSPO6nCmk51mJyn9isqYeau6toK_CE-6YACZeWChIBgzeTodMjkAS7pr6sU');"></div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Lakeside Manor</p>
-                                            <p class="text-[#9dabb8] text-xs">Unit 12B</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
-                                        Vacant
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-[#9dabb8] text-sm">-</span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="text-white text-sm font-medium">PKR 3,100</span>
-                                    <span class="block text-[#9dabb8] text-xs">Listed</span>
-                                </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr class="hover:bg-[#293038]/30 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="size-10 rounded-lg bg-cover bg-center shrink-0" data-alt="Modern house exterior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAltMm1rMKksd83oHl2Y9D76NNC-m9F_65VeaF9Pqc5aLcuUE0Wjyka1JdPGFzJ_FK0XNRxHKAi6seKWQIOId_hG2MKWyjU7bVXLhEAxpk82ckfSljWyLgkTUjvGcUopgon8oxs6mSSbKY2ORdzTS28zQWVg0MEZOHGVR_FiFAY5itCkhcQw9xnK9TVcnYnOo18C-H5FPRy6IkQnHF_C0R0D0RK2uwS_GwJRCvQ5HOmpsBW1l-caJXsEJaJlXArHk62hPyWg_RWLt_F');"></div>
-                                        <div>
-                                            <p class="text-white text-sm font-medium">Urban Loft</p>
-                                            <p class="text-[#9dabb8] text-xs">Unit 301</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
-                                        Occupied
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-full bg-[#293038] flex items-center justify-center text-xs text-white">MK</div>
-                                        <span class="text-white text-sm">Mike K.</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="text-white text-sm font-medium">PKR 2,100</span>
-                                    <span class="block text-[#9dabb8] text-xs">Paid</span>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-white text-sm font-medium">PKR @(p.Lease?.RentAmount.ToString("N0") ?? "0")</span>
+                                        <span class="block text-[#9dabb8] text-xs">@(p.Lease?.Months ?? 0) Months</span>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -365,33 +231,29 @@
                         Attention Required
                     </h3>
                     <div class="space-y-4">
-                        <!-- Item 1 -->
-                        <div class="flex gap-3 items-start pb-4 border-b border-[#293038]">
-                            <div class="size-8 rounded bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-sm">plumbing</span>
-                            </div>
-                            <div>
-                                <p class="text-white text-sm font-medium">Water Leak - Unit 402</p>
-                                <p class="text-[#9dabb8] text-xs mt-1">Reported 2 hours ago by John Doe</p>
-                                <div class="mt-2 flex gap-2">
-                                    <button class="text-xs bg-[#293038] hover:bg-[#363f4a] text-white px-2 py-1 rounded transition-colors">View Ticket</button>
-                                    <button class="text-xs text-[#9dabb8] hover:text-white px-2 py-1 transition-colors">Dismiss</button>
+                        @if (!(Model.Alerts?.Any() ?? false)) {
+                            <p class="text-[#9dabb8] text-xs">No pending items requiring attention.</p>
+                        }
+                        @foreach (var alert in Model.Alerts ?? new List<DashboardAlert>())
+                        {
+                            <div class="flex gap-3 items-start pb-4 border-b border-[#293038] last:border-0 last:pb-0">
+                                <div class="size-8 rounded bg-@alert.Color-500/10 text-@alert.Color-500 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-sm">@alert.Icon</span>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-medium">@alert.Title</p>
+                                    <p class="text-[#9dabb8] text-xs mt-1">@alert.Description</p>
+                                    <div class="mt-2 flex gap-2">
+                                        @if (alert.ActionType == "ViewTicket") {
+                                            <a href="@Url.Action("Index", "Maintenance")" class="text-xs bg-[#293038] hover:bg-[#363f4a] text-white px-2 py-1 rounded transition-colors">View Ticket</a>
+                                        } else {
+                                            <button class="text-xs bg-primary/20 hover:bg-primary/30 text-primary px-2 py-1 rounded transition-colors">Send Reminder</button>
+                                        }
+                                        <span class="text-[10px] text-[#9dabb8] self-center ml-auto">@alert.TimeAgo</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="flex gap-3 items-start">
-                            <div class="size-8 rounded bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-sm">schedule</span>
-                            </div>
-                            <div>
-                                <p class="text-white text-sm font-medium">Rent Overdue - Unit 105</p>
-                                <p class="text-[#9dabb8] text-xs mt-1">Alice Smith is 5 days late</p>
-                                <div class="mt-2 flex gap-2">
-                                    <button class="text-xs bg-primary/20 hover:bg-primary/30 text-primary px-2 py-1 rounded transition-colors">Send Reminder</button>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
                 <!-- Recent Communications -->

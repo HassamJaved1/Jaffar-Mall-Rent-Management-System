@@ -11,13 +11,15 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         private readonly LeaseServices _leaseServices;
         private readonly TenantServices _tenantServices;
         private readonly RentServices _rentServices;
+        private readonly MaintenanceServices _maintenanceServices;
 
-        public PropertyController(PropertyServices propertyServices, LeaseServices leaseServices, TenantServices tenantServices, RentServices rentServices)
+        public PropertyController(PropertyServices propertyServices, LeaseServices leaseServices, TenantServices tenantServices, RentServices rentServices, MaintenanceServices maintenanceServices)
         {
             _propertyServices = propertyServices;
             _leaseServices = leaseServices;
             _tenantServices = tenantServices;
             _rentServices = rentServices;
+            _maintenanceServices = maintenanceServices;
         }
 
         public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null)
@@ -120,8 +122,16 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                 Property = property,
                 Leases = leases ?? new List<PropertyLease>(),
                 Tenants = new Dictionary<long, Tenant>(),
-                Payments = new Dictionary<long, IEnumerable<RentPayment>>()
+                Payments = new Dictionary<long, IEnumerable<RentPayment>>(),
+                MaintenanceHistory = new List<Maintenance>()
             };
+
+            // Fetch maintenance history for this property
+            var maintenanceResult = await _maintenanceServices.GetAllMaintenanceAsync();
+            if (maintenanceResult.Data != null)
+            {
+                viewModel.MaintenanceHistory = maintenanceResult.Data.Where(m => m.PropertyId == id).OrderByDescending(m => m.CreatedAt);
+            }
 
             if (leases != null)
             {

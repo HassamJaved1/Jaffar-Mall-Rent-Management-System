@@ -51,7 +51,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                     await _emailService.SendMaintenanceVoucherEmailAsync(maintenance, prop, false);
                 }
                 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Voucher), new { id = maintenance.Id });
             }
             
             ModelState.AddModelError("", result.Message);
@@ -96,7 +96,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                     await _emailService.SendMaintenanceVoucherEmailAsync(maintenance, prop, true);
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Voucher), new { id = maintenance.Id });
             }
             
             ModelState.AddModelError("", result.Message);

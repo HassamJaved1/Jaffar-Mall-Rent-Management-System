@@ -107,7 +107,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         public async Task<IActionResult> Voucher(long id)
         {
             var paymentResult = await _rentServices.GetPaymentByIdAsync(id);
-            if (!paymentResult.Data.Id.Equals(0) && paymentResult.Code != 404)
+            if (paymentResult.Data != null && !paymentResult.Data.Id.Equals(0) && paymentResult.Code != 404)
             {
                 var payment = paymentResult.Data;
                  // Ideally we need Tenant and Property info.
@@ -121,7 +121,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                  // Use the RentStatusSummary logic to get details for this lease.
                  
                  var allStatus = await _rentServices.GetRentStatusSummaryAsync();
-                 var leaseStatus = allStatus.Data.FirstOrDefault(l => l.LeaseId == payment.LeaseId);
+                 var leaseStatus = allStatus.Data?.FirstOrDefault(l => l.LeaseId == payment.LeaseId);
                  
                  var viewModel = new VoucherViewModel
                  {

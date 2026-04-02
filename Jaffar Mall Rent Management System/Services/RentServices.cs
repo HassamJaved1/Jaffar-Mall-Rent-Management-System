@@ -63,7 +63,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     {
                         // Calculate remaining balance for the notification
                         var statusSummary = await GetRentStatusSummaryAsync();
-                        var currentStatus = statusSummary.Data.FirstOrDefault(s => s.LeaseId == lease.Id);
+                        var currentStatus = statusSummary.Data?.FirstOrDefault(s => s.LeaseId == lease.Id);
                         decimal balance = currentStatus?.Balance ?? 0;
                         decimal securityBalance = currentStatus?.SecurityBalance ?? 0;
                         
@@ -78,7 +78,8 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                             balance, 
                             payment.PaymentType, 
                             relaxationDays,
-                            securityBalance);
+                            securityBalance,
+                            payment);
                     }
 
                     return BackendResponse<bool>.Success(true, "Rent payment added successfully.");

@@ -163,5 +163,74 @@
             </div>
         </div>
 
+ 
+        <!-- Maintenance History -->
+        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-border-dark overflow-hidden mt-6">
+            <div class="p-6 border-b border-slate-100 dark:border-border-dark flex justify-between items-center bg-slate-50/50 dark:bg-background-dark/30">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-500">engineering</span>
+                        Maintenance & Repair History
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-text-secondary mt-1">Full history of repairs and maintenance for this property.</p>
+                </div>
+            </div>
+            
+            <div class="p-0">
+                @if (Model.MaintenanceHistory == null || !Model.MaintenanceHistory.Any())
+                {
+                    <div class="p-10 text-center flex flex-col items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">construction</span>
+                        <p class="text-slate-500 dark:text-text-secondary font-medium">No maintenance records found for this property.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead>
+                                <tr class="text-slate-500 dark:text-text-secondary border-b border-slate-200 dark:border-border-dark bg-slate-50/30 dark:bg-background-dark/20">
+                                    <th class="px-6 py-3 font-semibold uppercase text-[10px] tracking-wider">Date</th>
+                                    <th class="px-6 py-3 font-semibold uppercase text-[10px] tracking-wider">Issue & Details</th>
+                                    <th class="px-6 py-3 font-semibold uppercase text-[10px] tracking-wider">Cost</th>
+                                    <th class="px-6 py-3 font-semibold uppercase text-[10px] tracking-wider">Status</th>
+                                    <th class="px-6 py-3 font-semibold uppercase text-[10px] tracking-wider text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-border-dark">
+                                @foreach (var maintenance in Model.MaintenanceHistory)
+                                {
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-background-dark transition-colors">
+                                        <td class="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium font-mono text-[11px]">@maintenance.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-slate-900 dark:text-white font-bold">@maintenance.Title</div>
+                                            <div class="text-[11px] text-slate-500 dark:text-text-secondary truncate max-w-[250px]" title="@maintenance.Description">@maintenance.Description</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-bold text-blue-600 dark:text-blue-400">PKR @maintenance.RepairCost.ToString("N2")</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @{
+                                                string mStatusColor = maintenance.Status == (byte)Jaffar_Mall_Rent_Management_System.Models.MaintenanceStatus.Resolved ? "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400" : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400";
+                                                string mStatusText = maintenance.Status == (byte)Jaffar_Mall_Rent_Management_System.Models.MaintenanceStatus.Resolved ? "Resolved" : "Pending";
+                                            }
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold @mStatusColor border border-current/20">
+                                                @mStatusText
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="/Maintenance/Voucher/@maintenance.Id" target="_blank" class="text-primary hover:text-blue-700 font-bold text-xs inline-flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[16px]">print</span>
+                                                Print Voucher
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>

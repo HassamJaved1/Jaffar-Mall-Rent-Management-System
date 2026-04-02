@@ -178,5 +178,34 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 return null;
             }
         }
+        
+        public async Task<IEnumerable<RentPayment>> GetAllPaymentsAsync()
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                const string sql = @"
+                SELECT
+                    id,
+                    lease_id AS ""LeaseId"",
+                    amount,
+                    payment_date AS ""PaymentDate"",
+                    payment_method AS ""PaymentMethod"",
+                    payment_type AS ""PaymentType"",
+                    remarks,
+                    created_at AS ""CreatedAt""
+                FROM rent_payments
+                ORDER BY payment_date DESC";
+
+                return await connection.QueryAsync<RentPayment>(sql);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<RentPayment>();
+            }
+        }
     }
 }

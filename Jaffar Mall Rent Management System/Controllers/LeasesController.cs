@@ -85,7 +85,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             var dropdowns = await _leaseServices.PopulateDropdowns();
             // We need to add the current property to the vacant list if it's currently assigned to this lease
             var currentProperty = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
-            if (currentProperty != null && !dropdowns.Data.Properties.Any(p => p.Id == currentProperty.Id))
+            if (currentProperty != null && dropdowns.Data?.Properties != null && !dropdowns.Data.Properties.Any(p => p.Id == currentProperty.Id))
             {
                 dropdowns.Data.Properties.Add(currentProperty);
             }
@@ -108,7 +108,9 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                         var property = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
                         if (tenant != null && !string.IsNullOrEmpty(tenant.Email) && property != null)
                         {
-                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, lease.Status.ToString());
+                            var startDate = lease.StartDate ?? DateTime.Now;
+                            var endDate = lease.EndDate ?? DateTime.Now.AddMonths(lease.Months > 0 ? lease.Months : 1);
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, lease.Status.ToString(), lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueDays, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
                         }
                     } catch { }
                 });
@@ -134,7 +136,9 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                         var property = await _propertyServices.GetPropertyByIdAsync(lease.PropertyId);
                         if (tenant != null && !string.IsNullOrEmpty(tenant.Email) && property != null)
                         {
-                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, "Terminated");
+                            var startDate = lease.StartDate ?? DateTime.Now;
+                            var endDate = lease.EndDate ?? DateTime.Now.AddMonths(lease.Months > 0 ? lease.Months : 1);
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, "Terminated", lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueDays, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
                         }
                     } catch { }
                 });

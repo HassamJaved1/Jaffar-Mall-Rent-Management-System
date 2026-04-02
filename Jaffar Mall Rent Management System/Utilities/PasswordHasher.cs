@@ -1,4 +1,4 @@
-﻿namespace Jaffar_Mall_Rent_Management_System.Utilities
+namespace Jaffar_Mall_Rent_Management_System.Utilities
 {
     using System.Security.Cryptography;
 
@@ -59,9 +59,8 @@
 
                 return CryptographicOperations.FixedTimeEquals(storedPasswordHash, computedHash);
             }
-            catch (Exception e) 
+            catch (Exception) 
             {
-                //Log the exception message if needed
                 return false;
             }
         }

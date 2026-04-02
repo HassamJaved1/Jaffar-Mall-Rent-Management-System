@@ -6,13 +6,17 @@
                      ?? Enumerable.Empty<Jaffar_Mall_Rent_Management_System.Models.Property>();
     var property = properties.FirstOrDefault(p => p.Id == Model.PropertyId);
     string propName = property != null ? $"{property.Name} ({property.PropertyNumber})" : $"Unknown Property ({Model.PropertyId})";
+    decimal grandTotal = Model.RepairCost + Model.AmountPaid;
 }
 
 <div class="max-w-3xl mx-auto my-10 p-8 bg-white text-black shadow-lg border border-gray-200" id="voucher-print-area">
     <!-- Header -->
     <div class="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-6">
         <div>
-            <h1 class="text-3xl font-extrabold text-blue-900 tracking-tight">JAFFAR MALL</h1>
+            <h1 class="text-3xl font-extrabold tracking-tight">
+                <span class="text-[#1e3a8a]">JAFFAR</span>
+                <span class="text-[#eab308]">MALL</span>
+            </h1>
             <h2 class="text-lg font-semibold text-gray-700 mt-1">Maintenance & Repair Voucher</h2>
             <p class="text-sm text-gray-500 mt-2">Main GT Road, Jhelum, Punjab</p>
             <p class="text-sm text-gray-500">Contact: +92 310 3709000</p>
@@ -66,10 +70,26 @@
                 </tr>
                 <tr class="bg-gray-100">
                     <td class="border border-gray-300 px-4 py-2 text-right text-sm font-bold text-gray-700">
-                        Total Amount Received by Repairer
+                        Issue / Repair Cost Estimate
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-right text-gray-800 font-bold">
+                        @Model.RepairCost.ToString("C")
+                    </td>
+                </tr>
+                <tr class="bg-blue-50">
+                    <td class="border border-gray-300 px-4 py-2 text-right text-sm font-bold text-gray-700">
+                        Amount Paid to Repairer
                     </td>
                     <td class="border border-gray-300 px-4 py-2 text-right text-blue-800 font-extrabold text-lg">
                         @Model.AmountPaid.ToString("C")
+                    </td>
+                </tr>
+                <tr class="bg-gray-800">
+                    <td class="border border-gray-600 px-4 py-3 text-right text-sm font-extrabold text-white uppercase tracking-wider">
+                        Grand Total
+                    </td>
+                    <td class="border border-gray-600 px-4 py-3 text-right text-yellow-400 font-extrabold text-xl">
+                        @grandTotal.ToString("C")
                     </td>
                 </tr>
             </tbody>
@@ -80,12 +100,16 @@
     <div class="flex justify-end mb-12">
         <div class="w-1/2">
             <div class="flex justify-between py-2 border-b border-gray-200">
-                <span class="font-semibold text-gray-600">Total Repair Cost:</span>
+                <span class="font-semibold text-gray-600">Issue / Repair Cost Estimate:</span>
                 <span class="font-bold text-gray-800">@Model.RepairCost.ToString("C")</span>
             </div>
-            <div class="flex justify-between py-2 border-b-2 border-gray-800">
-                <span class="font-semibold text-gray-600">Amount Received by Repairer:</span>
+            <div class="flex justify-between py-2 border-b border-gray-200">
+                <span class="font-semibold text-gray-600">Amount Paid to Repairer:</span>
                 <span class="font-extrabold text-blue-700">@Model.AmountPaid.ToString("C")</span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 border-gray-800 mt-1 bg-gray-50 px-2">
+                <span class="font-extrabold text-gray-800 uppercase tracking-wide">Grand Total:</span>
+                <span class="font-extrabold text-[#1e3a8a] text-xl">@grandTotal.ToString("C")</span>
             </div>
         </div>
     </div>

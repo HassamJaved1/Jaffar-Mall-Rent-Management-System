@@ -1,4 +1,4 @@
-﻿namespace Jaffar_Mall_Rent_Management_System.Models
+namespace Jaffar_Mall_Rent_Management_System.Models
 {
     public class Property
     {
@@ -32,17 +32,17 @@
 
         public decimal TotalPaid { get; set; }
 
-        //public PropertyStatus Status { get; set; }
+        public byte Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
     }
 
-    //public enum PropertyStatus
-    //{
-    //    Vacant = 1,
-    //    Occupied = 2,
-    //    Pending = 3
-    //}
+    public enum PropertyStatus
+    {
+        Vacant = 1,
+        Occupied = 2,
+        Pending = 3
+    }
 }
