@@ -29,6 +29,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models
         public decimal RentAmount { get; set; }
 
         public int LeaseMonths { get; set; }
+        public int RentDueMonths { get; set; } = 1;
 
         public decimal TotalPaid { get; set; }
 

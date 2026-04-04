@@ -8,7 +8,7 @@
         @foreach (var property in Model.Items)
         {
             var isVacant = string.IsNullOrEmpty(property.TenantName);
-            var totalRent = property.RentAmount * property.LeaseMonths;
+            var totalRent = property.RentAmount * property.RentDueMonths;
             var isPaid = totalRent > 0 && property.TotalPaid >= totalRent;
             var statusColor = isVacant ? "text-[#637588] dark:text-[#9dabb8]" : (isPaid ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500");
             var statusBg = isVacant ? "bg-[#637588]/10 border-[#637588]/20" : (isPaid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-amber-500/10 border-amber-500/20");
@@ -83,7 +83,7 @@
                         }
                         else
                         {
-                            <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">PKR @totalRent<span class="text-sm font-normal text-[#637588] dark:text-[#9dabb8] ml-1">total</span></p>
+                            <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">PKR @totalRent.ToString("N0")<span class="text-xs font-normal text-[#637588] dark:text-[#9dabb8] ml-1">cumulative</span></p>
                             @if (isPaid)
                             {
                                 <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
