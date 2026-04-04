@@ -62,7 +62,7 @@
                                         <span class="text-white text-sm">@item.LeaseStartDate.ToString("MMM dd, yyyy")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <span class="text-white text-sm">@(item.LeaseEndDate.HasValue ? item.LeaseEndDate.Value.ToString("MMM dd, yyyy") : "N/A")</span>
+                                        <span class="text-white text-sm">@(item.NextRentDueDate.HasValue ? item.NextRentDueDate.Value.ToString("MMM dd, yyyy") : "N/A")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@(item.SecurityDeposit.HasValue ? item.SecurityDeposit.Value.ToString("C") : "0.00")</span>
@@ -77,7 +77,10 @@
                                         <span class="text-white text-sm">@item.MonthlyRent.ToString("C")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <span class="text-white text-sm">@item.TotalRentExpected.ToString("C")</span>
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-white text-sm font-bold">@item.IntervalRent.ToString("N0")</span>
+                                            <span class="text-[10px] text-gray-500 uppercase">Per @item.RentDueMonths Mo.</span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-green-400 text-sm">@item.TotalAmountPaid.ToString("C")</span>

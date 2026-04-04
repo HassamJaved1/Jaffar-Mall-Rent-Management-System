@@ -139,6 +139,15 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     if (balance > 0) status = "Pending";
                     if (balance < 0) status = "Overpaid"; // Optional
 
+                    // Calculation for Next Collection Deadline
+                    var nextRentDueDate = startDate.AddMonths(rentDueMonths);
+                    while (nextRentDueDate < DateTime.Now)
+                    {
+                        var nextStep = nextRentDueDate.AddMonths(rentDueMonths);
+                        if (lease.EndDate.HasValue && nextStep > lease.EndDate.Value) break;
+                        nextRentDueDate = nextStep;
+                    }
+
                     rentStatusList.Add(new RentStatusViewModel
                     {
                         LeaseId = lease.Id,
@@ -152,6 +161,8 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         RentDueMonths = lease.RentDueMonths,
                         LeaseStartDate = startDate,
                         LeaseEndDate = endDate,
+                        NextRentDueDate = nextRentDueDate,
+                        IntervalRent = intervalRent,
                         TotalRentExpected = totalExpected,
                         TotalAmountPaid = totalPaid,
                         Balance = balance,
