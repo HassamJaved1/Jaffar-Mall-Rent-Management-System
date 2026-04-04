@@ -82,9 +82,18 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                     // How many full payment periods have elapsed?
                     var startDate  = lease.StartDate ?? lease.CreatedAt;
-                    int dueDays    = lease.RentDueDays > 0 ? lease.RentDueDays : 30;
-                    int intervals  = (int)Math.Floor((today - startDate).TotalDays / dueDays);
-                    decimal expectedSoFar = intervals * lease.RentAmount;
+                    int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
+                    decimal intervalRent = lease.RentAmount * rentDueMonths;
+
+                    int intervalsDue = 0;
+                    var currentDueDate = startDate.AddMonths(rentDueMonths);
+                    while (currentDueDate <= dueDate)
+                    {
+                        if (lease.EndDate.HasValue && currentDueDate > lease.EndDate.Value) break;
+                        intervalsDue++;
+                        currentDueDate = currentDueDate.AddMonths(rentDueMonths);
+                    }
+                    decimal expectedSoFar = intervalsDue * intervalRent;
 
                     bool hasPaidCurrentPeriod = totalPaid >= expectedSoFar;
 
@@ -123,14 +132,20 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private static DateTime? CalculateNextDueDate(PropertyLease lease, DateTime today)
         {
             var startDate = lease.StartDate ?? lease.CreatedAt;
-            int dueDays   = lease.RentDueDays > 0 ? lease.RentDueDays : 30;
+            int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
 
-            if (startDate > today) return startDate; // Lease hasn't started yet
+            var candidate = startDate.AddMonths(rentDueMonths);
+
+            if (startDate > today) return candidate; // Lease hasn't started yet
 
             // Find the next due date after or on today
-            var candidate = startDate;
             while (candidate < today)
-                candidate = candidate.AddDays(dueDays);
+            {
+                 var nextCandidate = candidate.AddMonths(rentDueMonths);
+                 if (lease.EndDate.HasValue && nextCandidate > lease.EndDate.Value)
+                     break;
+                 candidate = nextCandidate;
+            }
 
             // Respect lease end date
             if (lease.EndDate.HasValue && candidate > lease.EndDate.Value)

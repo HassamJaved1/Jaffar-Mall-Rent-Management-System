@@ -140,9 +140,9 @@
                                 </div>
                             </label>
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Rent Due Every (Days)</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Rent Due Every (Months)</span>
                                 <div class="relative">
-                                    <input id="RentDueDays" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="30" min="1" />
+                                    <input id="RentDueMonths" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="1" min="1" />
                                 </div>
                             </label>
                             <label class="flex flex-col flex-1 gap-2 group">
@@ -307,14 +307,14 @@
                 const endDate = document.getElementById('EndDate').value;
                 const rentAmount = document.getElementById('RentAmount').value;
                 const securityDeposit = document.getElementById('SecurityDeposit').value;
-                const rentDueDays = document.getElementById('RentDueDays').value;
+                const rentDueMonths = document.getElementById('RentDueMonths').value;
                 const securityDueDays = document.getElementById('SecurityDueDays').value;
                 const incrementMonths = document.getElementById('IncrementMonths').value;
                 const incrementPercentage = document.getElementById('IncrementPercentage').value;
                 const description = document.getElementById('Description').value;
 
-                if (!tenantId || !propertyId || !rentAmount || !startDate || !endDate || !rentDueDays) {
-                    alert("Please select a Tenant, Property, Start Date, End Date, enter Rent Amount, and Rent Due Days.");
+                if (!tenantId || !propertyId || !rentAmount || !startDate || !endDate || !rentDueMonths) {
+                    alert("Please select a Tenant, Property, Start Date, End Date, enter Rent Amount, and Rent Due Months.");
                     return;
                 }
 
@@ -334,7 +334,7 @@
                     Months: calculatedMonths,
                     RentAmount: parseFloat(rentAmount),
                     SecurityDeposit: securityDeposit ? parseFloat(securityDeposit) : 0,
-                    RentDueDays: parseInt(rentDueDays),
+                    RentDueMonths: parseInt(rentDueMonths) || 1,
                     SecurityDueDays: parseInt(securityDueDays) || 0,
                     IncrementMonths: parseInt(incrementMonths) || 0,
                     IncrementPercentage: parseFloat(incrementPercentage) || 0,
@@ -391,8 +391,8 @@
                 if (end) elEndDate.value = end;
                 if (months) elMonths.value = months;
                 
-                const rentDueDays = @(ViewBag.Lease?.RentDueDays ?? 30);
-                document.getElementById('RentDueDays').value = rentDueDays;
+                const rentDueMonths = @(ViewBag.Lease?.RentDueMonths ?? 1);
+                document.getElementById('RentDueMonths').value = rentDueMonths;
                 
                 const securityDueDays = @(ViewBag.Lease?.SecurityDueDays ?? 0);
                 document.getElementById('SecurityDueDays').value = securityDueDays;

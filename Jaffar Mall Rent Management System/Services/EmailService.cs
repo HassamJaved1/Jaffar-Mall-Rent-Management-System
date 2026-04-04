@@ -16,7 +16,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             _pdfService = pdfService;
         }
 
-        public async Task SendLeaseAssignmentEmailAsync(string toEmail, string tenantName, string propertyName, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueDays, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0)
+        public async Task SendLeaseAssignmentEmailAsync(string toEmail, string tenantName, string propertyName, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueMonths, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                             <p>We are pleased to officially confirm the lease assignment for the property located at <strong>{propertyName}</strong>. This communication serves as a formal acknowledgment of the terms agreed upon for your tenancy at Jaffar Mall.</p>
 
-                            <p>According to our records, your lease is scheduled to commence on <strong>{startDate:MMMM dd, yyyy}</strong> and will remain in effect for a duration of <strong>{months} months</strong>, concluding on <strong>{endDate:MMMM dd, yyyy}</strong>. The monthly rental commitment for this unit has been established at <strong>PKR {rentAmount:N2}</strong>, with payments due every <strong>{rentDueDays} days</strong>.</p>
+                            <p>According to our records, your lease is scheduled to commence on <strong>{startDate:MMMM dd, yyyy}</strong> and will remain in effect for a duration of <strong>{months} months</strong>, concluding on <strong>{endDate:MMMM dd, yyyy}</strong>. The monthly rental commitment for this unit has been established at <strong>PKR {rentAmount:N2}</strong>, with payments due every <strong>{rentDueMonths} months</strong>.</p>
 
                             {(incrementMonths > 0 && incrementPercentage > 0 ? $@"
                             <p style='background-color: #fffbeb; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 20px 0;'>
@@ -87,7 +87,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 // Generate and Attach PDF Contract (Assignment)
                 try 
                 {
-                    var pdfData = _pdfService.GenerateLeaseContractPdf(tenantName, propertyName, rentAmount, months, startDate, endDate, rentDueDays, securityDeposit, securityDueDays, incrementMonths, incrementPercentage, "Active");
+                    var pdfData = _pdfService.GenerateLeaseContractPdf(tenantName, propertyName, rentAmount, months, startDate, endDate, rentDueMonths, securityDeposit, securityDueDays, incrementMonths, incrementPercentage, "Active");
                     var fileName = $"Lease_Assignment_{propertyName.Replace(" ", "_")}.pdf";
                     var attachment = new Attachment(new MemoryStream(pdfData), fileName, "application/pdf");
                     message.Attachments.Add(attachment);
@@ -113,7 +113,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             }
         }
 
-        public async Task SendLeaseStatusUpdateEmailAsync(string toEmail, string tenantName, string propertyName, string newStatus, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueDays, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0)
+        public async Task SendLeaseStatusUpdateEmailAsync(string toEmail, string tenantName, string propertyName, string newStatus, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueMonths, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                             <p style='font-size: 14px;'>
                                 <strong>Period:</strong> {startDate:MMM dd, yyyy} to {endDate:MMM dd, yyyy} ({months} Months)<br/>
                                 <strong>Monthly Rent:</strong> PKR {rentAmount:N2}<br/>
-                                <strong>Rent Cycle:</strong> Every {rentDueDays} Days<br/>
+                                <strong>Rent Cycle:</strong> Every {rentDueMonths} Months<br/>
                                 <strong>Security Deposit:</strong> PKR {securityDeposit:N2}
                             </p>
 
@@ -194,7 +194,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 // Generate and Attach Status-Specific PDF Contract
                 try 
                 {
-                    var pdfData = _pdfService.GenerateLeaseContractPdf(tenantName, propertyName, rentAmount, months, startDate, endDate, rentDueDays, securityDeposit, securityDueDays, incrementMonths, incrementPercentage, newStatus);
+                    var pdfData = _pdfService.GenerateLeaseContractPdf(tenantName, propertyName, rentAmount, months, startDate, endDate, rentDueMonths, securityDeposit, securityDueDays, incrementMonths, incrementPercentage, newStatus);
                     var fileName = $"{newStatus.Replace(" ", "_")}_Notice_{propertyName.Replace(" ", "_")}.pdf";
                     var attachment = new Attachment(new MemoryStream(pdfData), fileName, "application/pdf");
                     message.Attachments.Add(attachment);

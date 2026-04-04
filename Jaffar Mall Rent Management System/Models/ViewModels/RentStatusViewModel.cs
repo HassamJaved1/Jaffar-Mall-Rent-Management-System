@@ -12,7 +12,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         public int LeaseDurationMonths { get; set; }
         public decimal? SecurityDeposit { get; set; }
         public decimal PaidSecurityDeposit { get; set; }
-        public int RentDueDays { get; set; }
+        public int RentDueMonths { get; set; }
         
         public DateTime LeaseStartDate { get; set; }
         public DateTime? LeaseEndDate { get; set; }

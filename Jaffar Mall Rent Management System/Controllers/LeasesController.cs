@@ -56,7 +56,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                             Console.WriteLine($"[DEBUG] Attempting to send email to {tenant.Email} for {property.Name}");
                             var startDate = lease.StartDate ?? DateTime.Now;
                             var endDate = lease.EndDate ?? DateTime.Now.AddMonths(lease.Months > 0 ? lease.Months : 1);
-                            await _emailService.SendLeaseAssignmentEmailAsync(tenant.Email, tenant.Name, property.Name, lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueDays, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
+                            await _emailService.SendLeaseAssignmentEmailAsync(tenant.Email, tenant.Name, property.Name, lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueMonths, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
                         }
                     } catch (Exception ex) {
                         Console.WriteLine("Error triggering email: " + ex.Message);
@@ -110,7 +110,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                         {
                             var startDate = lease.StartDate ?? DateTime.Now;
                             var endDate = lease.EndDate ?? DateTime.Now.AddMonths(lease.Months > 0 ? lease.Months : 1);
-                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, lease.Status.ToString(), lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueDays, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, lease.Status.ToString(), lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueMonths, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
                         }
                     } catch { }
                 });
@@ -138,7 +138,7 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                         {
                             var startDate = lease.StartDate ?? DateTime.Now;
                             var endDate = lease.EndDate ?? DateTime.Now.AddMonths(lease.Months > 0 ? lease.Months : 1);
-                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, "Terminated", lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueDays, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
+                            await _emailService.SendLeaseStatusUpdateEmailAsync(tenant.Email, tenant.Name, property.Name, "Terminated", lease.RentAmount, lease.Months, startDate, endDate, lease.RentDueMonths, lease.SecurityDeposit ?? 0, lease.SecurityDueDays, lease.IncrementMonths, lease.IncrementPercentage);
                         }
                     } catch { }
                 });

@@ -113,42 +113,21 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     if (tenant == null || property == null) continue;
 
                     // 3. Calculate Expected Rent
-                    // Logic: Find how many months have passed since lease creation (or some start date).
-                    // For now, assuming lease created date is start date.
-                    
                     var startDate = lease.StartDate ?? lease.CreatedAt;
                     var endDate = lease.EndDate;
-                    var today = DateTime.Now;
-                    
-                    // Simple month difference calculation
-                    int monthsPassed = ((today.Year - startDate.Year) * 12) + today.Month - startDate.Month;
-                    
-                    if (today.Day < startDate.Day) monthsPassed--;
-                    
-                    if (monthsPassed < 0) monthsPassed = 0;
-                    
-                    // Add 1 because rent is usually due at start of month
-                    int dueMonths = monthsPassed + 1; // Current month is due
-                    
-                    // Ensure dueMonths doesn't exceed total expected months in the lease
-                    if (endDate.HasValue) 
-                    {
-                        int totalLeaseMonths = ((endDate.Value.Year - startDate.Year) * 12) + endDate.Value.Month - startDate.Month;
-                        if (endDate.Value.Day >= startDate.Day) totalLeaseMonths++;
-                        
-                        // We also respect lease.Months if it's there as a fallback
-                        int maxMonths = lease.Months > 0 ? lease.Months : totalLeaseMonths;
-                        if (dueMonths > maxMonths) 
-                        {
-                            dueMonths = maxMonths;
-                        }
-                    } 
-                    else if (lease.Months > 0 && dueMonths > lease.Months) 
-                    {
-                        dueMonths = lease.Months;
-                    }
+                    int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
+                    decimal intervalRent = lease.RentAmount * rentDueMonths;
 
-                    decimal totalExpected = dueMonths * lease.RentAmount;
+                    int intervalsPassed = 0;
+                    var candidateDate = startDate.AddMonths(rentDueMonths);
+                    while (candidateDate <= DateTime.Now)
+                    {
+                         if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
+                         intervalsPassed++;
+                         candidateDate = candidateDate.AddMonths(rentDueMonths);
+                    }
+                    
+                    decimal totalExpected = intervalsPassed * intervalRent;
 
                     // 4. Get Total Paid
                     decimal totalPaid = await _rentRepository.GetTotalPaidByLeaseIdAsync(lease.Id);
@@ -170,7 +149,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         MonthlyRent = lease.RentAmount,
                         LeaseDurationMonths = lease.Months,
                         SecurityDeposit = lease.SecurityDeposit,
-                        RentDueDays = lease.RentDueDays,
+                        RentDueMonths = lease.RentDueMonths,
                         LeaseStartDate = startDate,
                         LeaseEndDate = endDate,
                         TotalRentExpected = totalExpected,

@@ -15,7 +15,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models
 
         public decimal? SecurityDeposit { get; set; }
         public decimal PaidSecurityDeposit { get; set; } = 0;
-        public int RentDueDays { get; set; } = 30; // Default rent due schedule
+        public int RentDueMonths { get; set; } = 1; // Default rent due schedule
         public int SecurityDueDays { get; set; } = 0; // Default security due schedule
         public string? AddedBy { get; set; }
 

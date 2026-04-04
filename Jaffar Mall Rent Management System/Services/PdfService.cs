@@ -8,7 +8,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 {
     public class PdfService
     {
-        public byte[] GenerateLeaseContractPdf(string tenantName, string propertyName, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueDays, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0, string status = "Active")
+        public byte[] GenerateLeaseContractPdf(string tenantName, string propertyName, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueMonths, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0, string status = "Active")
         {
             var document = Document.Create(container =>
             {
@@ -70,8 +70,8 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                             text.Span(". The monthly rental commitment for this unit was established at ");
                             text.Span($"PKR {rentAmount:N2}").SemiBold();
                             text.Span(", with payments due every ");
-                            text.Span(rentDueDays.ToString()).SemiBold();
-                            text.Span(" days.");
+                            text.Span(rentDueMonths.ToString()).SemiBold();
+                            text.Span(" months.");
                         });
 
                         if (incrementMonths > 0 && incrementPercentage > 0 && status == "Active")

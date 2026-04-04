@@ -42,6 +42,9 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         Code = 400
                     };
 
+
+               // var a = PasswordHasher.HashPassword("Password");
+
                 bool isValid = PasswordHasher.VerifyPassword(password, user.Password);
 
                 return new BackendResponse<long>

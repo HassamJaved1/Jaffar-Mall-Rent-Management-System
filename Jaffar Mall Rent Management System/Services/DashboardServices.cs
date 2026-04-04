@@ -57,13 +57,20 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     model.PendingSecurityAmount += securityOwed;
 
                     // B. Calculate Overdue Rent
-                    // Number of full rent periods that have passed since the start date
-                    var startDate = lease.StartDate ?? lease.CreatedAt;
-                    var totalDaysActive = (now - startDate).TotalDays;
-                    int periodsPassed = (int)Math.Floor(totalDaysActive / Math.Max(1, lease.RentDueDays));
+                    int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
+                    decimal intervalRent = lease.RentAmount * rentDueMonths;
+
+                    int intervalsPassed = 0;
+                    var candidateDate = (lease.StartDate ?? lease.CreatedAt).AddMonths(rentDueMonths);
+                    while (candidateDate <= now)
+                    {
+                         if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
+                         intervalsPassed++;
+                         candidateDate = candidateDate.AddMonths(rentDueMonths);
+                    }
                     
                     // Total amount that SHOULD have been paid by now for rent
-                    decimal totalExpectedRentSoFar = periodsPassed * lease.RentAmount;
+                    decimal totalExpectedRentSoFar = intervalsPassed * intervalRent;
                     
                     // Total rent actually paid for this lease
                     decimal totalRentPaid = allPayments.Where(p => p.LeaseId == lease.Id && p.PaymentType == "Rent").Sum(p => p.Amount);
