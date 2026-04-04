@@ -34,7 +34,8 @@
                             <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Property</th>
                             <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Tenant</th>
                             <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Date Range</th>
-                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Rent</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-center">Rent Interval</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-center">Cumulated Rent</th>
                             <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Status</th>
                             <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-right">Actions</th>
                         </tr>
@@ -58,8 +59,20 @@
                                         <span>End: @item.Lease.EndDate?.ToString("MMM dd, yyyy")</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-sm font-mono font-bold text-primary">PKR @item.Lease.RentAmount.ToString("N0")</span>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">@item.Lease.RentDueMonths Months</span>
+                                        <span class="text-[10px] uppercase tracking-wider text-gray-500">Frequency</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex flex-col">
+                                        @{
+                                            var cumulatedRent = item.Lease.RentAmount * item.Lease.RentDueMonths;
+                                        }
+                                        <span class="text-sm font-mono font-black text-primary">PKR @cumulatedRent.ToString("N0")</span>
+                                        <span class="text-[10px] text-gray-400 font-medium">@item.Lease.RentDueMonths x @item.Lease.RentAmount.ToString("N0")</span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     @{

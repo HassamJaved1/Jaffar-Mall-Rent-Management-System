@@ -219,7 +219,7 @@
                                 <span id="TermLengthDisplay" class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Est. Total Value</span>
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Cumulated Rent</span>
                                 <span id="TotalValueDisplay" class="text-lg font-bold text-primary">PKR 0.00</span>
                             </div>
                         </div>
@@ -289,8 +289,9 @@
 
             function updateSummary(months, rent) {
                 elTermDisplay.textContent = months + " Months";
-                const total = months * rent;
-                elTotalDisplay.textContent = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(total);
+                const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
+                const cumulatedRent = rentDueMonths * rent;
+                elTotalDisplay.textContent = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(cumulatedRent);
             }
 
             // Listen for changes
@@ -298,6 +299,11 @@
             elMonths.addEventListener('input', updateEndDateFromMonths);
             elEndDate.addEventListener('input', updateCalculationsFromDates);
             elRent.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            
+            const elRentDueMonths = document.getElementById('RentDueMonths');
+            if (elRentDueMonths) {
+                elRentDueMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
 
             btnCreate.addEventListener('click', async () => {
                 const tenantId = document.getElementById('TenantId').value;
