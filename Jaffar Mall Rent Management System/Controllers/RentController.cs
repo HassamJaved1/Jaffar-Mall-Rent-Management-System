@@ -16,10 +16,18 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             _leaseServices = leaseServices;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] string? status = null)
         {
             var result = await _rentServices.GetRentStatusSummaryAsync();
-            return View(result.Data);
+            var data = result.Data;
+
+            if (data != null && !string.IsNullOrEmpty(status))
+            {
+                data = data.Where(x => string.Equals(x.Status, status, StringComparison.OrdinalIgnoreCase));
+            }
+
+            ViewBag.CurrentStatus = status;
+            return View(data);
         }
 
         public async Task<IActionResult> Add()

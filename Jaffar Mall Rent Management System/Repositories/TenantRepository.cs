@@ -94,7 +94,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
-        public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int skip, int take, string? searchTerm = null)
+        public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int skip, int take, string? searchTerm = null, string? sort = null)
         {
             try
             {
@@ -122,9 +122,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm)";
                 }
 
-                sql += @"
-                ORDER BY id
-                OFFSET @Skip LIMIT @Take";
+                string sortClause = "ORDER BY id";
+                if (sort == "name_asc") sortClause = "ORDER BY name ASC";
+                else if (sort == "name_desc") sortClause = "ORDER BY name DESC";
+                else if (sort == "date_desc") sortClause = "ORDER BY created_at DESC";
+                else if (sort == "date_asc") sortClause = "ORDER BY created_at ASC";
+
+                sql += $"\n{sortClause}\nOFFSET @Skip LIMIT @Take";
 
                 var tenants = await connection.QueryAsync<Tenant>(sql, new 
                 { 

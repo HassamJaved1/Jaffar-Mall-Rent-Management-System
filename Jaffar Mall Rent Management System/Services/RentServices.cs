@@ -155,6 +155,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     rentStatusList.Add(new RentStatusViewModel
                     {
                         LeaseId = lease.Id,
+                        PropertyId = property.Id,
                         TenantName = tenant.Name,
                         PropertyName = property.Name,
                         PropertyNumber = property.PropertyNumber,

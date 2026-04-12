@@ -1,4 +1,4 @@
-﻿using Jaffar_Mall_Rent_Management_System.Models;
+using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Models.ViewModels;
 using Jaffar_Mall_Rent_Management_System.Repositories;
 
@@ -110,14 +110,14 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             return await _tenantRepository.GetTenantByIdAsync(id);
         }
 
-        public async Task<PaginatedViewModel<Tenant>> GetAllTenantsAsync(int page, int pageSize, string? searchTerm = null)
+        public async Task<PaginatedViewModel<Tenant>> GetAllTenantsAsync(int page, int pageSize, string? searchTerm = null, string? sort = null)
         {
             // Calculate skip
             var skip = (page - 1) * pageSize;
 
             // Run tasks in parallel
             var countTask = _tenantRepository.GetTotalTenantsCountAsync(searchTerm);
-            var itemsTask = _tenantRepository.GetAllTenantsAsync(skip, pageSize, searchTerm);
+            var itemsTask = _tenantRepository.GetAllTenantsAsync(skip, pageSize, searchTerm, sort);
 
             await Task.WhenAll(countTask, itemsTask);
 

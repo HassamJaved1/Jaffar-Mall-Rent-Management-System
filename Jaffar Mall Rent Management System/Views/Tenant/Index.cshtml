@@ -1,4 +1,4 @@
-﻿@using Jaffar_Mall_Rent_Management_System.Models
+@using Jaffar_Mall_Rent_Management_System.Models
 @using Jaffar_Mall_Rent_Management_System.Models.ViewModels
 @model PaginatedViewModel<Tenant>
 @{
@@ -33,12 +33,18 @@
                 <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search tenants by name or phone..." />
             </div>
         </form>
-            <!-- Filter Chips (Placeholder for now) -->
+            <!-- Filter Chips -->
             <div class="flex flex-wrap gap-2">
-                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">sort</span>
-                    <p class="text-[#111418] dark:text-white text-sm font-medium">Sort by: Name</p>
-                </button>
+                <div class="relative">
+                    <select id="filterSort" class="appearance-none flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 pr-10 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854] text-[#111418] dark:text-white text-sm font-medium outline-none">
+                        <option value="">Sort by: Default</option>
+                        <option value="name_asc" selected="@(ViewBag.CurrentSort == "name_asc" ? "selected" : null)">Sort by: Name (A-Z)</option>
+                        <option value="name_desc" selected="@(ViewBag.CurrentSort == "name_desc" ? "selected" : null)">Sort by: Name (Z-A)</option>
+                        <option value="date_desc" selected="@(ViewBag.CurrentSort == "date_desc" ? "selected" : null)">Sort by: Newest</option>
+                        <option value="date_asc" selected="@(ViewBag.CurrentSort == "date_asc" ? "selected" : null)">Sort by: Oldest</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">sort</span>
+                </div>
             </div>
         </div>
     </div>
@@ -61,21 +67,25 @@
         // Prevent default form submission on enter
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            performSearch(searchInput.value);
+            performSearch();
         });
 
         searchInput.addEventListener('input', function (e) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                performSearch(e.target.value);
+                performSearch();
             }, 300); // 300ms debounce
         });
 
-        function performSearch(query) {
+        function performSearch() {
             const url = new URL(window.location.origin + '@Url.Action("Index", "Tenant")');
-            if (query) {
-                url.searchParams.set('search', query);
-            }
+            
+            const query = searchInput.value;
+            if (query) url.searchParams.set('search', query);
+
+            const sort = document.getElementById('filterSort').value;
+            if (sort) url.searchParams.set('sort', sort);
+
             url.searchParams.set('page', 1); // Reset to page 1 on search
 
             // Update browser history
@@ -97,6 +107,8 @@
             })
             .catch(error => console.error('Error fetching tenants:', error));
         }
+
+        document.getElementById('filterSort').addEventListener('change', performSearch);
 
         // Dropdown Logic
         let currentOpenDropdown = null;
@@ -140,7 +152,7 @@
                  
                  if (response.ok && result.code === 200) { 
                      // Refresh the list
-                     performSearch(document.querySelector('input[name="search"]').value); 
+                     performSearch(); 
                  } else {
                      alert('Failed to delete tenant: ' + (result.message || 'Unknown error'));
                  }

@@ -12,7 +12,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<int> GetTotalPropertiesCountAsync(string? searchTerm = null)
+        public async Task<int> GetTotalPropertiesCountAsync(string? searchTerm = null, string? type = null, int? status = null, IEnumerable<long>? filterPropertyIds = null)
         {
             try
             {
@@ -20,16 +20,47 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await connection.OpenAsync();
                 
                 var sql = @"
-                SELECT COUNT(*) 
-                FROM properties
+                SELECT COUNT(DISTINCT p.id) 
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
                 WHERE 1=1";
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR address ILIKE @SearchTerm OR city ILIKE @SearchTerm OR property_number ILIKE @SearchTerm)";
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm)";
                 }
 
-                int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
+                if (!string.IsNullOrWhiteSpace(type))
+                {
+                    sql += " AND p.property_type = @Type";
+                }
+
+                if (status.HasValue)
+                {
+                    if (status.Value == 1) // Vacant
+                    {
+                        sql += " AND pl.id IS NULL";
+                    }
+                    else if (status.Value == 2) // Occupied
+                    {
+                        sql += " AND pl.id IS NOT NULL";
+                    }
+                }
+
+                if (filterPropertyIds != null && filterPropertyIds.Any())
+                {
+                    sql += " AND p.id = ANY(@FilterPropertyIds)";
+                }
+                else if (filterPropertyIds != null && !filterPropertyIds.Any())
+                {
+                    return 0; // Filter requested but no IDs match
+                }
+
+                int count = await connection.ExecuteScalarAsync<int>(sql, new { 
+                    SearchTerm = $"%{searchTerm}%", 
+                    Type = type,
+                    FilterPropertyIds = filterPropertyIds?.ToArray()
+                });
                 return count;
             }
             catch (Exception ex)
@@ -132,7 +163,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
-        public async Task<IEnumerable<Property>> GetAllPropertiesAsync(int skip, int take, string? searchTerm = null)
+        public async Task<IEnumerable<Property>> GetAllPropertiesAsync(int skip, int take, string? searchTerm = null, string? type = null, int? status = null, string? sort = null, IEnumerable<long>? filterPropertyIds = null)
         {
             try
             {
@@ -169,15 +200,47 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm)";
                 }
 
-                sql += @"
-                ORDER BY p.id
-                OFFSET @Skip LIMIT @Take";
+                if (!string.IsNullOrWhiteSpace(type))
+                {
+                    sql += " AND p.property_type = @Type";
+                }
+
+                if (status.HasValue)
+                {
+                    if (status.Value == 1) // Vacant
+                    {
+                        sql += " AND pl.id IS NULL";
+                    }
+                    else if (status.Value == 2) // Occupied
+                    {
+                        sql += " AND pl.id IS NOT NULL";
+                    }
+                }
+
+                if (filterPropertyIds != null && filterPropertyIds.Any())
+                {
+                    sql += " AND p.id = ANY(@FilterPropertyIds)";
+                }
+                else if (filterPropertyIds != null && !filterPropertyIds.Any())
+                {
+                    return Array.Empty<Property>();
+                }
+
+                string sortClause = "ORDER BY p.id";
+                if (sort == "date_desc") sortClause = "ORDER BY p.created_at DESC";
+                else if (sort == "date_asc") sortClause = "ORDER BY p.created_at ASC";
+                else if (sort == "name_asc") sortClause = "ORDER BY p.name ASC";
+                else if (sort == "name_desc") sortClause = "ORDER BY p.name DESC";
+
+                sql += $"\n{sortClause}\nOFFSET @Skip LIMIT @Take";
 
                 var properties = await connection.QueryAsync<Property>(sql, new 
                 { 
                     Skip = skip, 
                     Take = take,
-                    SearchTerm = $"%{searchTerm}%"
+                    SearchTerm = $"%{searchTerm}%",
+                    Type = type,
+                    FilterPropertyIds = filterPropertyIds?.ToArray()
                 });
                 return properties;
             }

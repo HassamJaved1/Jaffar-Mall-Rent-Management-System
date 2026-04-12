@@ -20,14 +20,15 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             _rentServices = rentServices;
         }
 
-        public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null)
+        public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null, [FromQuery] string? sort = null)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
-            var viewModel = await _tenantServices.GetAllTenantsAsync(page, pageSize, search);
+            var viewModel = await _tenantServices.GetAllTenantsAsync(page, pageSize, search, sort);
 
             ViewBag.CurrentSearch = search;
+            ViewBag.CurrentSort = sort;
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

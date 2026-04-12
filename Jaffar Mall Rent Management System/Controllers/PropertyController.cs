@@ -22,14 +22,37 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             _maintenanceServices = maintenanceServices;
         }
 
-        public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null)
+        public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null, [FromQuery] string? type = null, [FromQuery] int? status = null, [FromQuery] string? sort = null, [FromQuery] string? payment = null)
         {
             const int pageSize = 10; 
             if (page < 1) page = 1;
 
-            var viewModel = await _propertyServices.GetAllPropertiesAsync(page, pageSize, search);
+            IEnumerable<long>? filterPropertyIds = null;
+            if (!string.IsNullOrEmpty(payment))
+            {
+                var rentStatusResult = await _rentServices.GetRentStatusSummaryAsync();
+                var rentStatuses = rentStatusResult.Data;
+                
+                if (rentStatuses != null)
+                {
+                    filterPropertyIds = rentStatuses
+                        .Where(rs => string.Equals(rs.Status, payment, StringComparison.OrdinalIgnoreCase))
+                        .Select(rs => rs.PropertyId)
+                        .ToList();
+                }
+                else
+                {
+                    filterPropertyIds = new List<long>();
+                }
+            }
+
+            var viewModel = await _propertyServices.GetAllPropertiesAsync(page, pageSize, search, type, status, sort, filterPropertyIds);
             
             ViewBag.CurrentSearch = search;
+            ViewBag.CurrentType = type;
+            ViewBag.CurrentStatus = status;
+            ViewBag.CurrentSort = sort;
+            ViewBag.CurrentPayment = payment;
             
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

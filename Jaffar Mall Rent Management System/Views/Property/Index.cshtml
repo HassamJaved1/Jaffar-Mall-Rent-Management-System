@@ -1,4 +1,4 @@
-﻿@using Jaffar_Mall_Rent_Management_System.Models
+@using Jaffar_Mall_Rent_Management_System.Models
 @using Jaffar_Mall_Rent_Management_System.Models.ViewModels
 @model PaginatedViewModel<Property>
 @{
@@ -39,18 +39,48 @@
         </form>
             <!-- Filter Chips -->
             <div class="flex flex-wrap gap-2">
-                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                    <p class="text-[#111418] dark:text-white text-sm font-medium">Status: <span class="text-primary font-bold">All</span></p>
-                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
-                </button>
-                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                    <p class="text-[#111418] dark:text-white text-sm font-medium">Type: <span class="text-primary font-bold">Apartment</span></p>
-                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">keyboard_arrow_down</span>
-                </button>
-                <button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854]">
-                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px]">sort</span>
-                    <p class="text-[#111418] dark:text-white text-sm font-medium">Sort by: Date Added</p>
-                </button>
+                <div class="relative">
+                    <select id="filterPayment" class="appearance-none flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 pr-10 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854] text-[#111418] dark:text-white text-sm font-medium outline-none">
+                        <option value="">Payment: All</option>
+                        <option value="Paid" selected="@(ViewBag.CurrentPayment == "Paid" ? "selected" : null)">Payment: Paid</option>
+                        <option value="Pending" selected="@(ViewBag.CurrentPayment == "Pending" ? "selected" : null)">Payment: Pending</option>
+                        <option value="Overdue" selected="@(ViewBag.CurrentPayment == "Overdue" ? "selected" : null)">Payment: Overdue</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">keyboard_arrow_down</span>
+                </div>
+
+                <div class="relative">
+                    <select id="filterStatus" class="appearance-none flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 pr-10 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854] text-[#111418] dark:text-white text-sm font-medium outline-none">
+                        <option value="">Status: All</option>
+                        <option value="1" selected="@(ViewBag.CurrentStatus == 1 ? "selected" : null)">Status: Vacant</option>
+                        <option value="2" selected="@(ViewBag.CurrentStatus == 2 ? "selected" : null)">Status: Occupied</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">keyboard_arrow_down</span>
+                </div>
+                
+                <div class="relative">
+                    <select id="filterType" class="appearance-none flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 pr-10 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854] text-[#111418] dark:text-white text-sm font-medium outline-none">
+                        <option value="">Type: All</option>
+                        <option value="Apartment" selected="@(ViewBag.CurrentType == "Apartment" ? "selected" : null)">Type: Apartment</option>
+                        <option value="Single Family House" selected="@(ViewBag.CurrentType == "Single Family House" ? "selected" : null)">Type: Single Family House</option>
+                        <option value="Condo" selected="@(ViewBag.CurrentType == "Condo" ? "selected" : null)">Type: Condo</option>
+                        <option value="Townhouse" selected="@(ViewBag.CurrentType == "Townhouse" ? "selected" : null)">Type: Townhouse</option>
+                        <option value="Commercial" selected="@(ViewBag.CurrentType == "Commercial" ? "selected" : null)">Type: Commercial</option>
+                        <option value="Industrial" selected="@(ViewBag.CurrentType == "Industrial" ? "selected" : null)">Type: Industrial</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">keyboard_arrow_down</span>
+                </div>
+
+                <div class="relative">
+                    <select id="filterSort" class="appearance-none flex h-9 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] px-4 pr-10 hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors border border-transparent dark:border-[#3e4854] text-[#111418] dark:text-white text-sm font-medium outline-none">
+                        <option value="">Sort by: Default</option>
+                        <option value="date_desc" selected="@(ViewBag.CurrentSort == "date_desc" ? "selected" : null)">Sort by: Newest</option>
+                        <option value="date_asc" selected="@(ViewBag.CurrentSort == "date_asc" ? "selected" : null)">Sort by: Oldest</option>
+                        <option value="name_asc" selected="@(ViewBag.CurrentSort == "name_asc" ? "selected" : null)">Sort by: Name (A-Z)</option>
+                        <option value="name_desc" selected="@(ViewBag.CurrentSort == "name_desc" ? "selected" : null)">Sort by: Name (Z-A)</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[#111418] dark:text-white text-[20px] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">sort</span>
+                </div>
             </div>
         </div>
     </div>
@@ -72,21 +102,34 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            performSearch(searchInput.value);
+            performSearch();
         });
 
         searchInput.addEventListener('input', function (e) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                performSearch(e.target.value);
+                performSearch();
             }, 300);
         });
 
-        function performSearch(query) {
+        function performSearch() {
             const url = new URL(window.location.origin + '@Url.Action("Index", "Property")');
-            if (query) {
-                url.searchParams.set('search', query);
-            }
+            
+            const query = searchInput.value;
+            if (query) url.searchParams.set('search', query);
+            
+            const type = document.getElementById('filterType').value;
+            if (type) url.searchParams.set('type', type);
+
+            const status = document.getElementById('filterStatus').value;
+            if (status) url.searchParams.set('status', status);
+
+            const payment = document.getElementById('filterPayment').value;
+            if (payment) url.searchParams.set('payment', payment);
+
+            const sort = document.getElementById('filterSort').value;
+            if (sort) url.searchParams.set('sort', sort);
+
             url.searchParams.set('page', 1);
             window.history.pushState({}, '', url);
 
@@ -101,6 +144,12 @@
             })
             .catch(error => console.error('Error fetching properties:', error));
         }
+
+        // Add event listeners for filters
+        document.getElementById('filterType').addEventListener('change', performSearch);
+        document.getElementById('filterStatus').addEventListener('change', performSearch);
+        document.getElementById('filterPayment').addEventListener('change', performSearch);
+        document.getElementById('filterSort').addEventListener('change', performSearch);
 
         let currentOpenDropdown = null;
         window.toggleDropdown = function(event, id) {
@@ -135,7 +184,7 @@
                  });
                  const result = await response.json();
                  if (response.ok && result.code === 200) { 
-                     performSearch(document.querySelector('input[name="search"]').value); 
+                     performSearch(); 
                  } else {
                      alert('Failed to delete property: ' + (result.message || 'Unknown error'));
                  }

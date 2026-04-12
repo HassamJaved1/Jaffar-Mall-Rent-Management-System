@@ -1,4 +1,4 @@
-﻿using Jaffar_Mall_Rent_Management_System.Backend_Logics;
+using Jaffar_Mall_Rent_Management_System.Backend_Logics;
 using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Models.ViewModels;
 using Jaffar_Mall_Rent_Management_System.Repositories;
@@ -112,14 +112,14 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             return await _propertyRepository.GetPropertyByIdAsync(id);
         }
 
-        public async Task<PaginatedViewModel<Property>> GetAllPropertiesAsync(int page, int pageSize, string? searchTerm = null)
+        public async Task<PaginatedViewModel<Property>> GetAllPropertiesAsync(int page, int pageSize, string? searchTerm = null, string? type = null, int? status = null, string? sort = null, IEnumerable<long>? filterPropertyIds = null)
         {
             // Calculate skip
             var skip = (page - 1) * pageSize;
 
             // Run tasks in parallel for efficiency
-            var countTask = _propertyRepository.GetTotalPropertiesCountAsync(searchTerm);
-            var itemsTask = _propertyRepository.GetAllPropertiesAsync(skip, pageSize, searchTerm);
+            var countTask = _propertyRepository.GetTotalPropertiesCountAsync(searchTerm, type, status, filterPropertyIds);
+            var itemsTask = _propertyRepository.GetAllPropertiesAsync(skip, pageSize, searchTerm, type, status, sort, filterPropertyIds);
 
             await Task.WhenAll(countTask, itemsTask);
 
