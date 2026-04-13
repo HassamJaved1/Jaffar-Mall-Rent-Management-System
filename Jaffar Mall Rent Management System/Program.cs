@@ -65,6 +65,14 @@ builder.Services.AddScoped(provider =>
     return new MaintenanceRepository(connString!);
 });
 builder.Services.AddScoped<MaintenanceServices>();
+
+builder.Services.AddScoped(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new DocumentRepository(connString!);
+});
+builder.Services.AddScoped<DocumentServices>();
+
 builder.Services.AddScoped<DashboardServices>();
 
 // Automated rent reminder background service (runs every 24 hours)

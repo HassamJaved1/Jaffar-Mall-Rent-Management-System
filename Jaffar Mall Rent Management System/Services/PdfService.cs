@@ -10,7 +10,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
     {
         public byte[] GenerateLeaseContractPdf(string tenantName, string propertyName, decimal rentAmount, int months, DateTime startDate, DateTime endDate, int rentDueMonths, decimal securityDeposit, int securityDueDays, int incrementMonths = 0, decimal incrementPercentage = 0, string status = "Active")
         {
-            var document = Document.Create(container =>
+            var document = QuestPDF.Fluent.Document.Create(container =>
             {
                 container.Page(page =>
                 {
@@ -124,7 +124,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
         public byte[] GeneratePaymentVoucherPdf(RentPayment payment, string tenantName, string propertyName)
         {
-            var document = Document.Create(container =>
+            var document = QuestPDF.Fluent.Document.Create(container =>
             {
                 container.Page(page =>
                 {
@@ -203,7 +203,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
         public byte[] GenerateMaintenanceVoucherPdf(Maintenance maintenance, string propertyName)
         {
-            var document = Document.Create(container =>
+            var document = QuestPDF.Fluent.Document.Create(container =>
             {
                 container.Page(page =>
                 {

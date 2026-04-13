@@ -126,5 +126,18 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
             return new PaginatedViewModel<Tenant>(items, totalCount, page, pageSize);
         }
+
+        public async Task<BackendResponse<IEnumerable<Tenant>>> GetAllTenantsAsync()
+        {
+            try
+            {
+                var items = await _tenantRepository.GetAllTenantsAsync();
+                return BackendResponse<IEnumerable<Tenant>>.Success(items);
+            }
+            catch (Exception ex)
+            {
+                return BackendResponse<IEnumerable<Tenant>>.Failure("Error: " + ex.Message, 500);
+            }
+        }
     }
 }
