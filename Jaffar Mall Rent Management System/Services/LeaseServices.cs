@@ -153,7 +153,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             }
         }
 
-        public async Task<IEnumerable<LeaseListItemViewModel>> GetLeaseManagementListAsync()
+        public async Task<IEnumerable<LeaseListItemViewModel>> GetLeaseManagementListAsync(string? searchTerm = null)
         {
             var leases = await _leasesRepository.GetAllLeasesAsync();
             var list = new List<LeaseListItemViewModel>();
@@ -170,6 +170,16 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     PropertyName = property?.Name ?? "Unknown",
                     PropertyNumber = property?.PropertyNumber ?? "N/A"
                 });
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var normalizedSearch = searchTerm.Trim();
+                list = list.Where(item =>
+                        item.TenantName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                        item.PropertyName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                        item.PropertyNumber.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             return list;

@@ -70,9 +70,10 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                 return BackendResponse<bool>.Failure(result.Message, result.Code).ToActionResult();
             }
         }
-        public async Task<IActionResult> Manage()
+        public async Task<IActionResult> Manage([FromQuery] string? search = null)
         {
-            var list = await _leaseServices.GetLeaseManagementListAsync();
+            var list = await _leaseServices.GetLeaseManagementListAsync(search);
+            ViewBag.CurrentSearch = search;
             return View(list);
         }
 

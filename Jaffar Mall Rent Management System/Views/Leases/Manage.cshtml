@@ -25,6 +25,15 @@
 
 <div class="flex-1 overflow-y-auto p-4 sm:p-8">
     <div class="max-w-[1400px] mx-auto flex flex-col gap-4">
+        <form method="get" class="relative w-full lg:max-w-[480px]">
+            <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
+                <button type="submit" class="flex items-center justify-center pl-4 pr-2 outline-none">
+                    <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
+                </button>
+                <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search by tenant, property, or unit..." />
+            </div>
+        </form>
+
         @if (Model != null && Model.Any())
         {
             <div class="overflow-x-auto rounded-xl border border-[#dce0e5] dark:border-[#293038] bg-white dark:bg-[#1a1d23]">
