@@ -7,6 +7,8 @@
         public string Description { get; set; } = string.Empty;
         public string Phone_No { get; set; } = string.Empty;
 
+        public string? Email { get; set; }
+
         // New fields added based on your UI
         public string? CardNumber { get; set; }
         public string? Address { get; set; }

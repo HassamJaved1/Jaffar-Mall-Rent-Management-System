@@ -1,3 +1,4 @@
+using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Backend_Logics;
 using Jaffar_Mall_Rent_Management_System.Repositories;
 using Jaffar_Mall_Rent_Management_System.Services;
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
 
 // Inject connection string from appsettings.json
@@ -28,11 +30,19 @@ builder.Services.AddScoped(provider =>
     return new TenantRepository(connString!);
 });
 
+builder.Services.AddScoped(provider =>
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new LeasesRepository(connString!);
+});
+
 // Inject the service
 builder.Services.AddScoped<UserAuthService>();
 builder.Services.AddScoped<PropertyServices>();
 builder.Services.AddScoped<TenantServices>();
 builder.Services.AddScoped<LeaseServices>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddHostedService<LeaseExpiryReminderService>();
 
 var app = builder.Build();
 
