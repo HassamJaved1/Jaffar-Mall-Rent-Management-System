@@ -104,6 +104,8 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 
                 var rentStatusList = new List<RentStatusViewModel>();
 
+                var today = DateTime.Today;
+
                 foreach (var lease in activeLeases)
                 {
                     // 2. Get details
@@ -120,7 +122,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                     int expectedIntervals = 1;
                     var candidateDate = startDate.AddMonths(rentDueMonths);
-                    while (candidateDate <= DateTime.Now)
+                    while (candidateDate <= today)
                     {
                          if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
                          expectedIntervals++;
@@ -139,17 +141,26 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     // 5. Balance
                     decimal balance = totalExpected - totalPaid;
 
-                    string status = "Paid";
-                    if (balance > 0) status = "Pending";
-                    if (balance < 0) status = "Overpaid"; // Optional
+                    int intervalsPaid = intervalRent > 0 ? (int)(totalPaid / intervalRent) : 0;
+                    var earliestUnpaidDueDate = startDate.AddMonths(rentDueMonths * (intervalsPaid + 1));
 
                     // Calculation for Next Collection Deadline
                     var nextRentDueDate = startDate.AddMonths(rentDueMonths);
-                    while (nextRentDueDate < DateTime.Now)
+                    while (nextRentDueDate < today)
                     {
                         var nextStep = nextRentDueDate.AddMonths(rentDueMonths);
                         if (lease.EndDate.HasValue && nextStep > lease.EndDate.Value) break;
                         nextRentDueDate = nextStep;
+                    }
+
+                    string status = "Paid";
+                    if (balance < 0)
+                    {
+                        status = "Overpaid"; // Optional
+                    }
+                    else if (balance > 0)
+                    {
+                        status = earliestUnpaidDueDate.Date < today ? "Overdue" : "Pending";
                     }
 
                     rentStatusList.Add(new RentStatusViewModel
