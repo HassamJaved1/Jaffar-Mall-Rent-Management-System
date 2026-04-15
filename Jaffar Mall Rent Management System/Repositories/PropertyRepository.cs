@@ -23,11 +23,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SELECT COUNT(DISTINCT p.id) 
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
                 WHERE 1=1";
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm)";
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm OR t.name ILIKE @SearchTerm)";
                 }
 
                 if (!string.IsNullOrWhiteSpace(type))
@@ -197,7 +198,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm)";
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm OR t.name ILIKE @SearchTerm)";
                 }
 
                 if (!string.IsNullOrWhiteSpace(type))

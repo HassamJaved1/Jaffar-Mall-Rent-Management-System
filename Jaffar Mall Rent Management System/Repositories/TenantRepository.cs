@@ -26,7 +26,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm)";
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm OR email ILIKE @SearchTerm OR card_number ILIKE @SearchTerm)";
                 }
 
                 int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
@@ -119,7 +119,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm)";
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm OR email ILIKE @SearchTerm OR card_number ILIKE @SearchTerm)";
                 }
 
                 string sortClause = "ORDER BY id";
