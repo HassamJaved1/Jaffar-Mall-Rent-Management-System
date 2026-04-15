@@ -110,8 +110,9 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                             lease.RentAmount, earliestUnpaidDate, managerEmail);
                     }
                     // ── Overdue / Pending ───────────────────────────────
-                    // Send an email every 3 days when it is pending/overdue to act as a reminder.
-                    else if (daysUntilDue < 0 && Math.Abs(daysUntilDue) % 3 == 0)
+                    // Send immediately when the rent first becomes overdue (-1 day),
+                    // then continue every 3 days as a reminder.
+                    else if (daysUntilDue < 0 && (daysUntilDue == -1 || Math.Abs(daysUntilDue) % 3 == 0))
                     {
                         _logger.LogInformation("[RentReminder] Sending ongoing pending/overdue reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
