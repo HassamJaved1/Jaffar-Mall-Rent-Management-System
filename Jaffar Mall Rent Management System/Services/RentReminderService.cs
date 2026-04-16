@@ -14,7 +14,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly ILogger<RentReminderService> _logger;
 
         // How often to check (every 24 hours)
-        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24);
+        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
 
         public RentReminderService(IServiceScopeFactory scopeFactory, ILogger<RentReminderService> logger)
         {
@@ -99,7 +99,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         _logger.LogInformation("[RentReminder] Sending 7-day reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentReminderEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, earliestUnpaidDate, managerEmail);
+                            intervalRent, earliestUnpaidDate, managerEmail);
                     }
                     // ── Due today not paid (Becomes Pending) ───────────────
                     else if (daysUntilDue == 0)

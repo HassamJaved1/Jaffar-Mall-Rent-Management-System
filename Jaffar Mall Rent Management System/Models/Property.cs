@@ -32,6 +32,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models
         public int RentDueMonths { get; set; } = 1;
 
         public decimal TotalPaid { get; set; }
+        public DateTime? LeaseStartDate { get; set; }
 
         public byte Status { get; set; }
 
