@@ -613,5 +613,71 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             }
             catch (Exception ex) { Console.WriteLine($"Error sending overdue notice: {ex.Message}"); }
         }
+        // ─── Rent Increase Notification ────────────────────────────────────────────
+        public async Task SendRentIncreaseNotificationAsync(string toEmail, string tenantName, string propertyName, decimal oldRent, decimal newRent, decimal percentage, DateTime effectiveDate)
+        {
+            try
+            {
+                var smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+                var smtpPort   = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUser   = _configuration["EmailSettings:SmtpUser"] ?? "your_email@gmail.com";
+                var smtpPass   = _configuration["EmailSettings:SmtpPass"] ?? "your_password";
+
+                var fromAddress = new MailAddress(smtpUser, "Jaffar Mall Management");
+
+                string subject = $"Rent Increment Notification | {propertyName}";
+                string body = $@"
+                <html>
+                <body style='font-family:""Segoe UI"",Tahoma,Geneva,Verdana,sans-serif;color:#1e293b;line-height:1.8;background-color:#f8fafc;padding:40px 0;'>
+                    <div style='max-width:650px;margin:0 auto;background:#ffffff;padding:40px;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 4px 6px -1px rgb(0 0 0/0.1);'>
+                        <div style='text-align:center;margin-bottom:30px;'>
+                            <div style='margin-bottom:10px;'>
+                                <span style='color:#1e3a8a;font-size:28px;font-weight:bold;'>JAFFAR</span>
+                                <span style='color:#eab308;font-size:28px;font-weight:bold;'>MALL</span>
+                            </div>
+                            <h2 style='color:#1e3a8a;margin:0;font-size:18px;'>RENT INCREMENT APPLIED</h2>
+                            <div style='height:3px;width:60px;background:#eab308;margin:15px auto;'></div>
+                        </div>
+                        <p>Dear <strong>{tenantName}</strong>,</p>
+                        <p>This is to formally notify you that, as per your lease agreement, a scheduled rent increment has been applied to the property <strong>{propertyName}</strong> effective from <strong>{effectiveDate:MMMM dd, yyyy}</strong>.</p>
+                        
+                        <div style='display:flex; justify-content:space-between; background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0; margin:25px 0;'>
+                            <div style='text-align:center; flex:1;'>
+                                <p style='margin:0;font-size:12px;color:#64748b;text-transform:uppercase;'>Previous Rent</p>
+                                <p style='margin:5px 0 0;font-size:18px;font-weight:600;color:#64748b;'>PKR {oldRent:N0}</p>
+                            </div>
+                            <div style='text-align:center; flex:1; border-left:1px solid #e2e8f0; border-right:1px solid #e2e8f0;'>
+                                <p style='margin:0;font-size:12px;color:#059669;text-transform:uppercase;'>Increase ({percentage}%)</p>
+                                <p style='margin:5px 0 0;font-size:18px;font-weight:600;color:#059669;'>+PKR {(newRent - oldRent):N0}</p>
+                            </div>
+                            <div style='text-align:center; flex:1;'>
+                                <p style='margin:0;font-size:12px;color:#1e3a8a;text-transform:uppercase;'>New Monthly Rent</p>
+                                <p style='margin:5px 0 0;font-size:18px;font-weight:bold;color:#1e3a8a;'>PKR {newRent:N0}</p>
+                            </div>
+                        </div>
+
+                        <p>This updated rent amount will be reflected in your next collection period. We appreciate your continued cooperation and tenancy at Jaffar Mall.</p>
+                        
+                        <div style='margin-top:40px;padding-top:20px;border-top:1px solid #e2e8f0;'>
+                            <p style='margin:0;font-weight:600;color:#1e3a8a;'>Manager</p>
+                            <p style='margin:4px 0;font-weight:600;color:#1e3a8a;'>Jaffar Mall Management Office</p>
+                            <p style='margin:4px 0;color:#eab308;font-size:14px;'>Main GT Road, Jhelum, Punjab, Pakistan</p>
+                            <p style='margin:4px 0;color:#eab308;font-size:14px;'>Contact: +92 310 3709000</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+
+                using var smtp = new SmtpClient { Host = smtpServer, Port = smtpPort, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(smtpUser, smtpPass) };
+
+                if (!string.IsNullOrEmpty(toEmail) && smtpUser != "your_email@gmail.com")
+                {
+                    using var message = new MailMessage(fromAddress, new MailAddress(toEmail, tenantName)) { Subject = subject, Body = body, IsBodyHtml = true };
+                    AddBccRecipients(message);
+                    await smtp.SendMailAsync(message);
+                }
+            }
+            catch (Exception ex) { Console.WriteLine($"Error sending rent increment notification: {ex.Message}"); }
+        }
     }
 }

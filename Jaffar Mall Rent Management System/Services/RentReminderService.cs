@@ -119,6 +119,44 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                             tenant.Email, tenant.Name, property.Name,
                             lease.RentAmount, earliestUnpaidDate, managerEmail);
                     }
+
+                    // ── Automated Rent Increment ───────────────────────
+                    if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                    {
+                        var baseDate = lease.LastIncrementDate ?? lease.StartDate ?? lease.CreatedAt;
+                        var nextIncrementDue = baseDate.AddMonths(lease.IncrementMonths);
+
+                        if (today >= nextIncrementDue)
+                        {
+                            decimal oldRent = lease.RentAmount;
+                            decimal increaseAmount = oldRent * (lease.IncrementPercentage / 100);
+                            decimal newRent = oldRent + increaseAmount;
+
+                            _logger.LogInformation("[RentIncrement] Incrementing rent for Lease {Id} ({Tenant} - {Property}). From {Old} to {New} (+{Percent}%)", 
+                                lease.Id, tenant.Name, property.Name, oldRent.ToString("N2"), newRent.ToString("N2"), lease.IncrementPercentage);
+
+                            lease.RentAmount = newRent;
+                            lease.LastIncrementDate = today; // Or nextIncrementDue
+                            lease.UpdatedAt = DateTime.UtcNow;
+
+                            bool success = await leasesRepo.UpdateLeaseAsync(lease);
+                            if (success)
+                            {
+                                // Optional: Notify tenant/manager about rent increase
+                                try {
+                                    await emailService.SendRentIncreaseNotificationAsync(
+                                        tenant.Email, tenant.Name, property.Name, 
+                                        oldRent, newRent, lease.IncrementPercentage, today);
+                                } catch (Exception ex) {
+                                    _logger.LogWarning("[RentIncrement] Failed to send notification email: {Msg}", ex.Message);
+                                }
+                            }
+                            else
+                            {
+                                _logger.LogError("[RentIncrement] Failed to update Lease {Id} with new rent.", lease.Id);
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

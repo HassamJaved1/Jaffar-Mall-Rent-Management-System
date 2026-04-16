@@ -26,6 +26,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models
 
         public int IncrementMonths { get; set; } = 0; // After how many months
         public decimal IncrementPercentage { get; set; } = 0; // % to increase
+        public DateTime? LastIncrementDate { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
