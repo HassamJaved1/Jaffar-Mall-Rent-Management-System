@@ -4,6 +4,9 @@ using Jaffar_Mall_Rent_Management_System.Services;
 using Jaffar_Mall_Rent_Management_System.Utilities;
 using System.Globalization;
 using QuestPDF.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 // Set QuestPDF License
 QuestPDF.Settings.License = LicenseType.Community;
@@ -16,7 +19,23 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login/Index";
+        options.AccessDeniedPath = "/Login/Index";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+    });
 
 
 // Inject connection string from appsettings.json
@@ -90,6 +109,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
