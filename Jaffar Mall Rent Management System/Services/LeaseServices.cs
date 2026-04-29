@@ -9,14 +9,12 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly PropertyRepository _propertyRepository;
         private readonly TenantRepository _tenantRepository;
         private readonly LeasesRepository _leasesRepository;
-        private readonly RentRepository _rentRepository;
 
-        public LeaseServices(PropertyRepository propertyRepository, TenantRepository tenantRepository, LeasesRepository leasesRepository, RentRepository rentRepository) 
+        public LeaseServices(PropertyRepository propertyRepository, TenantRepository tenantRepository, LeasesRepository leasesRepository) 
         {
            _propertyRepository = propertyRepository;
             _tenantRepository = tenantRepository;
             _leasesRepository = leasesRepository;
-            _rentRepository = rentRepository;
         }
 
         public async Task<BackendResponse<LeasesDropdown>> PopulateDropdowns()
@@ -58,31 +56,11 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 var result = await _leasesRepository.AddLeaseAsync(lease);
                 if (result)
                 {
-                    // Automatic security deposit payment insertion
+                    // Keep security collection record in lease itself and avoid creating rent payment rows.
                     if (lease.SecurityDeposit.HasValue && lease.SecurityDeposit.Value > 0)
                     {
-                        try
-                        {
-                            await _rentRepository.CreateRentPaymentsTableAsync();
-                            var securityPayment = new RentPayment
-                            {
-                                LeaseId = lease.Id,
-                                Amount = lease.SecurityDeposit.Value,
-                                PaymentDate = DateTime.UtcNow,
-                                PaymentMethod = "Security",
-                                PaymentType = "Security Fee",
-                                Remarks = "Initial security deposit automatically collected at lease assignment."
-                            };
-                            await _rentRepository.AddRentPaymentAsync(securityPayment);
-                            
-                            // Immediately mark the security deposit as paid in the lease table
-                            lease.PaidSecurityDeposit = lease.SecurityDeposit.Value;
-                            await _leasesRepository.UpdateLeaseAsync(lease);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error inserting automatic security deposit: {ex.Message}");
-                        }
+                        lease.PaidSecurityDeposit = lease.SecurityDeposit.Value;
+                        await _leasesRepository.UpdateLeaseAsync(lease);
                     }
 
                     return BackendResponse<bool>.Success(true, "Lease created successfully.");

@@ -137,7 +137,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                const string sql = @"SELECT COALESCE(SUM(amount), 0) FROM rent_payments WHERE lease_id = @LeaseId";
+                const string sql = @"SELECT COALESCE(SUM(amount), 0) FROM rent_payments WHERE lease_id = @LeaseId AND payment_type = 'Rent'";
 
                 return await connection.ExecuteScalarAsync<decimal>(sql, new { LeaseId = leaseId });
             }
