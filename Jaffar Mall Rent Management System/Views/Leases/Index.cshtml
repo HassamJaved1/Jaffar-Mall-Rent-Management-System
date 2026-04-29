@@ -305,7 +305,6 @@
 
             function updateSummary(months, rent) {
                 const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
-                const securityDeposit = parseFloat(document.getElementById('SecurityDeposit').value) || 0;
                 const rentDueError = document.getElementById('RentDueError');
 
                 // Validation
@@ -325,7 +324,7 @@
                 const formatter = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 });
                 
                 const regularCollection = rent * rentDueMonths;
-                const firstCollection = regularCollection - securityDeposit;
+                const firstCollection = regularCollection;
 
                 if (elRegularCollectionDisplay) elRegularCollectionDisplay.textContent = formatter.format(regularCollection);
                 if (elFirstCollectionDisplay) elFirstCollectionDisplay.textContent = formatter.format(firstCollection);
