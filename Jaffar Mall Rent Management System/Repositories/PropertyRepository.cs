@@ -190,7 +190,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     pl.rent_amount AS ""RentAmount"",
                     pl.months AS ""LeaseMonths"",
                     pl.rent_due_months AS ""RentDueMonths"",
-                    pl.start_date AS ""LeaseStartDate"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
                     COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
@@ -279,7 +279,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     pl.rent_amount AS ""RentAmount"",
                     pl.months AS ""LeaseMonths"",
                     pl.rent_due_months AS ""RentDueMonths"",
-                    pl.start_date AS ""LeaseStartDate"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
                     COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
@@ -324,7 +324,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     pl.rent_amount AS ""RentAmount"",
                     pl.months AS ""LeaseMonths"",
                     pl.rent_due_months AS ""RentDueMonths"",
-                    pl.start_date AS ""LeaseStartDate"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
                     COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id), 0) AS ""TotalPaid""
                 FROM properties p
                 LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
