@@ -11,13 +11,15 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         private readonly LeaseServices _leaseServices;
         private readonly PropertyServices _propertyServices;
         private readonly RentServices _rentServices;
+        private readonly IWebHostEnvironment _environment;
 
-        public TenantController(TenantServices tenantServices, LeaseServices leaseServices, PropertyServices propertyServices, RentServices rentServices)
+        public TenantController(TenantServices tenantServices, LeaseServices leaseServices, PropertyServices propertyServices, RentServices rentServices, IWebHostEnvironment environment)
         {
             _tenantServices = tenantServices;
             _leaseServices = leaseServices;
             _propertyServices = propertyServices;
             _rentServices = rentServices;
+            _environment = environment;
         }
 
         public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] string? search = null, [FromQuery] string? sort = null)
@@ -46,8 +48,40 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddTenant([FromBody] Tenant tenant)
+        public async Task<IActionResult> AddTenant([FromForm] Tenant tenant, IFormFile? idCardImage)
         {
+            if (idCardImage != null)
+            {
+                try
+                {
+                    string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "id_cards");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + idCardImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await idCardImage.CopyToAsync(fileStream);
+                    }
+
+                    tenant.IdCardImageUrl = "/uploads/id_cards/" + uniqueFileName;
+                }
+                catch (Exception ex)
+                {
+                    return BackendResponse<bool>.Failure("Error saving ID Card image: " + ex.Message, 500)
+                                                .ToActionResult();
+                }
+            }
+            else
+            {
+                 return BackendResponse<bool>.Failure("ID Card image is mandatory.", 400)
+                                                .ToActionResult();
+            }
+
             var response = await _tenantServices.AddTenantAsync(tenant);
 
             if (response.Data)
@@ -73,8 +107,45 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditTenant([FromBody] Tenant tenant)
+        public async Task<IActionResult> EditTenant([FromForm] Tenant tenant, IFormFile? idCardImage)
         {
+            var existingTenant = await _tenantServices.GetTenantByIdAsync(tenant.Id);
+            if (existingTenant == null)
+            {
+                return BackendResponse<bool>.Failure("Tenant not found.", 404).ToActionResult();
+            }
+
+            if (idCardImage != null)
+            {
+                try
+                {
+                    string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "id_cards");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + idCardImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await idCardImage.CopyToAsync(fileStream);
+                    }
+
+                    tenant.IdCardImageUrl = "/uploads/id_cards/" + uniqueFileName;
+                }
+                catch (Exception ex)
+                {
+                    return BackendResponse<bool>.Failure("Error saving ID Card image: " + ex.Message, 500).ToActionResult();
+                }
+            }
+            else
+            {
+                // Preserve existing image if no new one is uploaded
+                tenant.IdCardImageUrl = existingTenant.IdCardImageUrl;
+            }
+
             var response = await _tenantServices.UpdateTenantAsync(tenant);
             if (response.Data)
             {

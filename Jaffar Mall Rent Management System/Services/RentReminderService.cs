@@ -91,25 +91,40 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     if (lease.EndDate.HasValue && earliestUnpaidDate > lease.EndDate.Value) 
                         continue; // Fully paid up to lease end
 
-                    int daysUntilDue = (earliestUnpaidDate - today).Days;
+                    // Use .Date to ignore time components for logic comparison
+                    DateTime todayDate = today.Date;
+                    DateTime unpaidDate = earliestUnpaidDate.Date;
+                    int daysUntilDue = (unpaidDate - todayDate).Days;
 
-                    // ── 7-day advance reminder ──────────────────────────
-                    if (daysUntilDue == 7)
+                    // ── Period Opening Reminder (First 5 days of collection period) ────────
+                    var periodStartDate = unpaidDate.AddMonths(-rentDueMonths).Date;
+                    int daysSincePeriodStarted = (todayDate - periodStartDate).Days;
+
+                    // 1. Initial Period Reminder (Window: Day 0 to Day 4 of the period)
+                    if (daysSincePeriodStarted >= 0 && daysSincePeriodStarted < 5)
+                    {
+                        _logger.LogInformation("[RentReminder] Sending initial period reminder (Day {Day}) → {Tenant} ({Property})", daysSincePeriodStarted, tenant.Name, property.Name);
+                        await emailService.SendPendingRentReminderEmailAsync(
+                            tenant.Email, tenant.Name, property.Name,
+                            intervalRent, unpaidDate, managerEmail);
+                    }
+                    // 2. 7-day advance reminder
+                    else if (daysUntilDue == 7)
                     {
                         _logger.LogInformation("[RentReminder] Sending 7-day reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentReminderEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            intervalRent, earliestUnpaidDate, managerEmail);
+                            intervalRent, unpaidDate, managerEmail);
                     }
-                    // ── Due today not paid (Becomes Pending) ───────────────
+                    // 3. Due today not paid (Becomes Pending/Overdue)
                     else if (daysUntilDue == 0)
                     {
                         _logger.LogInformation("[RentReminder] Sending overdue notice → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, earliestUnpaidDate, managerEmail);
+                            lease.RentAmount, unpaidDate, managerEmail);
                     }
-                    // ── Overdue / Pending ───────────────────────────────
+                    // 4. Overdue / Persistent Reminders
                     // Send immediately when the rent first becomes overdue (-1 day),
                     // then continue every 3 days as a reminder.
                     else if (daysUntilDue < 0 && (daysUntilDue == -1 || Math.Abs(daysUntilDue) % 3 == 0))
@@ -117,7 +132,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         _logger.LogInformation("[RentReminder] Sending ongoing pending/overdue reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, earliestUnpaidDate, managerEmail);
+                            lease.RentAmount, unpaidDate, managerEmail);
                     }
 
                     // ── Automated Rent Increment ───────────────────────

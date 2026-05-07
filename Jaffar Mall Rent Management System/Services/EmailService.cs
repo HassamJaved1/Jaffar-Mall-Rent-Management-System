@@ -460,8 +460,62 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 message.Bcc.Add(new MailAddress(ownerEmail, "Owner Copy"));
             }
         }
+        // ─── Pending Rent Reminder (Initial window) ──────────────────────────────
+        public async Task SendPendingRentReminderEmailAsync(string toEmail, string tenantName, string propertyName, decimal rentAmount, DateTime dueDate, string managerEmail)
+        {
+            try
+            {
+                var smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+                var smtpPort   = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUser   = _configuration["EmailSettings:SmtpUser"] ?? "your_email@gmail.com";
+                var smtpPass   = _configuration["EmailSettings:SmtpPass"] ?? "your_password";
 
-        // ─── Rent Due Reminder (7-day advance) ─────────────────────────────────────
+                var fromAddress = new MailAddress(smtpUser, "Jaffar Mall Management");
+
+                string subject = $"Pending Rent Payment Request | {propertyName}";
+                string body = $@"
+                <html>
+                <body style='font-family:""Segoe UI"",Tahoma,Geneva,Verdana,sans-serif;color:#1e293b;line-height:1.8;background-color:#f8fafc;padding:40px 0;'>
+                    <div style='max-width:650px;margin:0 auto;background:#ffffff;padding:40px;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 4px 6px -1px rgb(0 0 0/0.1);'>
+                        <div style='text-align:center;margin-bottom:30px;'>
+                            <div style='margin-bottom:10px;'>
+                                <span style='color:#1e3a8a;font-size:28px;font-weight:bold;'>JAFFAR</span>
+                                <span style='color:#eab308;font-size:28px;font-weight:bold;'>MALL</span>
+                            </div>
+                            <h2 style='color:#1e3a8a;margin:0;font-size:18px;'>PENDING RENT PAYMENT</h2>
+                            <div style='height:3px;width:60px;background:#eab308;margin:15px auto;'></div>
+                        </div>
+                        <p>Dear <strong>{tenantName}</strong>,</p>
+                        <p>Please pay your pending rent for <strong>{propertyName}</strong>. This payment is for the current collection period ending on <strong>{dueDate:MMMM dd, yyyy}</strong>.</p>
+                        <div style='background:#f1f5f9;padding:20px;border-radius:8px;border-left:4px solid #1e3a8a;margin:25px 0;text-align:center;'>
+                            <p style='margin:0;font-size:14px;color:#64748b;'>Pending Amount</p>
+                            <p style='margin:8px 0 0;font-size:28px;font-weight:bold;color:#1e3a8a;'>PKR {rentAmount:N2}</p>
+                        </div>
+                        <p>We kindly request you to clear the pending amount at your earliest convenience. If you have already submitted your payment, please disregard this message.</p>
+                        <p>For any queries, please contact our management office.</p>
+                        <div style='margin-top:40px;padding-top:20px;border-top:1px solid #e2e8f0;'>
+                            <p style='margin:0;font-weight:600;color:#1e3a8a;'>Manager</p>
+                            <p style='margin:4px 0;font-weight:600;color:#1e3a8a;'>Jaffar Mall Management Office</p>
+                            <p style='margin:4px 0;color:#eab308;font-size:14px;'>Main GT Road, Jhelum, Punjab, Pakistan</p>
+                            <p style='margin:4px 0;color:#eab308;font-size:14px;'>Contact: +92 310 3709000</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+
+                using var smtp = new SmtpClient { Host = smtpServer, Port = smtpPort, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(smtpUser, smtpPass) };
+
+                if (!string.IsNullOrEmpty(toEmail) && smtpUser != "your_email@gmail.com")
+                {
+                    using var tenantMsg = new MailMessage(fromAddress, new MailAddress(toEmail, tenantName)) { Subject = subject, Body = body, IsBodyHtml = true };
+                    AddBccRecipients(tenantMsg);
+                    await smtp.SendMailAsync(tenantMsg);
+                    Console.WriteLine($"[PENDING REMINDER SENT] Tenant: {toEmail}");
+                }
+            }
+            catch (Exception ex) { Console.WriteLine($"Error sending pending rent reminder: {ex.Message}"); }
+        }
+
         public async Task SendRentReminderEmailAsync(string toEmail, string tenantName, string propertyName, decimal rentAmount, DateTime dueDate, string managerEmail)
         {
             try

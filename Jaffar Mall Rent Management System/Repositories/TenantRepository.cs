@@ -54,13 +54,14 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 try {
                     await connection.ExecuteAsync("ALTER TABLE tenants ADD COLUMN IF NOT EXISTS email VARCHAR(255);");
+                    await connection.ExecuteAsync("ALTER TABLE tenants ADD COLUMN IF NOT EXISTS id_card_image_url VARCHAR(500);");
                 } catch { }
 
                 const string sql = @"
                 INSERT INTO tenants
-                    (name, description, phone_no, email, card_number, address, city, country, created_at, updated_at)
+                    (name, description, phone_no, email, card_number, address, city, country, id_card_image_url, created_at, updated_at)
                 VALUES
-                    (@Name, @Description, @Phone_No, @Email, @CardNumber, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
+                    (@Name, @Description, @Phone_No, @Email, @CardNumber, @Address, @City, @Country, @IdCardImageUrl, @CreatedAt, @UpdatedAt)
                 RETURNING id";
 
                 var parameters = new
@@ -73,6 +74,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Address = tenant.Address,
                     City = tenant.City,
                     Country = tenant.Country,
+                    IdCardImageUrl = tenant.IdCardImageUrl,
                     CreatedAt = tenant.CreatedAt,
                     UpdatedAt = tenant.UpdatedAt
                 };
@@ -112,6 +114,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     address AS ""Address"",
                     city AS ""City"",
                     country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -164,6 +167,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     address AS ""Address"",
                     city AS ""City"",
                     country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -199,6 +203,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     address AS ""Address"",
                     city AS ""City"",
                     country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -238,6 +243,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     address = @Address,
                     city = @City,
                     country = @Country,
+                    id_card_image_url = @IdCardImageUrl,
                     updated_at = @UpdatedAt
                 WHERE id = @Id";
 
@@ -252,6 +258,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Address = tenant.Address,
                     City = tenant.City,
                     Country = tenant.Country,
+                    IdCardImageUrl = tenant.IdCardImageUrl,
                     UpdatedAt = tenant.UpdatedAt
                 };
 

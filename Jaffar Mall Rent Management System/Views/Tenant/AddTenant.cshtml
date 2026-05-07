@@ -47,6 +47,23 @@
                             <span class="text-slate-700 dark:text-white text-sm font-medium">Description / Notes</span>
                             <textarea id="Description" class="w-full rounded-lg border border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-[#111418] text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" placeholder="Enter any additional details..." rows="4"></textarea>
                         </label>
+                        <label class="flex flex-col gap-1.5 w-full">
+                            <span class="text-slate-700 dark:text-white text-sm font-medium">ID Card Picture <span class="text-red-500">*</span></span>
+                            <div class="flex items-center justify-center w-full">
+                                <label for="IdCardImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:hover:bg-bray-800 dark:bg-[#111418] hover:bg-slate-100 dark:border-border-dark dark:hover:border-slate-500 dark:hover:bg-surface-dark transition-all">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <span class="material-symbols-outlined text-slate-500 dark:text-text-secondary mb-2">cloud_upload</span>
+                                        <p class="mb-2 text-sm text-slate-500 dark:text-text-secondary"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                        <p class="text-xs text-slate-500 dark:text-text-secondary">PNG, JPG or JPEG (MAX. 5MB)</p>
+                                    </div>
+                                    <input id="IdCardImage" type="file" class="hidden" accept="image/*" />
+                                </label>
+                            </div>
+                            <div id="imagePreview" class="hidden mt-3">
+                                <p class="text-xs text-slate-500 mb-1">Preview:</p>
+                                <img id="previewImg" src="#" alt="ID Card Preview" class="h-40 rounded-lg border border-slate-200 dark:border-border-dark object-contain" />
+                            </div>
+                        </label>
                     </div>
                 </div>
 
@@ -78,27 +95,53 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const btnSave = document.getElementById('btnSaveTenant');
+            const fileInput = document.getElementById('IdCardImage');
+            const previewContainer = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    previewContainer.classList.add('hidden');
+                }
+            });
 
             btnSave.addEventListener('click', async (e) => {
                 e.preventDefault();
 
-                // 1. Map UI fields to your C# Tenant Model properties
-                const tenantData = {
-                    Name: document.getElementById('Name').value,
-                    Description: document.getElementById('Description').value,
-                    Phone_No: document.getElementById('Phone_No').value,
-                    Email: document.getElementById('Email').value,
-                    CardNumber: document.getElementById('CardNumber').value,
-                    Address: document.getElementById('Address').value,
-                    City: document.getElementById('City').value,
-                    Country: document.getElementById('Country').value
-                };
+                // 1. Get Form Data
+                const name = document.getElementById('Name').value;
+                const phone = document.getElementById('Phone_No').value;
+                const idCardImage = fileInput.files[0];
 
                 // Simple Validation
-                if (!tenantData.Name || !tenantData.Phone_No) {
+                if (!name || !phone) {
                     alert("Name and Phone Number are required.");
                     return;
                 }
+
+                if (!idCardImage) {
+                    alert("ID Card Picture is mandatory.");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('Name', name);
+                formData.append('Description', document.getElementById('Description').value);
+                formData.append('Phone_No', phone);
+                formData.append('Email', document.getElementById('Email').value);
+                formData.append('CardNumber', document.getElementById('CardNumber').value);
+                formData.append('Address', document.getElementById('Address').value);
+                formData.append('City', document.getElementById('City').value);
+                formData.append('Country', document.getElementById('Country').value);
+                formData.append('idCardImage', idCardImage);
 
                 // UI Feedback: Loading State
                 const originalContent = btnSave.innerHTML;
@@ -110,10 +153,7 @@
                     // 2. Fetch API Request
                     const response = await fetch('/Tenant/AddTenant', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(tenantData)
+                        body: formData
                     });
 
                     // Parse the JSON body from the response
@@ -127,6 +167,8 @@
                         alert(result.message);
                         // Reset all inputs/textareas
                         document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                        fileInput.value = '';
+                        previewContainer.classList.add('hidden');
                     } else {
                         alert("Failed: " + (result.message || "Unknown error occurred"));
                     }

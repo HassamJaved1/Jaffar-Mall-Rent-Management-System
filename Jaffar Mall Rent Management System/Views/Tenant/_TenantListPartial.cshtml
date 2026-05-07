@@ -9,9 +9,15 @@
         {
             <!-- Tenant Item -->
             <div class="group flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl bg-white dark:bg-[#1a1d23] border border-[#dce0e5] dark:border-[#293038] shadow-sm hover:shadow-md hover:border-primary/30 transition-all dark:hover:bg-[#20242b]">
-                 <!-- Avatar Placeholder -->
-                 <div class="size-16 shrink-0 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 font-bold text-xl uppercase">
-                     @(string.IsNullOrEmpty(tenant.Name) ? "?" : tenant.Name.Substring(0, 1))
+                 <div class="size-16 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 font-bold text-xl uppercase overflow-hidden border border-slate-200 dark:border-border-dark">
+                     @if (!string.IsNullOrEmpty(tenant.IdCardImageUrl))
+                     {
+                         <img src="@tenant.IdCardImageUrl" alt="ID Card" class="w-full h-full object-cover" />
+                     }
+                     else
+                     {
+                         @(string.IsNullOrEmpty(tenant.Name) ? "?" : tenant.Name.Substring(0, 1))
+                     }
                  </div>
                 <!-- Details -->
                 <div class="flex-1 min-w-0 flex flex-col gap-1 pr-4">
