@@ -167,6 +167,7 @@
                                 <div class="relative">
                                     <input id="IncrementMonths" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="@(ViewBag.Lease?.IncrementMonths ?? 0)" min="0" />
                                 </div>
+                                <span id="IncrementMonthsError" class="text-[10px] text-red-500 font-bold hidden">Increment interval cannot exceed duration!</span>
                                 <span class="text-[10px] text-gray-500">How many months until next increase?</span>
                             </label>
                             <label class="flex flex-col flex-1 gap-2 group">
@@ -308,13 +309,24 @@
                 const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
                 const rentDueError = document.getElementById('RentDueError');
 
-                // Validation
+                // Validation for Rent Due
                 if (rentDueMonths > months && months > 0) {
                     document.getElementById('RentDueMonths').classList.add('border-red-500', 'text-red-500');
                     if (rentDueError) rentDueError.classList.remove('hidden');
                 } else {
                     document.getElementById('RentDueMonths').classList.remove('border-red-500', 'text-red-500');
                     if (rentDueError) rentDueError.classList.add('hidden');
+                }
+
+                // Validation for Increment Months
+                const incrementMonths = parseInt(document.getElementById('IncrementMonths').value) || 0;
+                const incrementError = document.getElementById('IncrementMonthsError');
+                if (incrementMonths > months && months > 0) {
+                    document.getElementById('IncrementMonths').classList.add('border-red-500', 'text-red-500');
+                    if (incrementError) incrementError.classList.remove('hidden');
+                } else {
+                    document.getElementById('IncrementMonths').classList.remove('border-red-500', 'text-red-500');
+                    if (incrementError) incrementError.classList.add('hidden');
                 }
 
                 elTermDisplay.textContent = months + (months === 1 ? " Month" : " Months");
@@ -349,6 +361,11 @@
             if (elRentDueMonths) {
                 elRentDueMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
             }
+            
+            const elIncrementMonths = document.getElementById('IncrementMonths');
+            if (elIncrementMonths) {
+                elIncrementMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
 
             btnCreate.addEventListener('click', async () => {
                 const tenantId = document.getElementById('TenantId').value;
@@ -367,9 +384,14 @@
                 }
 
                 const securityDueDays = document.getElementById('SecurityDueDays').value;
-                const incrementMonths = document.getElementById('IncrementMonths').value;
+                const incrementMonths = parseInt(document.getElementById('IncrementMonths').value) || 0;
                 const incrementPercentage = document.getElementById('IncrementPercentage').value;
                 const description = document.getElementById('Description').value;
+
+                if (incrementMonths > monthsInput && monthsInput > 0) {
+                    alert("Increment After (Months) cannot be greater than Contract Duration (Months).");
+                    return;
+                }
 
                 if (!tenantId || !propertyId || !rentAmount || !startDate || !endDate || !rentDueMonths) {
                     alert("Please fill in all required fields, including Rent Amount and Collection Interval.");

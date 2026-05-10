@@ -14,7 +14,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly ILogger<RentReminderService> _logger;
 
         // How often to check (every 24 hours)
-        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _checkInterval = TimeSpan.FromDays(1);
 
         public RentReminderService(IServiceScopeFactory scopeFactory, ILogger<RentReminderService> logger)
         {

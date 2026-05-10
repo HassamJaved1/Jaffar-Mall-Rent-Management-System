@@ -33,6 +33,19 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
                  return BackendResponse<bool>.Failure("Invalid data provided.", 400).ToActionResult();
             }
 
+            if (lease.Months > 0)
+            {
+                if (lease.RentDueMonths > lease.Months)
+                {
+                    return BackendResponse<bool>.Failure("Rent collection interval cannot be greater than the total contract duration.", 400).ToActionResult();
+                }
+
+                if (lease.IncrementMonths > lease.Months)
+                {
+                    return BackendResponse<bool>.Failure("Increment After (Months) cannot be greater than Contract Duration (Months).", 400).ToActionResult();
+                }
+            }
+
             // Set defaults if needed
             if (lease.Status == 0) lease.Status = LeaseStatus.Pending;
             lease.AddedBy = "Admin User"; // Placeholder for now
@@ -98,6 +111,19 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateLease([FromBody] PropertyLease lease)
         {
+            if (lease.Months > 0)
+            {
+                if (lease.RentDueMonths > lease.Months)
+                {
+                    return BackendResponse<bool>.Failure("Rent collection interval cannot be greater than the total contract duration.", 400).ToActionResult();
+                }
+
+                if (lease.IncrementMonths > lease.Months)
+                {
+                    return BackendResponse<bool>.Failure("Increment After (Months) cannot be greater than Contract Duration (Months).", 400).ToActionResult();
+                }
+            }
+
             var result = await _leaseServices.UpdateLeaseAsync(lease);
             if (result.Data)
             {
