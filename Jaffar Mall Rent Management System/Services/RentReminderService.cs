@@ -14,7 +14,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly ILogger<RentReminderService> _logger;
 
         // How often to check (every 24 hours)
-        private readonly TimeSpan _checkInterval = TimeSpan.FromDays(1);
+        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
 
         public RentReminderService(IServiceScopeFactory scopeFactory, ILogger<RentReminderService> logger)
         {
@@ -83,9 +83,75 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     // How many full payment periods have elapsed?
                     var startDate  = lease.StartDate ?? lease.CreatedAt;
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
-                    decimal intervalRent = lease.RentAmount * rentDueMonths;
+                    decimal initialRent = lease.RentAmount;
+                    int intervalsPaid = 0;
+                    decimal intervalRent = 0;
 
-                    int intervalsPaid = (int)(totalPaid / intervalRent);
+                    if (initialRent > 0)
+                    {
+                        // 1. Back-calculate the initial rent at the start of the lease
+                        if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0 && lease.LastIncrementDate.HasValue)
+                        {
+                            int monthsSinceStart = (lease.LastIncrementDate.Value.Year - startDate.Year) * 12 + lease.LastIncrementDate.Value.Month - startDate.Month;
+                            if (lease.LastIncrementDate.Value.Day < startDate.Day)
+                            {
+                                monthsSinceStart--;
+                            }
+                            
+                            int incrementsApplied = monthsSinceStart / lease.IncrementMonths;
+                            
+                            for (int inc = 0; inc < incrementsApplied; inc++)
+                            {
+                                initialRent = initialRent / (1m + lease.IncrementPercentage / 100m);
+                            }
+                            
+                            initialRent = Math.Round(initialRent, 2);
+                        }
+
+                        // 2. Iteratively calculate expected rent for each interval
+                        decimal accumulatedExpectedRent = 0;
+
+                        while (true)
+                        {
+                            decimal currentIntervalRent = 0;
+                            // Calculate rent for all months inside this interval
+                            for (int m = 0; m < rentDueMonths; m++)
+                            {
+                                int monthIndex = intervalsPaid * rentDueMonths + m;
+                                int increments = 0;
+                                if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                                {
+                                    increments = monthIndex / lease.IncrementMonths;
+                                }
+                                
+                                decimal monthRent = initialRent;
+                                for (int inc = 0; inc < increments; inc++)
+                                {
+                                    monthRent += monthRent * (lease.IncrementPercentage / 100m);
+                                }
+                                
+                                currentIntervalRent += monthRent;
+                            }
+
+                            if (currentIntervalRent == 0) break; // Failsafe
+
+                            // Check if total payments cover this interval fully
+                            if (totalPaid >= accumulatedExpectedRent + currentIntervalRent - 0.01m)
+                            {
+                                accumulatedExpectedRent += currentIntervalRent;
+                                intervalsPaid++;
+                            }
+                            else
+                            {
+                                intervalRent = currentIntervalRent; // This is the rent due for the currently unpaid interval
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        continue; // If rent is 0, nothing to do
+                    }
                     var earliestUnpaidDate = startDate.AddMonths(rentDueMonths * (intervalsPaid + 1));
 
                     if (lease.EndDate.HasValue && earliestUnpaidDate > lease.EndDate.Value) 
@@ -122,7 +188,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         _logger.LogInformation("[RentReminder] Sending overdue notice → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, unpaidDate, managerEmail);
+                            intervalRent, unpaidDate, managerEmail);
                     }
                     // 4. Overdue / Persistent Reminders
                     // Send immediately when the rent first becomes overdue (-1 day),
@@ -132,7 +198,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         _logger.LogInformation("[RentReminder] Sending ongoing pending/overdue reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, unpaidDate, managerEmail);
+                            intervalRent, unpaidDate, managerEmail);
                     }
 
                     // ── Automated Rent Increment ───────────────────────
