@@ -254,7 +254,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         LeaseStartDate = startDate,
                         LeaseEndDate = endDate,
                         NextRentDueDate = nextRentDueDate,
-                        IntervalRent = intervalRent,
+                        IntervalRent = currentExpectedIntervalRent,
                         TotalRentExpected = totalExpected,
                         TotalAmountPaid = totalPaid,
                         CurrentPaidRent = currentPaidRent,

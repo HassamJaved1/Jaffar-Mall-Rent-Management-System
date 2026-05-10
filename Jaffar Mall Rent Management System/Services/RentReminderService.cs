@@ -14,7 +14,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly ILogger<RentReminderService> _logger;
 
         // How often to check (every 24 hours)
-        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _checkInterval = TimeSpan.FromDays(10);
 
         public RentReminderService(IServiceScopeFactory scopeFactory, ILogger<RentReminderService> logger)
         {
@@ -170,9 +170,9 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     if (daysSincePeriodStarted >= 0 && daysSincePeriodStarted < 5)
                     {
                         _logger.LogInformation("[RentReminder] Sending initial period reminder (Day {Day}) → {Tenant} ({Property})", daysSincePeriodStarted, tenant.Name, property.Name);
-                        await emailService.SendPendingRentReminderEmailAsync(
-                            tenant.Email, tenant.Name, property.Name,
-                            intervalRent, unpaidDate, managerEmail);
+                        //await emailService.SendPendingRentReminderEmailAsync(
+                        //    tenant.Email, tenant.Name, property.Name,
+                        //    intervalRent, unpaidDate, managerEmail);
                     }
                     // 2. 7-day advance reminder
                     else if (daysUntilDue == 7)
@@ -207,7 +207,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         var baseDate = lease.LastIncrementDate ?? lease.StartDate ?? lease.CreatedAt;
                         var nextIncrementDue = baseDate.AddMonths(lease.IncrementMonths);
 
-                        if (today == nextIncrementDue)
+                        if (today.Date == nextIncrementDue.Date)
                         {
                             decimal oldRent = lease.RentAmount;
                             decimal increaseAmount = oldRent * (lease.IncrementPercentage / 100);

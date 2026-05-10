@@ -23,10 +23,10 @@
             <h3 class="text-white text-base font-bold mb-4">Payment Details</h3>
             
             <!-- Tabs -->
-            <div class="flex gap-4 border-b border-[#293038] mb-6">
+            @* <div class="flex gap-4 border-b border-[#293038] mb-6">
                 <button type="button" id="tabRent" class="px-4 py-3 text-sm font-bold border-b-2 border-primary text-white transition-all" onclick="switchTab('Rent')">Rent Payment</button>
                 <button type="button" id="tabSecurity" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-[#9dabb8] hover:text-white transition-all" onclick="switchTab('Security Fee')">Security Fee</button>
-            </div>
+            </div> *@
 
             
             <form asp-action="Create" method="post" class="space-y-6">
@@ -54,7 +54,7 @@
 
                 <input type="hidden" name="PaymentType" id="PaymentTypeInput" value="Rent" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="display:none;">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-[#9dabb8] mb-1">Relaxation Days (Grace Period)</label>
                         <input type="number" name="RelaxationDays" value="0" min="0" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" />
