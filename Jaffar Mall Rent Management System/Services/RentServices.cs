@@ -118,30 +118,106 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     var startDate = lease.StartDate ?? lease.CreatedAt;
                     var endDate = lease.EndDate;
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
-                    decimal intervalRent = lease.RentAmount * rentDueMonths;
-
-                    int expectedIntervals = 1;
-                    var candidateDate = startDate.AddMonths(rentDueMonths);
-                    while (candidateDate <= today)
+                    decimal initialRent = lease.RentAmount;
+                    if (initialRent > 0 && lease.IncrementMonths > 0 && lease.IncrementPercentage > 0 && lease.LastIncrementDate.HasValue)
                     {
-                         if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
-                         expectedIntervals++;
-                         candidateDate = candidateDate.AddMonths(rentDueMonths);
+                        int monthsSinceStart = (lease.LastIncrementDate.Value.Year - startDate.Year) * 12 + lease.LastIncrementDate.Value.Month - startDate.Month;
+                        if (lease.LastIncrementDate.Value.Day < startDate.Day)
+                        {
+                            monthsSinceStart--;
+                        }
+                        int incrementsApplied = monthsSinceStart / lease.IncrementMonths;
+                        for (int inc = 0; inc < incrementsApplied; inc++)
+                        {
+                            initialRent = initialRent / (1m + lease.IncrementPercentage / 100m);
+                        }
+                        initialRent = Math.Round(initialRent, 2);
                     }
-                    
-                    decimal totalExpected = expectedIntervals * intervalRent;
+
+                    int expectedIntervals = 0;
+                    decimal totalExpected = 0;
+                    var candidateDate = startDate;
+                    decimal currentExpectedIntervalRent = 0;
+
+                    while (true)
+                    {
+                        currentExpectedIntervalRent = 0;
+                        for (int m = 0; m < rentDueMonths; m++)
+                        {
+                            int monthIndex = expectedIntervals * rentDueMonths + m;
+                            int increments = 0;
+                            if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                            {
+                                increments = monthIndex / lease.IncrementMonths;
+                            }
+                            decimal monthRent = initialRent;
+                            for (int inc = 0; inc < increments; inc++)
+                            {
+                                monthRent += monthRent * (lease.IncrementPercentage / 100m);
+                            }
+                            currentExpectedIntervalRent += monthRent;
+                        }
+                        
+                        expectedIntervals++;
+                        totalExpected += currentExpectedIntervalRent;
+                        
+                        candidateDate = startDate.AddMonths(expectedIntervals * rentDueMonths);
+                        if (candidateDate > today || (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value))
+                        {
+                             break;
+                        }
+                    }
 
                     // 4. Get Total Paid
                     decimal totalPaid = await _rentRepository.GetTotalPaidByLeaseIdAsync(lease.Id);
 
+                    int intervalsPaid = 0;
+                    decimal accumulatedExpectedRent = 0;
+                    decimal intervalRent = 0;
+
+                    if (initialRent > 0)
+                    {
+                        while (true)
+                        {
+                            decimal currentIntervalRent = 0;
+                            for (int m = 0; m < rentDueMonths; m++)
+                            {
+                                int monthIndex = intervalsPaid * rentDueMonths + m;
+                                int increments = 0;
+                                if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                                {
+                                    increments = monthIndex / lease.IncrementMonths;
+                                }
+                                decimal monthRent = initialRent;
+                                for (int inc = 0; inc < increments; inc++)
+                                {
+                                    monthRent += monthRent * (lease.IncrementPercentage / 100m);
+                                }
+                                currentIntervalRent += monthRent;
+                            }
+
+                            if (currentIntervalRent == 0) break;
+
+                            if (totalPaid >= accumulatedExpectedRent + currentIntervalRent - 0.01m)
+                            {
+                                accumulatedExpectedRent += currentIntervalRent;
+                                intervalsPaid++;
+                            }
+                            else
+                            {
+                                intervalRent = currentIntervalRent;
+                                break;
+                            }
+                        }
+                    }
+
                     // Current Paid Rent
-                    decimal previousExpected = totalExpected - intervalRent;
+                    decimal previousExpected = totalExpected - currentExpectedIntervalRent;
                     decimal currentPaidRent = Math.Max(0, totalPaid - previousExpected);
 
                     // 5. Balance
                     decimal balance = totalExpected - totalPaid;
 
-                    int intervalsPaid = intervalRent > 0 ? (int)(totalPaid / intervalRent) : 0;
                     var earliestUnpaidDueDate = startDate.AddMonths(rentDueMonths * (intervalsPaid + 1));
 
                     // Calculation for Next Collection Deadline

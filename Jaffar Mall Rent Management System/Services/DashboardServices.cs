@@ -56,20 +56,54 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     model.PendingSecurityAmount += securityOwed;
 
                     // B. Calculate Overdue Rent
+                    var startDate = lease.StartDate ?? lease.CreatedAt;
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
-                    decimal intervalRent = lease.RentAmount * rentDueMonths;
+                    
+                    decimal initialRent = lease.RentAmount;
+                    if (initialRent > 0 && lease.IncrementMonths > 0 && lease.IncrementPercentage > 0 && lease.LastIncrementDate.HasValue)
+                    {
+                        int monthsSinceStart = (lease.LastIncrementDate.Value.Year - startDate.Year) * 12 + lease.LastIncrementDate.Value.Month - startDate.Month;
+                        if (lease.LastIncrementDate.Value.Day < startDate.Day)
+                        {
+                            monthsSinceStart--;
+                        }
+                        int incrementsApplied = monthsSinceStart / lease.IncrementMonths;
+                        for (int inc = 0; inc < incrementsApplied; inc++)
+                        {
+                            initialRent = initialRent / (1m + lease.IncrementPercentage / 100m);
+                        }
+                        initialRent = Math.Round(initialRent, 2);
+                    }
 
                     int intervalsPassed = 0;
-                    var candidateDate = (lease.StartDate ?? lease.CreatedAt).AddMonths(rentDueMonths);
+                    decimal totalExpectedRentSoFar = 0;
+                    var candidateDate = startDate.AddMonths(rentDueMonths);
+
                     while (candidateDate <= now)
                     {
-                         if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
-                         intervalsPassed++;
-                         candidateDate = candidateDate.AddMonths(rentDueMonths);
+                        if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
+                        
+                        decimal currentIntervalRent = 0;
+                        for (int m = 0; m < rentDueMonths; m++)
+                        {
+                            int monthIndex = intervalsPassed * rentDueMonths + m;
+                            int increments = 0;
+                            if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                            {
+                                increments = monthIndex / lease.IncrementMonths;
+                            }
+                            decimal monthRent = initialRent;
+                            for (int inc = 0; inc < increments; inc++)
+                            {
+                                monthRent += monthRent * (lease.IncrementPercentage / 100m);
+                            }
+                            currentIntervalRent += monthRent;
+                        }
+                        
+                        intervalsPassed++;
+                        totalExpectedRentSoFar += currentIntervalRent;
+                        candidateDate = candidateDate.AddMonths(rentDueMonths);
                     }
-                    
-                    // Total amount that SHOULD have been paid by now for rent
-                    decimal totalExpectedRentSoFar = intervalsPassed * intervalRent;
                     
                     // Total rent actually paid for this lease
                     decimal totalRentPaid = allPayments.Where(p => p.LeaseId == lease.Id && p.PaymentType == "Rent").Sum(p => p.Amount);
