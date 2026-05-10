@@ -342,7 +342,25 @@
                 if (elRegularCollectionDisplay) elRegularCollectionDisplay.textContent = formatter.format(regularCollection);
                 if (elFirstCollectionDisplay) elFirstCollectionDisplay.textContent = formatter.format(firstCollection);
 
-                const cumulatedRent = months * rent;
+                const incrementPercentage = parseFloat(document.getElementById('IncrementPercentage').value) || 0;
+
+                let cumulatedRent = 0;
+                let currentRent = rent;
+
+                if (months > 0) {
+                    if (incrementMonths > 0 && incrementPercentage > 0) {
+                        for (let i = 1; i <= months; i++) {
+                            // Apply increment after every X months
+                            if (i > 1 && (i - 1) % incrementMonths === 0) {
+                                currentRent += (currentRent * (incrementPercentage / 100));
+                            }
+                            cumulatedRent += currentRent;
+                        }
+                    } else {
+                        cumulatedRent = months * rent;
+                    }
+                }
+
                 elTotalDisplay.textContent = formatter.format(cumulatedRent);
             }
 
@@ -363,8 +381,13 @@
             }
             
             const elIncrementMonths = document.getElementById('IncrementMonths');
+            const elIncrementPercentage = document.getElementById('IncrementPercentage');
+
             if (elIncrementMonths) {
                 elIncrementMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
+            if (elIncrementPercentage) {
+                elIncrementPercentage.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
             }
 
             btnCreate.addEventListener('click', async () => {
