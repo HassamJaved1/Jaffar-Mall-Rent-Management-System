@@ -287,5 +287,18 @@ namespace Jaffar_Mall_Rent_Management_System.Services
             }
             return BackendResponse<RentPayment>.Success(payment);
         }
+
+        public async Task<BackendResponse<IEnumerable<RentPayment>>> GetAllPaymentsAsync()
+        {
+            try
+            {
+                var payments = await _rentRepository.GetAllPaymentsAsync();
+                return BackendResponse<IEnumerable<RentPayment>>.Success(payments, "Retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BackendResponse<IEnumerable<RentPayment>>.Failure($"Failed to retrieve payments: {ex.Message}", 500);
+            }
+        }
     }
 }

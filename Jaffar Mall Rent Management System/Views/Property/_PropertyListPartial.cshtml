@@ -73,6 +73,11 @@
                         <div class="flex flex-col">
                             <p class="text-sm font-bold text-[#111418] dark:text-white truncate max-w-[150px]">@property.TenantName</p>
                             <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Lease Duration: @property.LeaseMonths Months</p>
+                            @if(property.LeaseStartDate.HasValue && property.LeaseMonths > 0)
+                            {
+                                var endDate = property.LeaseStartDate.Value.AddMonths(property.LeaseMonths);
+                                <p class="text-xs text-[#637588] dark:text-[#9dabb8]">End Date: @endDate.ToString("MMM dd, yyyy")</p>
+                            }
                             <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Collect After: @rentDueMonths Months</p>
                         </div>
                     </div>

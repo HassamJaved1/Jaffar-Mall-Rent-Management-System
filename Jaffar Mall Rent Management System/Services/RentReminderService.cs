@@ -80,6 +80,18 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     // Calculate total paid for this period
                     decimal totalPaid = await rentRepo.GetTotalPaidByLeaseIdAsync(lease.Id);
 
+                    // Check if lease has ended and make property vacant automatically
+                    if (lease.EndDate.HasValue && today.Date > lease.EndDate.Value.Date)
+                    {
+                        if (property.Status != (byte)PropertyStatus.Vacant || !string.IsNullOrEmpty(property.TenantName))
+                        {
+                            property.Status = (byte)PropertyStatus.Vacant;
+                            property.TenantName = null;
+                            await propertyRepo.UpdatePropertyAsync(property);
+                            _logger.LogInformation("[RentReminder] Lease {LeaseId} expired. Property {PropertyId} automatically set to Vacant.", lease.Id, property.Id);
+                        }
+                    }
+
                     // How many full payment periods have elapsed?
                     var startDate  = lease.StartDate ?? lease.CreatedAt;
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;

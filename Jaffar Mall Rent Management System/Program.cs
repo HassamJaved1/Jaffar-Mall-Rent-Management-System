@@ -96,6 +96,13 @@ builder.Services.AddScoped<DashboardServices>();
 
 // Automated rent reminder background service (runs every 24 hours)
 builder.Services.AddHostedService<RentReminderService>();
+
+var discordWebhook = builder.Configuration["DiscordWebhookUrl"];
+if (!string.IsNullOrEmpty(discordWebhook))
+{
+    builder.Logging.AddProvider(new DiscordLoggerProvider(discordWebhook));
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
