@@ -61,18 +61,48 @@
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden">
-    <div class="flex h-screen w-full">
-         <!-- Sidebar -->
-        <aside class="w-[280px] hidden md:flex flex-col bg-background-dark border-r border-[#293038] shrink-0 h-full overflow-y-auto">
+    <div class="flex flex-col md:flex-row h-screen w-full overflow-hidden">
+        <!-- Mobile Header (Visible only on mobile) -->
+        <header class="md:hidden flex items-center justify-between px-4 h-14 bg-background-dark border-b border-[#293038] shrink-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary size-8 rounded flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-xl">apartment</span>
+                </div>
+                <h1 class="text-white text-lg font-bold leading-none">Rent Manager</h1>
+            </div>
+            <button id="mobile-menu-open" class="p-2 text-[#9dabb8] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+        </header>
+
+        <!-- Sidebar Backdrop (Mobile only) -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[280px] flex flex-col bg-background-dark border-r border-[#293038] shrink-0 h-full overflow-y-auto transition-transform duration-300 transform -translate-x-full md:translate-x-0">
             <div class="flex h-full flex-col justify-between p-4">
                 <div class="flex flex-col gap-6">
-                    <!-- Brand -->
-                    <div class="flex items-center gap-3 px-2">
+                    <!-- Brand (Desktop) -->
+                    <div class="hidden md:flex items-center gap-3 px-2">
                         <div class="bg-center bg-no-repeat bg-cover rounded-lg size-10 bg-primary flex items-center justify-center text-white" data-alt="RentManager Logo">
                             <span class="material-symbols-outlined text-2xl">apartment</span>
                         </div>
                         <h1 class="text-white text-xl font-bold leading-normal tracking-tight">Rent Manager</h1>
                     </div>
+                    
+                    <!-- Mobile Sidebar Header -->
+                    <div class="flex md:hidden items-center justify-between px-2 mb-2">
+                         <div class="flex items-center gap-3">
+                            <div class="bg-primary size-8 rounded flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-xl">apartment</span>
+                            </div>
+                            <h1 class="text-white text-lg font-bold">Rent Manager</h1>
+                        </div>
+                        <button id="mobile-menu-close" class="p-2 text-[#9dabb8] hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-2xl">close</span>
+                        </button>
+                    </div>
+
                     <!-- Navigation -->
                     <nav class="flex flex-col gap-2">
                         <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" asp-controller="Dashboard" asp-action="Index">
@@ -123,11 +153,13 @@
                         </form>
                     </div>
                     <div class="p-4 rounded-xl bg-[#1e252b] border border-[#293038]">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="size-10 rounded-full bg-cover bg-center" data-alt="User profile photo" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2HA0NAXihEVKshNYBbssShVeU35hA1TJkpVOBJQgqGRWQf9Jr__nYfj2IOz52WJSL1jc3CZkK5mwDcI0SUo3wwaPaJx7Htu-HbjUSfRSO6y0uN99EYC3MkoTtZmgscWWq7s46U_bIrLBTnFxBNb0pYbBywUE-bxcUakBvbwmPi2Te4GYTRHhtTVXTVF_nbEH5Y-9U3Cy_b9bqoQUT_r4aUAAfs_Uj6Qh4aD5c1gUAAM0qJ3qAu6Eha9Nr9hkxJUZEQq47JNfn3cfI');"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="size-10 rounded-full bg-cover bg-center bg-[#293038] flex items-center justify-center" data-alt="User profile photo">
+                                <span class="material-symbols-outlined text-[#9dabb8]">person</span>
+                            </div>
                             <div>
-                                <p class="text-sm font-bold text-white">Hassam Javed</p>
-                                <p class="text-xs text-[#9dabb8]">Admin</p>
+                                <p class="text-sm font-bold text-white">Admin User</p>
+                                <p class="text-xs text-[#9dabb8]">Manager</p>
                             </div>
                         </div>
                     </div>
@@ -136,10 +168,55 @@
         </aside>
         
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-background-light dark:bg-background-dark">
             @RenderBody()
         </main>
     </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const closeBtn = document.getElementById('mobile-menu-close');
+
+        function toggleSidebar(show) {
+            if (show) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+                backdrop.classList.add('opacity-100');
+                document.body.classList.add('overflow-hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        backdrop.classList.add('hidden');
+                    }
+                }, 300);
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        // Handle all toggle buttons (including ones in views)
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#mobile-menu-open') || e.target.closest('.mobile-menu-toggle')) {
+                toggleSidebar(true);
+            }
+            if (e.target.closest('#mobile-menu-close') || e.target.closest('#sidebar-backdrop')) {
+                toggleSidebar(false);
+            }
+        });
+
+        // Close sidebar on navigation (mobile)
+        const navLinks = sidebar.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleSidebar(false);
+                }
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
