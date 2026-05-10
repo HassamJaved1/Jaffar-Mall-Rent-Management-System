@@ -9,6 +9,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         public decimal PendingRentAmount { get; set; }
         public decimal PendingSecurityAmount { get; set; }
         public int ActiveMaintenanceCount { get; set; }
+        public decimal TotalExpectedRent { get; set; }
 
         public List<RentStatusItem>? RentStatus { get; set; }
         public List<MonthlyCashFlowItem>? MonthlyCashFlow { get; set; }

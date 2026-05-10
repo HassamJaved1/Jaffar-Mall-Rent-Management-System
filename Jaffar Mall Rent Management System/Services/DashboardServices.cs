@@ -11,19 +11,22 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly MaintenanceRepository _maintenanceRepository;
         private readonly RentRepository _rentRepository;
         private readonly TenantRepository _tenantRepository;
+        private readonly RentServices _rentServices;
 
         public DashboardServices(
             PropertyRepository propertyRepository, 
             LeasesRepository leasesRepository, 
             MaintenanceRepository maintenanceRepository, 
             RentRepository rentRepository,
-            TenantRepository tenantRepository)
+            TenantRepository tenantRepository,
+            RentServices rentServices)
         {
             _propertyRepository = propertyRepository;
             _leasesRepository = leasesRepository;
             _maintenanceRepository = maintenanceRepository;
             _rentRepository = rentRepository;
             _tenantRepository = tenantRepository;
+            _rentServices = rentServices;
         }
 
         public async Task<DashboardViewModel> GetDashboardDataAsync()
@@ -42,78 +45,17 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 var occupiedPropertiesCount = activeLeases.Select(l => l.PropertyId).Distinct().Count();
                 model.OccupancyRate = totalProperties > 0 ? (double)occupiedPropertiesCount / totalProperties * 100 : 0;
 
-                // 2. Revenue & Refined Pending Logic
+                // 2. Revenue & Refined Pending Logic via RentServices
                 var allPayments = (await _rentRepository.GetAllPaymentsAsync()).ToList();
                 model.TotalRevenue = allPayments.Sum(p => p.Amount);
                 
-                model.PendingRentAmount = 0;
-                model.PendingSecurityAmount = 0;
+                var rentStatusSummaryResponse = await _rentServices.GetRentStatusSummaryAsync();
+                var rentStatusList = rentStatusSummaryResponse.Data ?? new List<RentStatusViewModel>();
 
-                foreach (var lease in activeLeases)
-                {
-                    // A. Calculate Pending Security
-                    decimal securityOwed = Math.Max(0, (lease.SecurityDeposit ?? 0) - lease.PaidSecurityDeposit);
-                    model.PendingSecurityAmount += securityOwed;
-
-                    // B. Calculate Overdue Rent
-                    var startDate = lease.StartDate ?? lease.CreatedAt;
-                    int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
-                    
-                    decimal initialRent = lease.RentAmount;
-                    if (initialRent > 0 && lease.IncrementMonths > 0 && lease.IncrementPercentage > 0 && lease.LastIncrementDate.HasValue)
-                    {
-                        int monthsSinceStart = (lease.LastIncrementDate.Value.Year - startDate.Year) * 12 + lease.LastIncrementDate.Value.Month - startDate.Month;
-                        if (lease.LastIncrementDate.Value.Day < startDate.Day)
-                        {
-                            monthsSinceStart--;
-                        }
-                        int incrementsApplied = monthsSinceStart / lease.IncrementMonths;
-                        for (int inc = 0; inc < incrementsApplied; inc++)
-                        {
-                            initialRent = initialRent / (1m + lease.IncrementPercentage / 100m);
-                        }
-                        initialRent = Math.Round(initialRent, 2);
-                    }
-
-                    int intervalsPassed = 0;
-                    decimal totalExpectedRentSoFar = 0;
-                    var candidateDate = startDate.AddMonths(rentDueMonths);
-
-                    while (candidateDate <= now)
-                    {
-                        if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
-                        
-                        decimal currentIntervalRent = 0;
-                        for (int m = 0; m < rentDueMonths; m++)
-                        {
-                            int monthIndex = intervalsPassed * rentDueMonths + m;
-                            int increments = 0;
-                            if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
-                            {
-                                increments = monthIndex / lease.IncrementMonths;
-                            }
-                            decimal monthRent = initialRent;
-                            for (int inc = 0; inc < increments; inc++)
-                            {
-                                monthRent += monthRent * (lease.IncrementPercentage / 100m);
-                            }
-                            currentIntervalRent += monthRent;
-                        }
-                        
-                        intervalsPassed++;
-                        totalExpectedRentSoFar += currentIntervalRent;
-                        candidateDate = candidateDate.AddMonths(rentDueMonths);
-                    }
-                    
-                    // Total rent actually paid for this lease
-                    decimal totalRentPaid = allPayments.Where(p => p.LeaseId == lease.Id && p.PaymentType == "Rent").Sum(p => p.Amount);
-                    
-                    decimal rentOverdue = Math.Max(0, totalExpectedRentSoFar - totalRentPaid);
-                    model.PendingRentAmount += rentOverdue;
-                }
+                model.PendingRentAmount = rentStatusList.Where(r => r.Balance > 0).Sum(r => r.Balance);
+                model.PendingSecurityAmount = rentStatusList.Where(r => r.SecurityBalance > 0).Sum(r => r.SecurityBalance);
                 
                 var currentMonthPayments = allPayments.Where(p => p.PaymentDate.Month == now.Month && p.PaymentDate.Year == now.Year).Sum(p => p.Amount);
-                // We'll keep the breakdown logic but use the calculated refined values
                 
                 // 3. Maintenance
                 var allMaintenance = (await _maintenanceRepository.GetAllAsync()).ToList();
@@ -121,13 +63,16 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                 model.ActiveMaintenanceCount = activeMaintenance.Count;
 
                 // 4. Rent Status Breakdown (Updated for Overdue focus)
-                decimal totalPotentiallyOwed = activeLeases.Sum(l => l.RentAmount);
-                decimal totalSecurityExpected = activeLeases.Sum(l => l.SecurityDeposit).GetValueOrDefault();
+                decimal totalPotentiallyOwed = rentStatusList.Sum(r => r.IntervalRent);
+                decimal totalSecurityExpected = rentStatusList.Sum(r => r.SecurityDeposit ?? 0);
+                
+                model.TotalExpectedRent = totalPotentiallyOwed;
+
                 model.RentStatus = new List<RentStatusItem>
                 {
-                    new RentStatusItem { Label = "Collected (MTD)", Amount = currentMonthPayments, Percentage = totalPotentiallyOwed > 0 ? (double)(currentMonthPayments / totalPotentiallyOwed * 100) : 0, Color = "bg-green-500" },
-                    new RentStatusItem { Label = "Overdue Rent", Amount = model.PendingRentAmount, Percentage = totalPotentiallyOwed > 0 ? (double)(model.PendingRentAmount / totalPotentiallyOwed * 100) : 0, Color = "bg-red-500" },
-                    new RentStatusItem { Label = "Pending Security", Amount = model.PendingSecurityAmount, Percentage = totalSecurityExpected > 0 ? (double)(model.PendingSecurityAmount / totalSecurityExpected * 100) : 0, Color = "bg-orange-500" }
+                    new RentStatusItem { Label = "Collected (MTD)", Amount = currentMonthPayments, Percentage = totalPotentiallyOwed > 0 ? Math.Min(100, (double)(currentMonthPayments / totalPotentiallyOwed * 100)) : 0, Color = "bg-green-500" },
+                    new RentStatusItem { Label = "Overdue Rent", Amount = model.PendingRentAmount, Percentage = totalPotentiallyOwed > 0 ? Math.Min(100, (double)(model.PendingRentAmount / totalPotentiallyOwed * 100)) : 0, Color = "bg-red-500" },
+                    new RentStatusItem { Label = "Pending Security", Amount = model.PendingSecurityAmount, Percentage = totalSecurityExpected > 0 ? Math.Min(100, (double)(model.PendingSecurityAmount / totalSecurityExpected * 100)) : 0, Color = "bg-orange-500" }
                 };
 
                 // 5. Cash Flow Graph (Last 6 Months)
