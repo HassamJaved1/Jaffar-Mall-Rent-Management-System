@@ -21,11 +21,34 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Schema Migration for new columns
+                try {
+                    await connection.ExecuteAsync(@"
+                        CREATE TABLE IF NOT EXISTS maintenance (
+                            id BIGSERIAL PRIMARY KEY,
+                            tenant_id BIGINT,
+                            property_id BIGINT NOT NULL,
+                            title VARCHAR(255) NOT NULL,
+                            description TEXT,
+                            status SMALLINT NOT NULL,
+                            priority SMALLINT NOT NULL,
+                            assigned_to VARCHAR(255),
+                            created_at TIMESTAMP NOT NULL,
+                            updated_at TIMESTAMP NOT NULL,
+                            resolved_at TIMESTAMP
+                        );
+                    ");
+                    await connection.ExecuteAsync("ALTER TABLE maintenance ADD COLUMN IF NOT EXISTS repair_cost DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE maintenance ADD COLUMN IF NOT EXISTS amount_paid DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE maintenance ADD COLUMN IF NOT EXISTS repairer_name VARCHAR(255);");
+                    await connection.ExecuteAsync("ALTER TABLE maintenance ADD COLUMN IF NOT EXISTS repairer_details TEXT;");
+                } catch { }
+
                 const string sql = @"
                 INSERT INTO maintenance
-                  (tenant_id, property_id, title, description, status, priority, assigned_to, created_at, updated_at, resolved_at)
+                  (tenant_id, property_id, title, description, status, priority, assigned_to, created_at, updated_at, resolved_at, repair_cost, amount_paid, repairer_name, repairer_details)
                 VALUES
-                  (@TenantId, @PropertyId, @Title, @Description, @Status, @Priority, @AssignedTo, @CreatedAt, @UpdatedAt, @ResolvedAt)
+                  (@TenantId, @PropertyId, @Title, @Description, @Status, @Priority, @AssignedTo, @CreatedAt, @UpdatedAt, @ResolvedAt, @RepairCost, @AmountPaid, @RepairerName, @RepairerDetails)
                 RETURNING id";
 
                 var parameters = new
@@ -37,7 +60,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)item.Status,
                     Priority = (short)item.Priority,
                     AssignedTo = item.AssignedTo,
-                    ResolvedAt = item.ResolvedAt
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    ResolvedAt = item.ResolvedAt,
+                    RepairCost = item.RepairCost,
+                    AmountPaid = item.AmountPaid,
+                    RepairerName = item.RepairerName,
+                    RepairerDetails = item.RepairerDetails
                 };
 
                 long id = await connection.ExecuteScalarAsync<long>(sql, parameters);
@@ -47,7 +76,7 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return 0;
+                throw;
             }
         }
 
@@ -70,7 +99,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                   assigned_to AS ""AssignedTo"",
                   created_at AS ""CreatedAt"",
                   updated_at AS ""UpdatedAt"",
-                  resolved_at AS ""ResolvedAt""
+                  resolved_at AS ""ResolvedAt"",
+                  repair_cost AS ""RepairCost"",
+                  amount_paid AS ""AmountPaid"",
+                  repairer_name AS ""RepairerName"",
+                  repairer_details AS ""RepairerDetails""
                 FROM maintenance
                 ORDER BY created_at DESC";
 
@@ -104,7 +137,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                   assigned_to AS ""AssignedTo"",
                   created_at AS ""CreatedAt"",
                   updated_at AS ""UpdatedAt"",
-                  resolved_at AS ""ResolvedAt""
+                  resolved_at AS ""ResolvedAt"",
+                  repair_cost AS ""RepairCost"",
+                  amount_paid AS ""AmountPaid"",
+                  repairer_name AS ""RepairerName"",
+                  repairer_details AS ""RepairerDetails""
                 FROM maintenance
                 WHERE id = @Id";
 
@@ -138,7 +175,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                   assigned_to AS ""AssignedTo"",
                   created_at AS ""CreatedAt"",
                   updated_at AS ""UpdatedAt"",
-                  resolved_at AS ""ResolvedAt""
+                  resolved_at AS ""ResolvedAt"",
+                  repair_cost AS ""RepairCost"",
+                  amount_paid AS ""AmountPaid"",
+                  repairer_name AS ""RepairerName"",
+                  repairer_details AS ""RepairerDetails""
                 FROM maintenance
                 WHERE tenant_id = @TenantId
                 ORDER BY created_at DESC";
@@ -173,7 +214,11 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                   assigned_to AS ""AssignedTo"",
                   created_at AS ""CreatedAt"",
                   updated_at AS ""UpdatedAt"",
-                  resolved_at AS ""ResolvedAt""
+                  resolved_at AS ""ResolvedAt"",
+                  repair_cost AS ""RepairCost"",
+                  amount_paid AS ""AmountPaid"",
+                  repairer_name AS ""RepairerName"",
+                  repairer_details AS ""RepairerDetails""
                 FROM maintenance
                 WHERE property_id = @PropertyId
                 ORDER BY created_at DESC";
@@ -206,7 +251,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     status = @Status,
                     priority = @Priority,
                     assigned_to = @AssignedTo,
-                    resolved_at = @ResolvedAt
+                    resolved_at = @ResolvedAt,
+                    repair_cost = @RepairCost,
+                    amount_paid = @AmountPaid,
+                    repairer_name = @RepairerName,
+                    repairer_details = @RepairerDetails,
+                    updated_at = @UpdatedAt
                 WHERE id = @Id";
 
                 var parameters = new
@@ -217,7 +267,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)item.Status,
                     Priority = (short)item.Priority,
                     AssignedTo = item.AssignedTo,
-                    ResolvedAt = item.ResolvedAt
+                    ResolvedAt = item.ResolvedAt,
+                    RepairCost = item.RepairCost,
+                    AmountPaid = item.AmountPaid,
+                    RepairerName = item.RepairerName,
+                    RepairerDetails = item.RepairerDetails,
+                    UpdatedAt = item.UpdatedAt
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);

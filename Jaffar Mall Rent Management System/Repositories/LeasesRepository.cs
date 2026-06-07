@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Jaffar_Mall_Rent_Management_System.Models;
 
 namespace Jaffar_Mall_Rent_Management_System.Repositories
@@ -39,11 +39,23 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Auto migrate start_date, end_date, rent_due_months, and paid_security_deposit
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS rent_due_months INTEGER DEFAULT 1;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS paid_security_deposit DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS security_due_days INTEGER DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS increment_months INTEGER DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS increment_percentage DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS last_increment_date TIMESTAMP;");
+                } catch { }
+
                 const string sql = @"
                 INSERT INTO property_leases
-                    (tenant_id, property_id, description, status, rent_amount,months, security_deposit, added_by)
+                    (tenant_id, property_id, description, status, rent_amount, months, start_date, end_date, security_deposit, paid_security_deposit, rent_due_months, security_due_days, increment_months, increment_percentage, last_increment_date, added_by)
                 VALUES
-                    (@TenantId, @PropertyId, @Description, @Status, @RentAmount,@Months, @SecurityDeposit, @AddedBy)
+                    (@TenantId, @PropertyId, @Description, @Status, @RentAmount, @Months, @StartDate, @EndDate, @SecurityDeposit, @PaidSecurityDeposit, @RentDueMonths, @SecurityDueDays, @IncrementMonths, @IncrementPercentage, @LastIncrementDate, @AddedBy)
                 RETURNING id";
 
                 var parameters = new
@@ -54,7 +66,15 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)lease.Status,
                     RentAmount = lease.RentAmount,
                     SecurityDeposit = lease.SecurityDeposit,
+                    PaidSecurityDeposit = lease.PaidSecurityDeposit,
+                    RentDueMonths = lease.RentDueMonths,
+                    SecurityDueDays = lease.SecurityDueDays,
                     Months = lease.Months,
+                    StartDate = lease.StartDate,
+                    EndDate = lease.EndDate,
+                    IncrementMonths = lease.IncrementMonths,
+                    IncrementPercentage = lease.IncrementPercentage,
+                    LastIncrementDate = lease.LastIncrementDate,
                     AddedBy = lease.AddedBy
                 };
 
@@ -82,6 +102,18 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Ensure columns exist before selection
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS rent_due_months INTEGER DEFAULT 1;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS paid_security_deposit DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS security_due_days INTEGER DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS increment_months INTEGER DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS increment_percentage DECIMAL(18,2) DEFAULT 0;");
+                    await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS last_increment_date TIMESTAMP;");
+                } catch { }
+
                 const string sql = @"
                 SELECT
                     id,
@@ -91,7 +123,15 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
                     months AS ""Months"",
+                    start_date::timestamptz AS ""StartDate"",
+                    end_date::timestamptz AS ""EndDate"",
                     security_deposit AS ""SecurityDeposit"",
+                    paid_security_deposit AS ""PaidSecurityDeposit"",
+                    rent_due_months AS ""RentDueMonths"",
+                    security_due_days AS ""SecurityDueDays"",
+                    increment_months AS ""IncrementMonths"",
+                    increment_percentage AS ""IncrementPercentage"",
+                    last_increment_date AS ""LastIncrementDate"",
                     added_by AS ""AddedBy"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
@@ -125,13 +165,30 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     months AS ""Months"",
+                    start_date::timestamptz AS ""StartDate"",
+                    end_date::timestamptz AS ""EndDate"",
                     rent_amount AS ""RentAmount"",
                     security_deposit AS ""SecurityDeposit"",
+                    paid_security_deposit AS ""PaidSecurityDeposit"",
+                    rent_due_months AS ""RentDueMonths"",
+                    security_due_days AS ""SecurityDueDays"",
+                    increment_months AS ""IncrementMonths"",
+                    increment_percentage AS ""IncrementPercentage"",
+                    last_increment_date AS ""LastIncrementDate"",
                     added_by AS ""AddedBy"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
                 WHERE id = @Id";
+
+                // Ensure columns exist (fallback in case it's a direct ID lookup)
+                try {
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS start_date TIMESTAMP;");
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;");
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS rent_due_months INTEGER DEFAULT 1;");
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS paid_security_deposit DECIMAL(18,2) DEFAULT 0;");
+                     await connection.ExecuteAsync("ALTER TABLE property_leases ADD COLUMN IF NOT EXISTS security_due_days INTEGER DEFAULT 0;");
+                } catch { }
 
                 var lease = await connection.QuerySingleOrDefaultAsync<PropertyLease?>(sql, new { Id = id });
                 return lease;
@@ -160,9 +217,17 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
-                    security_deposit AS ""SecurityDeposit"",
-                    added_by AS ""AddedBy"",
                     months AS ""Months"",
+                    start_date::timestamptz AS ""StartDate"",
+                    end_date::timestamptz AS ""EndDate"",
+                    security_deposit AS ""SecurityDeposit"",
+                    paid_security_deposit AS ""PaidSecurityDeposit"",
+                    rent_due_months AS ""RentDueMonths"",
+                    security_due_days AS ""SecurityDueDays"",
+                    increment_months AS ""IncrementMonths"",
+                    increment_percentage AS ""IncrementPercentage"",
+                    last_increment_date AS ""LastIncrementDate"",
+                    added_by AS ""AddedBy"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
@@ -195,9 +260,17 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description,
                     status AS ""Status"",
                     rent_amount AS ""RentAmount"",
-                    security_deposit AS ""SecurityDeposit"",
-                    added_by AS ""AddedBy"",
                     months AS ""Months"",
+                    start_date::timestamptz AS ""StartDate"",
+                    end_date::timestamptz AS ""EndDate"",
+                    security_deposit AS ""SecurityDeposit"",
+                    paid_security_deposit AS ""PaidSecurityDeposit"",
+                    rent_due_months AS ""RentDueMonths"",
+                    security_due_days AS ""SecurityDueDays"",
+                    increment_months AS ""IncrementMonths"",
+                    increment_percentage AS ""IncrementPercentage"",
+                    last_increment_date AS ""LastIncrementDate"",
+                    added_by AS ""AddedBy"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM property_leases
@@ -232,8 +305,16 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     description = @Description,
                     status = @Status,
                     months = @Months,
+                    start_date = @StartDate,
+                    end_date = @EndDate,
                     rent_amount = @RentAmount,
                     security_deposit = @SecurityDeposit,
+                    paid_security_deposit = @PaidSecurityDeposit,
+                    rent_due_months = @RentDueMonths,
+                    security_due_days = @SecurityDueDays,
+                    increment_months = @IncrementMonths,
+                    increment_percentage = @IncrementPercentage,
+                    last_increment_date = @LastIncrementDate,
                     added_by = @AddedBy,
                     updated_at = @UpdatedAt
                 WHERE id = @Id";
@@ -247,7 +328,15 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Status = (short)lease.Status,
                     RentAmount = lease.RentAmount,
                     Months = lease.Months,
+                    StartDate = lease.StartDate,
+                    EndDate = lease.EndDate,
                     SecurityDeposit = lease.SecurityDeposit,
+                    PaidSecurityDeposit = lease.PaidSecurityDeposit,
+                    RentDueMonths = lease.RentDueMonths,
+                    SecurityDueDays = lease.SecurityDueDays,
+                    IncrementMonths = lease.IncrementMonths,
+                    IncrementPercentage = lease.IncrementPercentage,
+                    LastIncrementDate = lease.LastIncrementDate,
                     AddedBy = lease.AddedBy,
                     UpdatedAt = lease.UpdatedAt
                 };
@@ -287,3 +376,4 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
     
     }
 }
+

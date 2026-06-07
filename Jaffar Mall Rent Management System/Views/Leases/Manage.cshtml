@@ -1,0 +1,173 @@
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@using Jaffar_Mall_Rent_Management_System.Models
+@model IEnumerable<LeaseListItemViewModel>
+@{
+    ViewData["Title"] = "Property Assignment Management";
+}
+
+<!-- Header -->
+<header class="w-full bg-white dark:bg-[#111418] border-b border-[#dce0e5] dark:border-[#293038] px-8 py-6 shrink-0 z-10">
+    <div class="flex flex-col gap-6 max-w-[1400px] mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Property Assignments</h1>
+                <p class="text-[#637588] dark:text-[#9dabb8] text-base font-normal">Manage active leases, update terms, or terminate assignments.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="@Url.Action("Index", "Leases")" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px] mr-2">add_task</span>
+                    New Assignment
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="flex-1 overflow-y-auto p-4 sm:p-8">
+    <div class="max-w-[1400px] mx-auto flex flex-col gap-4">
+        <form method="get" class="relative w-full lg:max-w-[480px]">
+            <div class="flex w-full items-center rounded-lg h-12 bg-[#f0f2f4] dark:bg-[#293038] focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
+                <button type="submit" class="flex items-center justify-center pl-4 pr-2 outline-none">
+                    <span class="material-symbols-outlined text-[#637588] dark:text-[#9dabb8]">search</span>
+                </button>
+                <input name="search" value="@(ViewBag.CurrentSearch ?? "")" class="w-full bg-transparent border-none text-[#111418] dark:text-white placeholder:text-[#637588] dark:placeholder:text-[#9dabb8] focus:ring-0 text-base h-full" placeholder="Search by tenant, property, or unit..." />
+            </div>
+        </form>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="overflow-x-auto rounded-xl border border-[#dce0e5] dark:border-[#293038] bg-white dark:bg-[#1a1d23]">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#f8f9fa] dark:bg-[#20242b] border-b border-[#dce0e5] dark:border-[#293038]">
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Property</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Tenant</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Date Range</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-center">Rent Collection</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-center">Cumulated Rent</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">Status</th>
+                            <th class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#dce0e5] dark:divide-[#293038]">
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-[#20242b] transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">@item.PropertyName</span>
+                                        <span class="text-xs text-[#637588] dark:text-[#9dabb8]">Unit: @item.PropertyNumber</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-[#111418] dark:text-white font-medium">@item.TenantName</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col text-xs text-[#637588] dark:text-[#9dabb8]">
+                                        <span>Start: @item.Lease.StartDate?.ToString("MMM dd, yyyy")</span>
+                                        <span>End: @item.Lease.EndDate?.ToString("MMM dd, yyyy")</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">@item.Lease.RentDueMonths Months</span>
+                                        <span class="text-[10px] uppercase tracking-wider text-gray-500">Collect After</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex flex-col">
+                                        @{
+                                            var cumulatedRent = item.Lease.RentAmount * item.Lease.RentDueMonths;
+                                        }
+                                        <span class="text-sm font-mono font-black text-primary">PKR @cumulatedRent.ToString("N0")</span>
+                                        <span class="text-[10px] text-gray-400 font-medium">@item.Lease.RentDueMonths x @item.Lease.RentAmount.ToString("N0")</span>
+                                        
+                                        @if (item.Lease.IncrementMonths > 0 && item.Lease.IncrementPercentage > 0)
+                                        {
+                                            var baseDate = item.Lease.LastIncrementDate ?? item.Lease.StartDate ?? item.Lease.CreatedAt;
+                                            var nextIncrement = baseDate.AddMonths(item.Lease.IncrementMonths);
+                                            if (!item.Lease.EndDate.HasValue || nextIncrement <= item.Lease.EndDate.Value)
+                                            {
+                                                <div class="mt-1 flex items-center justify-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full" title="Next Rent Increment">
+                                                    <span class="material-symbols-outlined text-[12px]">trending_up</span>
+                                                    <span>@nextIncrement.ToString("MMM dd, yyyy") (@item.Lease.IncrementPercentage%)</span>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @{
+                                        var statusClass = item.Lease.Status switch
+                                        {
+                                            LeaseStatus.Active => "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400",
+                                            LeaseStatus.Pending => "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400",
+                                            LeaseStatus.Terminated => "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400",
+                                            _ => "bg-gray-100 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400"
+                                        };
+                                    }
+                                    <span class="inline-flex px-2 py-1 rounded-md text-xs font-bold @statusClass">@item.Lease.Status</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        @if (item.Lease.Status != LeaseStatus.Terminated)
+                                        {
+                                            <a href="@Url.Action("EditLease", "Leases", new { id = item.Lease.Id })" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit Terms">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </a>
+                                            <button onclick="terminateLease(@item.Lease.Id, '@item.PropertyName')" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors" title="Terminate Lease">
+                                                <span class="material-symbols-outlined text-[20px]">block</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-xs text-gray-400 italic">No further actions</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-[#1a1d23] rounded-xl border border-dashed border-[#dce0e5] dark:border-[#293038]">
+                <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">history_edu</span>
+                <h3 class="text-xl font-bold text-[#111418] dark:text-white">No Assignments Found</h3>
+                <p class="text-[#637588] dark:text-[#9dabb8] mt-2 mb-6">You haven't assigned any properties to tenants yet.</p>
+                <a href="@Url.Action("Index", "Leases")" class="px-6 py-2 bg-primary text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+                    Create First Assignment
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function terminateLease(id, propertyName) {
+            if (!confirm(`Are you sure you want to terminate the lease for ${propertyName}? This will mark the property as Vacant immediatey.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Leases/TerminateLease?id=${id}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    alert(result.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (result.message || 'Failed to terminate lease.'));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred.');
+            }
+        }
+    </script>
+}

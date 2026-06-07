@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Jaffar_Mall_Rent_Management_System.Models;
 
 namespace Jaffar_Mall_Rent_Management_System.Repositories
@@ -12,14 +12,24 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<int> GetTotalTenantsCountAsync()
+        public async Task<int> GetTotalTenantsCountAsync(string? searchTerm = null)
         {
             try
             {
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
-                const string sql = @"SELECT COUNT(*) FROM tenants";
-                int count = await connection.ExecuteScalarAsync<int>(sql);
+                
+                var sql = @"
+                SELECT COUNT(*) 
+                FROM tenants
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm OR email ILIKE @SearchTerm OR card_number ILIKE @SearchTerm)";
+                }
+
+                int count = await connection.ExecuteScalarAsync<int>(sql, new { SearchTerm = $"%{searchTerm}%" });
                 return count;
             }
             catch (Exception ex)
@@ -42,11 +52,16 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                try {
+                    await connection.ExecuteAsync("ALTER TABLE tenants ADD COLUMN IF NOT EXISTS email VARCHAR(255);");
+                    await connection.ExecuteAsync("ALTER TABLE tenants ADD COLUMN IF NOT EXISTS id_card_image_url VARCHAR(500);");
+                } catch { }
+
                 const string sql = @"
                 INSERT INTO tenants
-                    (name, description, phone_no, card_number, address, city, country, created_at, updated_at)
+                    (name, description, phone_no, email, card_number, address, city, country, id_card_image_url, created_at, updated_at)
                 VALUES
-                    (@Name, @Description, @Phone_No, @CardNumber, @Address, @City, @Country, @CreatedAt, @UpdatedAt)
+                    (@Name, @Description, @Phone_No, @Email, @CardNumber, @Address, @City, @Country, @IdCardImageUrl, @CreatedAt, @UpdatedAt)
                 RETURNING id";
 
                 var parameters = new
@@ -54,10 +69,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = tenant.Name,
                     Description = tenant.Description,
                     Phone_No = tenant.Phone_No,
+                    Email = tenant.Email,
                     CardNumber = tenant.CardNumber,
                     Address = tenant.Address,
                     City = tenant.City,
                     Country = tenant.Country,
+                    IdCardImageUrl = tenant.IdCardImageUrl,
                     CreatedAt = tenant.CreatedAt,
                     UpdatedAt = tenant.UpdatedAt
                 };
@@ -79,6 +96,59 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
+        public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int skip, int take, string? searchTerm = null, string? sort = null)
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var sql = @"
+                SELECT
+                    id,
+                    name,
+                    description,
+                    phone_no AS ""Phone_No"",
+                    email AS ""Email"",
+                    card_number AS ""CardNumber"",
+                    address AS ""Address"",
+                    city AS ""City"",
+                    country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
+                    created_at AS ""CreatedAt"",
+                    updated_at AS ""UpdatedAt""
+                FROM tenants
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (name ILIKE @SearchTerm OR phone_no ILIKE @SearchTerm OR email ILIKE @SearchTerm OR card_number ILIKE @SearchTerm)";
+                }
+
+                string sortClause = "ORDER BY id";
+                if (sort == "name_asc") sortClause = "ORDER BY name ASC";
+                else if (sort == "name_desc") sortClause = "ORDER BY name DESC";
+                else if (sort == "date_desc") sortClause = "ORDER BY created_at DESC";
+                else if (sort == "date_asc") sortClause = "ORDER BY created_at ASC";
+
+                sql += $"\n{sortClause}\nOFFSET @Skip LIMIT @Take";
+
+                var tenants = await connection.QueryAsync<Tenant>(sql, new 
+                { 
+                    Skip = skip, 
+                    Take = take,
+                    SearchTerm = $"%{searchTerm}%"
+                });
+                return tenants;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Tenant>();
+            }
+        }
+
+        // Overload for getting all tenants (used by dropdowns)
         public async Task<IEnumerable<Tenant>> GetAllTenantsAsync()
         {
             try
@@ -92,10 +162,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    email AS ""Email"",
                     card_number AS ""CardNumber"",
                     address AS ""Address"",
                     city AS ""City"",
                     country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -126,10 +198,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name,
                     description,
                     phone_no AS ""Phone_No"",
+                    email AS ""Email"",
                     card_number AS ""CardNumber"",
                     address AS ""Address"",
                     city AS ""City"",
                     country AS ""Country"",
+                    id_card_image_url AS ""IdCardImageUrl"",
                     created_at AS ""CreatedAt"",
                     updated_at AS ""UpdatedAt""
                 FROM tenants
@@ -164,10 +238,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     name = @Name,
                     description = @Description,
                     phone_no = @Phone_No,
+                    email = @Email,
                     card_number = @CardNumber,
                     address = @Address,
                     city = @City,
-                    country = @Country
+                    country = @Country,
+                    id_card_image_url = @IdCardImageUrl,
+                    updated_at = @UpdatedAt
                 WHERE id = @Id";
 
                 var parameters = new
@@ -176,10 +253,13 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = tenant.Name,
                     Description = tenant.Description,
                     Phone_No = tenant.Phone_No,
+                    Email = tenant.Email,
                     CardNumber = tenant.CardNumber,
                     Address = tenant.Address,
                     City = tenant.City,
-                    Country = tenant.Country
+                    Country = tenant.Country,
+                    IdCardImageUrl = tenant.IdCardImageUrl,
+                    UpdatedAt = tenant.UpdatedAt
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);

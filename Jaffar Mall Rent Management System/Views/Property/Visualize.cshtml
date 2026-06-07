@@ -1,0 +1,429 @@
+@{
+    ViewData["Title"] = "Mall Floor Map";
+}
+
+<!-- Header -->
+<header class="w-full bg-white dark:bg-[#111418] border-b border-[#dce0e5] dark:border-[#293038] px-8 py-5 shrink-0 z-10">
+    <div class="flex flex-col gap-4 max-w-[1400px] mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <a href="@Url.Action("Index", "Property")" class="flex items-center justify-center w-10 h-10 rounded-lg bg-[#f0f2f4] dark:bg-[#293038] text-[#637588] dark:text-[#9dabb8] hover:bg-[#e1e4e8] dark:hover:bg-[#3e4854] transition-colors">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="text-[#111418] dark:text-white text-2xl md:text-3xl font-black leading-tight tracking-[-0.033em]">Mall Floor Map</h1>
+                    <p class="text-[#637588] dark:text-[#9dabb8] text-sm mt-0.5">Interactive visualization of property units across all floors</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Summary Cards -->
+                <div id="stat-total" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#f0f2f4] dark:bg-[#293038] border border-transparent dark:border-[#3e4854]">
+                    <span class="material-symbols-outlined text-primary text-[20px]">apartment</span>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-wider text-[#637588] dark:text-[#9dabb8] font-semibold">Total</span>
+                        <span class="text-sm font-black text-[#111418] dark:text-white leading-none" id="totalCount">--</span>
+                    </div>
+                </div>
+                <div id="stat-vacant" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40">
+                    <span class="material-symbols-outlined text-emerald-500 text-[20px]">check_circle</span>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Vacant</span>
+                        <span class="text-sm font-black text-emerald-700 dark:text-emerald-300 leading-none" id="vacantCount">--</span>
+                    </div>
+                </div>
+                <div id="stat-occupied" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40">
+                    <span class="material-symbols-outlined text-red-500 text-[20px]">person</span>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-wider text-red-600 dark:text-red-400 font-semibold">Occupied</span>
+                        <span class="text-sm font-black text-red-700 dark:text-red-300 leading-none" id="occupiedCount">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Visualization Area -->
+<div class="flex-1 overflow-y-auto">
+    <div class="max-w-[1400px] mx-auto px-6 py-8">
+
+        <!-- Legend Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="relative w-5 h-5 rounded-md bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md shadow-emerald-500/30">
+                        <div class="absolute inset-0 rounded-md animate-ping bg-emerald-400 opacity-20"></div>
+                    </div>
+                    <span class="text-sm font-semibold text-[#637588] dark:text-[#9dabb8]">Vacant</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-gradient-to-br from-red-400 to-red-600 shadow-md shadow-red-500/30"></div>
+                    <span class="text-sm font-semibold text-[#637588] dark:text-[#9dabb8]">Occupied</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-[#637588] dark:text-[#9dabb8]">
+                <span class="material-symbols-outlined text-[16px]">info</span>
+                Hover over a unit to see details
+            </div>
+        </div>
+
+        <!-- Building Visualization -->
+        <div id="building-container" class="relative">
+            <!-- Loading State -->
+            <div id="loading-state" class="flex flex-col items-center justify-center py-24">
+                <div class="relative">
+                    <div class="w-16 h-16 rounded-full border-4 border-[#293038] border-t-primary animate-spin"></div>
+                    <span class="material-symbols-outlined text-primary text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">apartment</span>
+                </div>
+                <p class="text-[#637588] dark:text-[#9dabb8] text-sm mt-4 font-medium">Loading floor map...</p>
+            </div>
+
+            <!-- Floor Grid (injected by JS) -->
+            <div id="floor-grid" class="hidden flex flex-col gap-0 relative"></div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-24">
+                <span class="material-symbols-outlined text-7xl text-[#3e4854] mb-4">domain_disabled</span>
+                <h3 class="text-xl font-bold text-[#111418] dark:text-white mb-1">No Properties Found</h3>
+                <p class="text-[#637588] dark:text-[#9dabb8] text-sm mb-6">Add some properties to see the floor map visualization.</p>
+                <a href="@Url.Action("AddProperty", "Property")" class="px-5 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                    Add Property
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Selected Unit Detail Panel (slide-in) -->
+<div id="detail-panel" class="fixed top-0 right-0 h-full w-[380px] bg-white dark:bg-[#1a1d23] shadow-2xl shadow-black/30 border-l border-[#dce0e5] dark:border-[#293038] z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    <div class="p-6 border-b border-[#dce0e5] dark:border-[#293038] flex items-center justify-between">
+        <h3 class="text-lg font-bold text-[#111418] dark:text-white">Unit Details</h3>
+        <button onclick="closeDetailPanel()" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#637588] hover:bg-[#f0f2f4] dark:hover:bg-[#293038] transition-colors">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <div id="detail-content" class="flex-1 overflow-y-auto p-6">
+        <!-- Injected by JS -->
+    </div>
+</div>
+<div id="detail-backdrop" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onclick="closeDetailPanel()"></div>
+
+
+@section Scripts {
+<style>
+    .unit-box {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .unit-box:hover {
+        transform: translateY(-4px) scale(1.05);
+        z-index: 10;
+    }
+    .unit-vacant {
+        background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+    }
+    .unit-vacant:hover {
+        box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+    }
+    .unit-occupied {
+        background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+    }
+    .unit-occupied:hover {
+        box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5);
+    }
+    .floor-row {
+        animation: floorSlideIn 0.5s ease-out both;
+    }
+    @@keyframes floorSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .unit-pulse {
+        animation: unitPulse 0.3s ease-out;
+    }
+    @@keyframes unitPulse {
+        0% { transform: scale(0.8); opacity: 0; }
+        70% { transform: scale(1.05); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .occupancy-bar {
+        transition: width 1s ease-out;
+    }
+
+    /* Tooltip */
+    .unit-tooltip {
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%) translateY(8px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        z-index: 30;
+        white-space: nowrap;
+    }
+    .unit-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(17, 20, 24, 0.95);
+    }
+    .unit-box:hover .unit-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const loadingState = document.getElementById('loading-state');
+        const floorGrid = document.getElementById('floor-grid');
+        const emptyState = document.getElementById('empty-state');
+
+        try {
+            const response = await fetch('/Property/GetPropertiesForVisualization');
+            if (!response.ok) throw new Error("Failed to fetch");
+            const properties = await response.json();
+
+            if (!properties || properties.length === 0) {
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            // Calculate Stats
+            const total = properties.length;
+            const occupied = properties.filter(p => p.tenantName && p.tenantName.trim() !== '').length;
+            const vacant = total - occupied;
+            const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('vacantCount').textContent = vacant;
+            document.getElementById('occupiedCount').textContent = occupied;
+
+            // Group by Floor
+            const floors = {};
+            properties.forEach(p => {
+                const floor = p.floorNumber || 0;
+                if (!floors[floor]) floors[floor] = [];
+                floors[floor].push(p);
+            });
+
+            // Sort Floor Keys Descending (top floor first like a building)
+            const sortedFloors = Object.keys(floors).sort((a, b) => Number(b) - Number(a));
+
+            // Build the floor grid
+            floorGrid.innerHTML = '';
+
+            sortedFloors.forEach((floorNum, floorIndex) => {
+                const floorProps = floors[floorNum];
+                floorProps.sort((a, b) => (a.propertyNumber || '').localeCompare(b.propertyNumber || '', undefined, { numeric: true, sensitivity: 'base' }));
+
+                const floorVacant = floorProps.filter(p => !p.tenantName || p.tenantName.trim() === '').length;
+                const floorOccupied = floorProps.length - floorVacant;
+                const floorOccRate = floorProps.length > 0 ? Math.round((floorOccupied / floorProps.length) * 100) : 0;
+
+                const row = document.createElement('div');
+                row.className = 'floor-row';
+                row.style.animationDelay = `${floorIndex * 0.08}s`;
+
+                row.innerHTML = `
+                    <div class="flex gap-0 items-stretch">
+                        <!-- Floor Label (left sidebar) -->
+                        <div class="w-[140px] shrink-0 flex flex-col items-center justify-center py-6 px-4 border-r-2 border-[#dce0e5] dark:border-[#3e4854] bg-[#f8f9fa] dark:bg-[#0d1015]">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="material-symbols-outlined text-primary text-[18px]">layers</span>
+                                <span class="text-xs font-bold uppercase tracking-widest text-[#637588] dark:text-[#9dabb8]">Floor</span>
+                            </div>
+                            <span class="text-4xl font-black text-[#111418] dark:text-white leading-none">${floorNum}</span>
+                            <div class="mt-3 w-full">
+                                <div class="flex justify-between text-[10px] font-semibold mb-1">
+                                    <span class="text-emerald-500">${floorVacant} free</span>
+                                    <span class="text-red-400">${floorOccupied} used</span>
+                                </div>
+                                <div class="h-1.5 bg-[#e1e4e8] dark:bg-[#293038] rounded-full overflow-hidden">
+                                    <div class="occupancy-bar h-full rounded-full ${floorOccRate > 80 ? 'bg-gradient-to-r from-red-400 to-red-500' : floorOccRate > 50 ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-emerald-400 to-emerald-500'}" style="width: 0%;" data-width="${floorOccRate}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Units Grid -->
+                        <div class="flex-1 p-5 bg-white dark:bg-[#111418] border-b border-[#e8eaed] dark:border-[#1e2328]">
+                            <div class="flex flex-wrap gap-3" id="units-floor-${floorNum}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                floorGrid.appendChild(row);
+
+                // Add unit boxes with staggered animation
+                const unitsContainer = document.getElementById(`units-floor-${floorNum}`);
+                floorProps.forEach((p, unitIndex) => {
+                    const isOccupied = p.tenantName && p.tenantName.trim() !== '';
+
+                    const box = document.createElement('div');
+                    box.className = `unit-box ${isOccupied ? 'unit-occupied' : 'unit-vacant'} relative w-[72px] h-[62px] rounded-xl flex flex-col items-center justify-center cursor-pointer select-none text-white`;
+                    box.style.animationDelay = `${(floorIndex * 0.08) + (unitIndex * 0.03)}s`;
+                    box.classList.add('unit-pulse');
+
+                    box.innerHTML = `
+                        <span class="text-[9px] font-semibold uppercase tracking-wider opacity-70 leading-none mb-0.5">${isOccupied ? '' : 'OPEN'}</span>
+                        <span class="text-[15px] font-black leading-none">${p.propertyNumber || '--'}</span>
+                        <span class="text-[8px] opacity-60 mt-0.5">${p.propertyType ? p.propertyType.substring(0, 6) : ''}</span>
+
+                        <!-- Tooltip -->
+                        <div class="unit-tooltip">
+                            <div class="bg-[#111418]/95 backdrop-blur-md text-white rounded-xl px-4 py-3 shadow-2xl shadow-black/40 min-w-[200px]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-2.5 h-2.5 rounded-full ${isOccupied ? 'bg-red-400' : 'bg-emerald-400'} shadow-lg ${isOccupied ? 'shadow-red-400/50' : 'shadow-emerald-400/50'}"></div>
+                                    <span class="text-xs font-bold uppercase tracking-wider ${isOccupied ? 'text-red-300' : 'text-emerald-300'}">${isOccupied ? 'Occupied' : 'Vacant'}</span>
+                                </div>
+                                <p class="font-bold text-sm mb-0.5">${p.name || 'Unnamed'}</p>
+                                <p class="text-[11px] text-gray-400 mb-2">${p.propertyType || '—'} · Unit ${p.propertyNumber || '—'}</p>
+                                ${isOccupied ? `
+                                    <div class="border-t border-white/10 pt-2 mt-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="material-symbols-outlined text-[14px] text-red-300">person</span>
+                                            <span class="text-xs text-red-200 font-medium">${p.tenantName}</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="border-t border-white/10 pt-2 mt-1">
+                                        <span class="text-[11px] text-emerald-300 font-medium">Available for lease</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+
+                    box.addEventListener('click', () => openDetailPanel(p, isOccupied));
+                    unitsContainer.appendChild(box);
+                });
+            });
+
+            // Show the grid
+            loadingState.classList.add('hidden');
+            floorGrid.classList.remove('hidden');
+
+            // Animate occupancy bars
+            setTimeout(() => {
+                document.querySelectorAll('.occupancy-bar').forEach(bar => {
+                    bar.style.width = bar.dataset.width;
+                });
+            }, 300);
+
+        } catch (err) {
+            console.error(err);
+            loadingState.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-16">
+                    <span class="material-symbols-outlined text-6xl text-red-400 mb-4">error</span>
+                    <h3 class="text-lg font-bold text-[#111418] dark:text-white mb-1">Failed to Load Data</h3>
+                    <p class="text-[#637588] dark:text-[#9dabb8] text-sm mb-4">Something went wrong while fetching the floor map.</p>
+                    <button onclick="location.reload()" class="px-5 py-2 rounded-lg bg-primary text-white font-bold text-sm hover:bg-blue-600 transition-colors">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+    });
+
+    // Detail Panel
+    function openDetailPanel(property, isOccupied) {
+        const panel = document.getElementById('detail-panel');
+        const backdrop = document.getElementById('detail-backdrop');
+        const content = document.getElementById('detail-content');
+
+        content.innerHTML = `
+            <!-- Status Badge -->
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-3 h-3 rounded-full ${isOccupied ? 'bg-red-500 shadow-lg shadow-red-500/40' : 'bg-emerald-500 shadow-lg shadow-emerald-500/40'}"></div>
+                <span class="text-sm font-bold uppercase tracking-wider ${isOccupied ? 'text-red-500' : 'text-emerald-500'}">${isOccupied ? 'Occupied' : 'Vacant'}</span>
+            </div>
+
+            <!-- Unit Name -->
+            <h2 class="text-2xl font-black text-[#111418] dark:text-white mb-1">${property.name || 'Unnamed'}</h2>
+            <p class="text-sm text-[#637588] dark:text-[#9dabb8] mb-6">${property.description || 'No description available.'}</p>
+
+            <!-- Info Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="p-3 rounded-xl bg-[#f0f2f4] dark:bg-[#293038]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8]">Unit No.</span>
+                    <p class="text-lg font-black text-[#111418] dark:text-white mt-0.5">${property.propertyNumber || '—'}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-[#f0f2f4] dark:bg-[#293038]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8]">Floor</span>
+                    <p class="text-lg font-black text-[#111418] dark:text-white mt-0.5">${property.floorNumber || 0}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-[#f0f2f4] dark:bg-[#293038]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8]">Type</span>
+                    <p class="text-sm font-bold text-[#111418] dark:text-white mt-0.5">${property.propertyType || '—'}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-[#f0f2f4] dark:bg-[#293038]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8]">City</span>
+                    <p class="text-sm font-bold text-[#111418] dark:text-white mt-0.5">${property.city || '—'}</p>
+                </div>
+            </div>
+
+            ${property.address ? `
+                <div class="p-3 rounded-xl bg-[#f0f2f4] dark:bg-[#293038] mb-6">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8]">Address</span>
+                    <p class="text-sm font-medium text-[#111418] dark:text-white mt-0.5">${property.address}${property.city ? ', ' + property.city : ''}${property.country ? ', ' + property.country : ''}</p>
+                </div>
+            ` : ''}
+
+            ${isOccupied ? `
+                <!-- Tenant Info -->
+                <div class="border-t border-[#e1e4e8] dark:border-[#293038] pt-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-[#637588] dark:text-[#9dabb8] mb-3">Current Tenant</h4>
+                    <div class="flex items-center gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-red-500/30">
+                            ${(property.tenantName || '?')[0].toUpperCase()}
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#111418] dark:text-white text-sm">${property.tenantName}</p>
+                            <p class="text-xs text-red-500 dark:text-red-400">Active Lease</p>
+                        </div>
+                    </div>
+                </div>
+            ` : `
+                <!-- Vacant CTA -->
+                <div class="border-t border-[#e1e4e8] dark:border-[#293038] pt-5">
+                    <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 text-center">
+                        <span class="material-symbols-outlined text-emerald-500 text-3xl mb-1">check_circle</span>
+                        <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">This unit is available</p>
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">Ready to be assigned to a tenant</p>
+                    </div>
+                </div>
+            `}
+
+            <!-- Actions -->
+            <div class="mt-6 flex flex-col gap-2">
+                <a href="/Property/EditProperty?id=${property.id}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm transition-colors shadow-lg shadow-blue-500/20">
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Edit Property
+                </a>
+            </div>
+        `;
+
+        panel.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+    }
+
+    function closeDetailPanel() {
+        const panel = document.getElementById('detail-panel');
+        const backdrop = document.getElementById('detail-backdrop');
+        panel.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+    }
+</script>
+}

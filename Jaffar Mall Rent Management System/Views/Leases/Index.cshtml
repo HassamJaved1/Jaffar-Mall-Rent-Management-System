@@ -1,229 +1,249 @@
-﻿<!DOCTYPE html>
+@using Jaffar_Mall_Rent_Management_System.Models.ViewModels
+@model LeasesDropdown
+@{
+    ViewData["Title"] = "Property Assignment Screen";
+}
 
-<html class="dark" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Property Assignment Screen - RentManager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#197fe6",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111921",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "Noto Sans", "sans-serif"]
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
-            },
-        }
-    </script>
-</head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
-    <!-- Top Navigation -->
-    <div class="border-b border-gray-200 dark:border-[#293038] bg-white dark:bg-[#111418]">
-        <div class="px-4 md:px-10 py-3 flex items-center justify-between max-w-7xl mx-auto w-full">
-            <div class="flex items-center gap-4 text-slate-900 dark:text-white">
-                <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
-                    <span class="material-symbols-outlined text-[20px]">apartment</span>
-                </div>
-                <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">RentManager</h2>
+<!-- Main Content Area -->
+<div class="flex-1 flex justify-center py-8 px-4 md:px-10 overflow-auto">
+    <div class="flex flex-col max-w-5xl flex-1 w-full gap-8 pb-10">
+        <!-- Breadcrumbs -->
+        <div class="flex flex-wrap gap-2 items-center text-sm">
+            <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="@Url.Action("Index", "Home")">Home</a>
+            <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
+            <span class="text-slate-900 dark:text-white font-medium">@(ViewBag.Lease != null ? "Edit Assignment" : "New Assignment")</span>
+        </div>
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between gap-6 md:items-end">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">@(ViewBag.Lease != null ? "Edit Lease Agreement" : "Assign Property to Tenant")</h1>
+                <p class="text-gray-600 dark:text-[#9dabb8] text-base font-normal">@(ViewBag.Lease != null ? "Update the terms of the existing lease agreement." : "Create a new lease agreement and officially assign a unit.")</p>
             </div>
-            <div class="flex flex-1 justify-end gap-8">
-                <div class="hidden md:flex items-center gap-9">
-                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Dashboard</a>
-                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Properties</a>
-                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Tenants</a>
-                    <a class="text-sm font-medium leading-normal text-slate-900 dark:text-white" href="#">Leases</a>
-                    <a class="text-sm font-medium leading-normal text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Settings</a>
-                </div>
-                <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-gray-200 dark:ring-[#293038]" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEBrxnMVsnxL6m63VHAgLG_P99TIZibq6BzBAKbFjVPoqYXer9thbpmtlU3KkMe2XL7-QGNWcx2lKGYDV_-BostdBV6VuGE1qDCThiun6-m0ykch4TIvRIrN91v-om5xjp7rmHNvU6VUsCurBTDJExy2IriOteEnp8SlE2t10sewr1vzHyMEk66P6AL6XFaTGSsLSn80meTIM0QhXEQ6Q7piuvvQlT9QLXCWI3RAl-225jF3DhyO1joKeJgWAFVZeoDUDCGNsR4pYn");'></div>
+            <div class="flex gap-3">
+                <button type="button" onclick="history.back()" class="flex items-center justify-center h-10 px-4 rounded-lg bg-gray-200 dark:bg-[#293038] text-slate-900 dark:text-white text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#3c4753] transition-colors">
+                    Back
+                </button>
+                <button id="btnCreateAssignment" class="flex items-center justify-center h-10 px-6 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+                    @(ViewBag.Lease != null ? "Update Assignment" : "Create Assignment")
+                </button>
             </div>
         </div>
-    </div>
-    <!-- Main Content Area -->
-    <div class="flex-1 flex justify-center py-8 px-4 md:px-10">
-        <div class="flex flex-col max-w-5xl flex-1 w-full gap-8">
-            <!-- Breadcrumbs -->
-            <div class="flex flex-wrap gap-2 items-center text-sm">
-                <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Home</a>
-                <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
-                <a class="text-gray-500 dark:text-[#9dabb8] font-medium hover:text-primary transition-colors" href="#">Leases</a>
-                <span class="text-gray-400 dark:text-[#9dabb8] font-medium">/</span>
-                <span class="text-slate-900 dark:text-white font-medium">New Assignment</span>
-            </div>
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row justify-between gap-6 md:items-end">
-                <div class="flex flex-col gap-2">
-                    <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Assign Property to Tenant</h1>
-                    <p class="text-gray-600 dark:text-[#9dabb8] text-base font-normal">Create a new lease agreement and officially assign a unit.</p>
+        <!-- Form Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Form Column (Left 2/3) -->
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <!-- Section: Parties -->
+                <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">groups</span>
+                        Lease Parties
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Tenant Select -->
+                        <label class="flex flex-col flex-1 gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Tenant</span>
+                            <div class="relative">
+                                <select id="TenantId" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option disabled selected="@(ViewBag.Lease == null)" value="">Select a tenant...</option>
+                                    @if (Model != null && Model.Tenants.Any())
+                                    {
+                                        foreach (var tenant in Model.Tenants)
+                                        {
+                                            <option value="@tenant.Id" selected="@(ViewBag.Lease?.TenantId == tenant.Id)">@tenant.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No tenants found</option>
+                                    }
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Property Select -->
+                        <label class="flex flex-col flex-1 gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Property</span>
+                            <div class="relative">
+                                <select id="PropertyId" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option disabled selected="@(ViewBag.Lease == null)" value="">Select a property...</option>
+                                    @if (Model != null && Model.Properties.Any())
+                                    {
+                                        foreach (var property in Model.Properties)
+                                        {
+                                            <option value="@property.Id" selected="@(ViewBag.Lease?.PropertyId == property.Id)">@property.Name - @property.PropertyNumber</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No properties found</option>
+                                    }
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Added By -->
+                        <label class="flex flex-col flex-1 gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Added By</span>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <span class="material-symbols-outlined text-[20px]">person</span>
+                                </div>
+                                <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-100 dark:bg-[#293038] pl-10 px-4 py-3 text-gray-500 dark:text-gray-400 focus:outline-none cursor-not-allowed" readonly type="text" value="@(ViewBag.Lease?.AddedBy ?? "Admin User")" />
+                            </div>
+                        </label>
+                        <!-- Status -->
+                        <label class="flex flex-col flex-1 gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Agreement Status</span>
+                            <div class="relative">
+                                <select id="Status" class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                                    <option value="2" selected="@(ViewBag.Lease?.Status == LeaseStatus.Active)">Active</option>
+                                    <option value="1" selected="@(ViewBag.Lease?.Status == LeaseStatus.Pending)">Pending Signature</option>
+                                    <option value="3" selected="@(ViewBag.Lease?.Status == LeaseStatus.Terminated)">Terminated</option>
+                                    <option value="4" selected="@(ViewBag.Lease?.Status == LeaseStatus.Cancelled)">Cancelled</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
                 </div>
-                <div class="flex gap-3">
-                    <button class="flex items-center justify-center h-10 px-4 rounded-lg bg-gray-200 dark:bg-[#293038] text-slate-900 dark:text-white text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#3c4753] transition-colors">
-                        Cancel
-                    </button>
-                    <button class="flex items-center justify-center h-10 px-6 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
-                        Create Assignment
-                    </button>
-                </div>
-            </div>
-            <!-- Form Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Main Form Column (Left 2/3) -->
-                <div class="lg:col-span-2 flex flex-col gap-6">
-                    <!-- Section: Parties -->
-                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">groups</span>
-                            Lease Parties
-                        </h3>
+                <!-- Section: Terms & Description -->
+                <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">description</span>
+                        Details & Notes
+                    </h3>
+                    <div class="flex flex-col gap-6">
+                        <!-- Lease Duration -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Tenant Select -->
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Tenant</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Start Date</span>
                                 <div class="relative">
-                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                        <option disabled="" selected="" value="">Search for a tenant...</option>
-                                        <option value="1">Sarah Jenkins</option>
-                                        <option value="2">Michael Chen</option>
-                                        <option value="3">Elena Rodriguez</option>
-                                        <option value="3">Elesna Rodriguez</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
-                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
-                                    </div>
+                                    <input id="StartDate" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="datetime-local" />
                                 </div>
                             </label>
-                            <!-- Property Select -->
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Select Property</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Contract Duration (Months)</span>
                                 <div class="relative">
-                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                        <option disabled="" selected="" value="">Search by address...</option>
-                                        <option value="1">1204 Sunset Blvd, Apt 4B</option>
-                                        <option value="2">880 Highland Ave, Unit 12</option>
-                                        <option value="3">45 Main St, Penthouse</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
-                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
-                                    </div>
+                                    <input id="Months" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="1" min="1" />
                                 </div>
                             </label>
-                            <!-- Added By -->
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Added By</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Deadline (End Date)</span>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                        <span class="material-symbols-outlined text-[20px]">person</span>
-                                    </div>
-                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-100 dark:bg-[#293038] pl-10 px-4 py-3 text-gray-500 dark:text-gray-400 focus:outline-none cursor-not-allowed" readonly="" type="text" value="Admin User" />
+                                    <input id="EndDate" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="datetime-local" />
                                 </div>
                             </label>
-                            <!-- Status -->
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Agreement Status</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Rent Due Every (Months)</span>
                                 <div class="relative">
-                                    <select class="w-full appearance-none rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 pr-10 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all">
-                                        <option value="active">Active</option>
-                                        <option selected="" value="pending">Pending Signature</option>
-                                        <option value="draft">Draft</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-[#9dabb8]">
-                                        <span class="material-symbols-outlined text-[20px]">expand_more</span>
-                                    </div>
+                                    <input id="RentDueMonths" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="1" min="1" />
                                 </div>
+                                <span id="RentDueError" class="text-[10px] text-red-500 font-bold hidden">Interval cannot exceed duration!</span>
+                            </label>
+
+                            <label style="display:none" class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Due In (Days)</span>
+                                <div class="relative">
+                                    <input id="SecurityDueDays" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="0" min="0" />
+                                </div>
+                            </label>
+
+                        </div>
+                        
+                        <hr class="border-gray-200 dark:border-[#293038] my-2" />
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                             <span class="material-symbols-outlined text-primary text-[18px]">trending_up</span>
+                             Rent Incremental Terms
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                             <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Increment After (Months)</span>
+                                <div class="relative">
+                                    <input id="IncrementMonths" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="@(ViewBag.Lease?.IncrementMonths ?? 0)" min="0" />
+                                </div>
+                                <span id="IncrementMonthsError" class="text-[10px] text-red-500 font-bold hidden">Increment interval cannot exceed duration!</span>
+                                <span class="text-[10px] text-gray-500">How many months until next increase?</span>
+                            </label>
+                            <label class="flex flex-col flex-1 gap-2 group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Increment Percentage (%)</span>
+                                <div class="relative">
+                                    <input id="IncrementPercentage" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono" type="number" step="0.01" value="@(ViewBag.Lease?.IncrementPercentage ?? 0)" min="0" />
+                                </div>
+                                <span class="text-[10px] text-gray-500">e.g. 10 for 10%</span>
                             </label>
                         </div>
-                    </div>
-                    <!-- Section: Terms & Description -->
-                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">description</span>
-                            Details &amp; Notes
-                        </h3>
-                        <div class="flex flex-col gap-6">
-                            <!-- Lease Duration -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <label class="flex flex-col flex-1 gap-2 group">
-                                    <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Duration (Months)</span>
-                                    <div class="relative">
-                                        <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" max="120" min="1" type="number" value="12" />
-                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 text-sm">
-                                            months
-                                        </div>
-                                    </div>
-                                </label>
-                                <label class="flex flex-col flex-1 gap-2 group">
-                                    <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Start Date</span>
-                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="date" />
-                                </label>
-                            </div>
-                            <!-- Description -->
-                            <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Description / Notes</span>
-<textarea class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all" placeholder="Add any special conditions or notes about this assignment..." rows="3"></textarea>
-                            </label>
-                        </div>
+                        <!-- Description -->
+                        <label class="flex flex-col flex-1 gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Description / Notes</span>
+                            <textarea id="Description" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all" placeholder="Add any special conditions or notes about this assignment..." rows="3">@(ViewBag.Lease?.Description ?? "")</textarea>
+                        </label>
                     </div>
                 </div>
-                <!-- Financials Sidebar (Right 1/3) -->
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm h-fit sticky top-6">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">payments</span>
-                            Financials
-                        </h3>
-                        <div class="flex flex-col gap-5">
-                            <!-- Rent Amount -->
-                            <label class="flex flex-col gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Monthly Rent</span>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
-                                    </div>
-                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
+            </div>
+            <!-- Financials Sidebar (Right 1/3) -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                <div class="bg-white dark:bg-[#1c2126] border border-gray-200 dark:border-[#293038] rounded-xl p-6 shadow-sm h-fit sticky top-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">payments</span>
+                        Financials
+                    </h3>
+                    <div class="flex flex-col gap-5">
+                        <!-- Rent Amount -->
+                        <label class="flex flex-col gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Monthly Rent</span>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">PKR</span>
                                 </div>
-                            </label>
-                            <!-- Security Deposit -->
-                            <label class="flex flex-col gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Deposit</span>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <span class="text-gray-500 dark:text-gray-400 font-semibold">$</span>
-                                    </div>
-                                    <input class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-8 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" />
-                                </div>
-                            </label>
-                            <hr class="border-gray-200 dark:border-[#293038] my-2" />
-                            <!-- Summary -->
-                            <div class="flex flex-col gap-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Term Length</span>
-                                    <span class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Est. Total Value</span>
-                                    <span class="text-lg font-bold text-primary">$0.00</span>
-                                </div>
+                                <input id="RentAmount" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-12 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" value="@(ViewBag.Lease?.RentAmount ?? 0)" />
                             </div>
-                            <div class="bg-blue-50 dark:bg-[#111921] rounded-lg p-3 mt-2 border border-blue-100 dark:border-[#293038]">
-                                <div class="flex gap-2">
-                                    <span class="material-symbols-outlined text-primary text-sm mt-0.5">info</span>
-                                    <p class="text-xs text-slate-600 dark:text-gray-400 leading-normal">
-                                        A refundable security deposit is typically collected before move-in. Ensure this matches the lease agreement.
-                                    </p>
+                        </label>
+                        <!-- Security Deposit -->
+                        <label class="flex flex-col gap-2 group">
+                            <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Deposit</span>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">PKR</span>
                                 </div>
+                                <input id="SecurityDeposit" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] pl-12 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all font-mono font-medium" placeholder="0.00" type="number" value="@(ViewBag.Lease?.SecurityDeposit ?? 0)" />
+                            </div>
+                        </label>
+                        <hr class="border-gray-200 dark:border-[#293038] my-2" />
+                        <div class="flex flex-col gap-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Complete Contract Duration</span>
+                                <span id="TermLengthDisplay" class="text-sm font-medium text-slate-900 dark:text-white">1 Month</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Rent Collection After</span>
+                                <span id="TermRentCollectionDisplay" class="text-sm font-medium text-slate-900 dark:text-white">1 Month</span>
+                            </div>
+                            <hr class="border-gray-200 dark:border-[#293038] my-1" />
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">First Rent</span>
+                                <span id="FirstCollectionDisplay" class="text-sm font-bold text-emerald-600">PKR 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Regular Collection</span>
+                                <span id="RegularCollectionDisplay" class="text-sm font-medium text-slate-900 dark:text-white">PKR 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Rent Collection</span>
+                                <span id="TotalValueDisplay" class="text-lg font-bold text-primary">PKR 0.00</span>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 dark:bg-[#111921] rounded-lg p-3 mt-2 border border-blue-100 dark:border-[#293038]">
+                            <div class="flex gap-2">
+                                <span class="material-symbols-outlined text-primary text-sm mt-0.5">info</span>
+                                <p class="text-xs text-slate-600 dark:text-gray-400 leading-normal">
+                                    A refundable security deposit is typically collected before move-in. Ensure this matches the lease agreement.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -231,5 +251,257 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elStartDate = document.getElementById('StartDate');
+            const elEndDate = document.getElementById('EndDate');
+            const elRent = document.getElementById('RentAmount');
+            const elMonths = document.getElementById('Months');
+            const elTermDisplay = document.getElementById('TermLengthDisplay');
+            const rentcollectionTermDisplay = document.getElementById('TermRentCollectionDisplay');
+            const elFirstCollectionDisplay = document.getElementById('FirstCollectionDisplay');
+            const elRegularCollectionDisplay = document.getElementById('RegularCollectionDisplay');
+            const elTotalDisplay = document.getElementById('TotalValueDisplay');
+            const btnCreate = document.getElementById('btnCreateAssignment');
+
+            function updateCalculationsFromDates() {
+                const rent = parseFloat(elRent.value) || 0;
+                let months = 0;
+
+                if (elStartDate.value && elEndDate.value) {
+                    const start = new Date(elStartDate.value);
+                    const end = new Date(elEndDate.value);
+                    if (end > start) {
+                        months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+                        // If end day is less than start day, it's not a full month yet
+                        if (end.getDate() < start.getDate()) {
+                            months--;
+                        }
+                        if (months < 0) months = 0;
+                    }
+                }
+                
+                elMonths.value = months;
+                updateSummary(months, rent);
+            }
+
+            function updateEndDateFromMonths() {
+                const rent = parseFloat(elRent.value) || 0;
+                const months = parseInt(elMonths.value) || 0;
+                
+                if (elStartDate.value && months > 0) {
+                    const start = new Date(elStartDate.value);
+                    const end = new Date(start);
+                    end.setMonth(start.getMonth() + months);
+                    
+                    // Format for datetime-local: YYYY-MM-DDTHH:mm
+                    const off = end.getTimezoneOffset();
+                    const adjusted = new Date(end.getTime() - (off * 60 * 1000));
+                    elEndDate.value = adjusted.toISOString().slice(0, 16);
+                }
+                updateSummary(months, rent);
+            }
+
+            function updateSummary(months, rent) {
+                const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
+                const rentDueError = document.getElementById('RentDueError');
+
+                // Validation for Rent Due
+                if (rentDueMonths > months && months > 0) {
+                    document.getElementById('RentDueMonths').classList.add('border-red-500', 'text-red-500');
+                    if (rentDueError) rentDueError.classList.remove('hidden');
+                } else {
+                    document.getElementById('RentDueMonths').classList.remove('border-red-500', 'text-red-500');
+                    if (rentDueError) rentDueError.classList.add('hidden');
+                }
+
+                // Validation for Increment Months
+                const incrementMonths = parseInt(document.getElementById('IncrementMonths').value) || 0;
+                const incrementError = document.getElementById('IncrementMonthsError');
+                if (incrementMonths > months && months > 0) {
+                    document.getElementById('IncrementMonths').classList.add('border-red-500', 'text-red-500');
+                    if (incrementError) incrementError.classList.remove('hidden');
+                } else {
+                    document.getElementById('IncrementMonths').classList.remove('border-red-500', 'text-red-500');
+                    if (incrementError) incrementError.classList.add('hidden');
+                }
+
+                elTermDisplay.textContent = months + (months === 1 ? " Month" : " Months");
+                if (rentcollectionTermDisplay) {
+                    rentcollectionTermDisplay.textContent = rentDueMonths + (rentDueMonths === 1 ? " Month" : " Months");
+                }
+
+                const formatter = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 });
+                
+                const regularCollection = rent * rentDueMonths;
+                const firstCollection = regularCollection;
+
+                if (elRegularCollectionDisplay) elRegularCollectionDisplay.textContent = formatter.format(regularCollection);
+                if (elFirstCollectionDisplay) elFirstCollectionDisplay.textContent = formatter.format(firstCollection);
+
+                const incrementPercentage = parseFloat(document.getElementById('IncrementPercentage').value) || 0;
+
+                let cumulatedRent = 0;
+                let currentRent = rent;
+
+                if (months > 0) {
+                    if (incrementMonths > 0 && incrementPercentage > 0) {
+                        for (let i = 1; i <= months; i++) {
+                            // Apply increment after every X months
+                            if (i > 1 && (i - 1) % incrementMonths === 0) {
+                                currentRent += (currentRent * (incrementPercentage / 100));
+                            }
+                            cumulatedRent += currentRent;
+                        }
+                    } else {
+                        cumulatedRent = months * rent;
+                    }
+                }
+
+                elTotalDisplay.textContent = formatter.format(cumulatedRent);
+            }
+
+            // Listen for changes
+            elStartDate.addEventListener('input', updateEndDateFromMonths);
+            elMonths.addEventListener('input', updateEndDateFromMonths);
+            elEndDate.addEventListener('input', updateCalculationsFromDates);
+            elRent.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            
+            const elSecurityDeposit = document.getElementById('SecurityDeposit');
+            const elRentDueMonths = document.getElementById('RentDueMonths');
+
+            if (elSecurityDeposit) {
+                elSecurityDeposit.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
+            if (elRentDueMonths) {
+                elRentDueMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
+            
+            const elIncrementMonths = document.getElementById('IncrementMonths');
+            const elIncrementPercentage = document.getElementById('IncrementPercentage');
+
+            if (elIncrementMonths) {
+                elIncrementMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
+            if (elIncrementPercentage) {
+                elIncrementPercentage.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
+
+            btnCreate.addEventListener('click', async () => {
+                const tenantId = document.getElementById('TenantId').value;
+                const propertyId = document.getElementById('PropertyId').value;
+                const status = document.getElementById('Status').value;
+                const startDate = document.getElementById('StartDate').value;
+                const endDate = document.getElementById('EndDate').value;
+                const rentAmount = document.getElementById('RentAmount').value;
+                const securityDeposit = document.getElementById('SecurityDeposit').value;
+                const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
+                const monthsInput = parseInt(elMonths.value) || 0;
+
+                if (rentDueMonths > monthsInput && monthsInput >0) {
+                    alert("Rent collection interval cannot be greater than the total contract duration.");
+                    return;
+                }
+
+                const securityDueDays = document.getElementById('SecurityDueDays').value;
+                const incrementMonths = parseInt(document.getElementById('IncrementMonths').value) || 0;
+                const incrementPercentage = document.getElementById('IncrementPercentage').value;
+                const description = document.getElementById('Description').value;
+
+                if (incrementMonths > monthsInput && monthsInput > 0) {
+                    alert("Increment After (Months) cannot be greater than Contract Duration (Months).");
+                    return;
+                }
+
+                if (!tenantId || !propertyId || !rentAmount || !startDate || !endDate || !rentDueMonths) {
+                    alert("Please fill in all required fields, including Rent Amount and Collection Interval.");
+                    return;
+                }
+
+                const calculatedMonths = parseInt(elMonths.value) || 0;
+
+
+                const leaseId = @(ViewBag.Lease?.Id ?? 0);
+                const isEdit = leaseId > 0;
+
+                const leaseData = {
+                    Id: leaseId,
+                    TenantId: parseInt(tenantId),
+                    PropertyId: parseInt(propertyId),
+                    Status: parseInt(status),
+                    StartDate: startDate,
+                    EndDate: endDate,
+                    Months: calculatedMonths,
+                    RentAmount: parseFloat(rentAmount),
+                    SecurityDeposit: securityDeposit ? parseFloat(securityDeposit) : 0,
+                    RentDueMonths: parseInt(rentDueMonths) || 1,
+                    SecurityDueDays: parseInt(securityDueDays) || 0,
+                    IncrementMonths: parseInt(incrementMonths) || 0,
+                    IncrementPercentage: parseFloat(incrementPercentage) || 0,
+                    Description: description
+                };
+
+                const originalText = btnCreate.textContent;
+                btnCreate.disabled = true;
+                btnCreate.textContent = isEdit ? "Updating..." : "Creating...";
+
+                try {
+                    const url = isEdit ? '/Leases/UpdateLease' : '/Leases/CreateLease';
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(leaseData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.code === 200) {
+                        alert(result.message);
+                        // Redirect or reset
+                        window.location.href = '/Leases/Manage'; 
+                    } else {
+                        alert("Error: " + (result.message || "Failed to create lease."));
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    alert("An error occurred.");
+                } finally {
+                    btnCreate.disabled = false;
+                    btnCreate.textContent = originalText;
+                }
+            });
+
+            // Init
+            const isEdit = @(ViewBag.Lease != null ? "true" : "false");
+            if (!isEdit) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                elStartDate.value = now.toISOString().slice(0, 16);
+                updateEndDateFromMonths();
+            } else {
+                // Pre-fill from existing lease
+                const start = "@(ViewBag.Lease?.StartDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")";
+                const end = "@(ViewBag.Lease?.EndDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")";
+                const months = @(ViewBag.Lease?.Months ?? 0);
+                
+                if (start) elStartDate.value = start;
+                if (end) elEndDate.value = end;
+                if (months) elMonths.value = months;
+                
+                const rentDueMonths = @(ViewBag.Lease?.RentDueMonths ?? 1);
+                document.getElementById('RentDueMonths').value = rentDueMonths;
+                
+                const securityDueDays = @(ViewBag.Lease?.SecurityDueDays ?? 0);
+                document.getElementById('SecurityDueDays').value = securityDueDays;
+
+                updateSummary(months, parseFloat(elRent.value) || 0);
+            }
+        });
+    </script>
+}

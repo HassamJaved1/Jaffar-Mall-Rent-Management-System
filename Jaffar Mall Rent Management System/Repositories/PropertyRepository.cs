@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Jaffar_Mall_Rent_Management_System.Models;
 
 namespace Jaffar_Mall_Rent_Management_System.Repositories
@@ -12,16 +12,56 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<int> GetTotalPropertiesCountAsync()
+        public async Task<int> GetTotalPropertiesCountAsync(string? searchTerm = null, string? type = null, int? status = null, IEnumerable<long>? filterPropertyIds = null)
         {
             try
             {
                 await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
-                const string sql = @"
-                SELECT COUNT(*) 
-                FROM properties";
-                int count = await connection.ExecuteScalarAsync<int>(sql);
+                
+                var sql = @"
+                SELECT COUNT(DISTINCT p.id) 
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm OR t.name ILIKE @SearchTerm)";
+                }
+
+                if (!string.IsNullOrWhiteSpace(type))
+                {
+                    sql += " AND p.property_type = @Type";
+                }
+
+                if (status.HasValue)
+                {
+                    if (status.Value == 1) // Vacant
+                    {
+                        sql += " AND pl.id IS NULL";
+                    }
+                    else if (status.Value == 2) // Occupied
+                    {
+                        sql += " AND pl.id IS NOT NULL";
+                    }
+                }
+
+                if (filterPropertyIds != null && filterPropertyIds.Any())
+                {
+                    sql += " AND p.id = ANY(@FilterPropertyIds)";
+                }
+                else if (filterPropertyIds != null && !filterPropertyIds.Any())
+                {
+                    return 0; // Filter requested but no IDs match
+                }
+
+                int count = await connection.ExecuteScalarAsync<int>(sql, new { 
+                    SearchTerm = $"%{searchTerm}%", 
+                    Type = type,
+                    FilterPropertyIds = filterPropertyIds?.ToArray()
+                });
                 return count;
             }
             catch (Exception ex)
@@ -42,9 +82,9 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 INSERT INTO properties
-                    (name, description, property_type, property_code,address, city, country)
+                    (name, description, property_type, property_code, property_number, floor_number, address, city, country)
                 VALUES
-                    (@Name, @Description,@PropertyType,@PropertyCode,@Address,@City,@Country)
+                    (@Name, @Description, @PropertyType, @PropertyCode, @PropertyNumber, @FloorNumber, @Address, @City, @Country)
                 RETURNING id";
 
                 var parameters = new
@@ -53,6 +93,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Description = property.Description,
                     PropertyType = property.PropertyType,
                     PropertyCode = Guid.NewGuid(),
+                    PropertyNumber = property.PropertyNumber,
+                    FloorNumber = property.FloorNumber,
                     Address = property.Address,
                     City = property.City,
                     Country = property.Country
@@ -90,6 +132,8 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                 SET name = @Name,
                     description = @Description,
                     property_type = @PropertyType,
+                    property_number = @PropertyNumber,
+                    floor_number = @FloorNumber,
                     address = @Address,
                     city = @City,
                     country = @Country,
@@ -102,9 +146,12 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
                     Name = property.Name,
                     Description = property.Description,
                     PropertyType = property.PropertyType,
+                    PropertyNumber = property.PropertyNumber,
+                    FloorNumber = property.FloorNumber,
                     Address = property.Address,
                     City = property.City,
-                    Country = property.Country
+                    Country = property.Country,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 int rows = await connection.ExecuteAsync(sql, parameters);
@@ -117,6 +164,95 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             }
         }
 
+        public async Task<IEnumerable<Property>> GetAllPropertiesAsync(int skip, int take, string? searchTerm = null, string? type = null, int? status = null, string? sort = null, IEnumerable<long>? filterPropertyIds = null)
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var sql = @"
+                SELECT
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    pl.rent_due_months AS ""RentDueMonths"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id AND rp.payment_type = 'Rent'), 0) AS ""TotalPaid""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                WHERE 1=1";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    sql += " AND (p.name ILIKE @SearchTerm OR p.address ILIKE @SearchTerm OR p.city ILIKE @SearchTerm OR p.property_number ILIKE @SearchTerm OR t.name ILIKE @SearchTerm)";
+                }
+
+                if (!string.IsNullOrWhiteSpace(type))
+                {
+                    sql += " AND p.property_type = @Type";
+                }
+
+                if (status.HasValue)
+                {
+                    if (status.Value == 1) // Vacant
+                    {
+                        sql += " AND pl.id IS NULL";
+                    }
+                    else if (status.Value == 2) // Occupied
+                    {
+                        sql += " AND pl.id IS NOT NULL";
+                    }
+                }
+
+                if (filterPropertyIds != null && filterPropertyIds.Any())
+                {
+                    sql += " AND p.id = ANY(@FilterPropertyIds)";
+                }
+                else if (filterPropertyIds != null && !filterPropertyIds.Any())
+                {
+                    return Array.Empty<Property>();
+                }
+
+                string sortClause = "ORDER BY p.id";
+                if (sort == "date_desc") sortClause = "ORDER BY p.created_at DESC";
+                else if (sort == "date_asc") sortClause = "ORDER BY p.created_at ASC";
+                else if (sort == "name_asc") sortClause = "ORDER BY p.name ASC";
+                else if (sort == "name_desc") sortClause = "ORDER BY p.name DESC";
+
+                sql += $"\n{sortClause}\nOFFSET @Skip LIMIT @Take";
+
+                var properties = await connection.QueryAsync<Property>(sql, new 
+                { 
+                    Skip = skip, 
+                    Take = take,
+                    SearchTerm = $"%{searchTerm}%",
+                    Type = type,
+                    FilterPropertyIds = filterPropertyIds?.ToArray()
+                });
+                return properties;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Property>();
+            }
+        }
+
         public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
         {
             try
@@ -126,19 +262,29 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 SELECT
-                    id,
-                    name,
-                    description,
-                    property_type AS ""PropertyType"",
-                    property_code AS ""PropertyCode"",
-                    status AS ""Status"",
-                    address AS ""Address"",
-                    city AS ""City"",
-                    country AS ""Country"",
-                    created_at AS ""CreatedAt"",
-                    updated_at AS ""UpdatedAt""
-                FROM properties
-                ORDER BY id";
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    pl.rent_due_months AS ""RentDueMonths"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id AND rp.payment_type = 'Rent'), 0) AS ""TotalPaid""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                ORDER BY p.id";
 
                 var properties = await connection.QueryAsync<Property>(sql);
                 return properties;
@@ -161,19 +307,29 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
 
                 const string sql = @"
                 SELECT
-                    id,
-                    name,
-                    description,
-                    property_type AS ""PropertyType"",
-                    property_code AS ""PropertyCode"",
-                    status AS ""Status"",
-                    address AS ""Address"",
-                    city AS ""City"",
-                    country AS ""Country"",
-                    created_at AS ""CreatedAt"",
-                    updated_at AS ""UpdatedAt""
-                FROM properties
-                WHERE id = @Id";
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt"",
+                    t.name AS ""TenantName"",
+                    pl.rent_amount AS ""RentAmount"",
+                    pl.months AS ""LeaseMonths"",
+                    pl.rent_due_months AS ""RentDueMonths"",
+                    pl.start_date::timestamptz AS ""LeaseStartDate"",
+                    COALESCE((SELECT SUM(rp.amount) FROM rent_payments rp WHERE rp.lease_id = pl.id AND rp.payment_type = 'Rent'), 0) AS ""TotalPaid""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                LEFT JOIN tenants t ON pl.tenant_id = t.id
+                WHERE p.id = @Id";
 
                 var property = await connection.QuerySingleOrDefaultAsync<Property?>(sql, new { Id = id });
                 return property;
@@ -205,6 +361,41 @@ namespace Jaffar_Mall_Rent_Management_System.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+        }
+        public async Task<IEnumerable<Property>> GetVacantPropertiesAsync()
+        {
+            try
+            {
+                await using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                const string sql = @"
+                SELECT
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.property_type AS ""PropertyType"",
+                    p.property_code AS ""PropertyCode"",
+                    p.property_number AS ""PropertyNumber"",
+                    p.floor_number AS ""FloorNumber"",
+                    p.status AS ""Status"",
+                    p.address AS ""Address"",
+                    p.city AS ""City"",
+                    p.country AS ""Country"",
+                    p.created_at AS ""CreatedAt"",
+                    p.updated_at AS ""UpdatedAt""
+                FROM properties p
+                LEFT JOIN property_leases pl ON p.id = pl.property_id AND pl.status = 2
+                WHERE pl.id IS NULL
+                ORDER BY p.name";
+
+                return await connection.QueryAsync<Property>(sql);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Array.Empty<Property>();
             }
         }
     }

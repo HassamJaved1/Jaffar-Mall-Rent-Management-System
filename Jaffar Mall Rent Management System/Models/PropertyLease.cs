@@ -9,16 +9,24 @@ namespace Jaffar_Mall_Rent_Management_System.Models
         public long PropertyId { get; set; }
 
         public string? Description { get; set; }
-
         public LeaseStatus Status { get; set; }
 
         public decimal RentAmount { get; set; }
 
         public decimal? SecurityDeposit { get; set; }
-
+        public decimal PaidSecurityDeposit { get; set; } = 0;
+        public int RentDueMonths { get; set; } = 1; // Default rent due schedule
+        public int SecurityDueDays { get; set; } = 0; // Default security due schedule
         public string? AddedBy { get; set; }
 
         public int Months { get; set; }
+        
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
+        public int IncrementMonths { get; set; } = 0; // After how many months
+        public decimal IncrementPercentage { get; set; } = 0; // % to increase
+        public DateTime? LastIncrementDate { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

@@ -1,51 +1,226 @@
-﻿@* <!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html class="dark" lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Jaffar_Mall_Rent_Management_System</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Jaffar_Mall_Rent_Management_System.styles.css" asp-append-version="true" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>@ViewData["Title"] - RentManager</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Theme Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#197fe6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111418", 
+                        "surface-dark": "#1a1d23",
+                        "element-dark": "#293038",
+                        "card-dark": "#1e252b",
+                        "card-hover": "#293038",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics in dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111418;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #293038;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #3e4854;
+            }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Jaffar_Mall_Rent_Management_System</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden">
+    <div class="flex flex-col md:flex-row h-screen w-full overflow-hidden">
+        <!-- Mobile Header (Visible only on mobile) -->
+        <header class="md:hidden flex items-center justify-between px-4 h-14 bg-background-dark border-b border-[#293038] shrink-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary size-8 rounded flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-xl">apartment</span>
+                </div>
+                <h1 class="text-white text-lg font-bold leading-none">Rent Manager</h1>
+            </div>
+            <button id="mobile-menu-open" class="p-2 text-[#9dabb8] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+        </header>
+
+        <!-- Sidebar Backdrop (Mobile only) -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[280px] flex flex-col bg-background-dark border-r border-[#293038] shrink-0 h-full overflow-y-auto transition-transform duration-300 transform -translate-x-full md:translate-x-0">
+            <div class="flex h-full flex-col justify-between p-4">
+                <div class="flex flex-col gap-6">
+                    <!-- Brand (Desktop) -->
+                    <div class="hidden md:flex items-center gap-3 px-2">
+                        <div class="bg-center bg-no-repeat bg-cover rounded-lg size-10 bg-primary flex items-center justify-center text-white" data-alt="RentManager Logo">
+                            <span class="material-symbols-outlined text-2xl">apartment</span>
+                        </div>
+                        <h1 class="text-white text-xl font-bold leading-normal tracking-tight">Rent Manager</h1>
+                    </div>
+                    
+                    <!-- Mobile Sidebar Header -->
+                    <div class="flex md:hidden items-center justify-between px-2 mb-2">
+                         <div class="flex items-center gap-3">
+                            <div class="bg-primary size-8 rounded flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-xl">apartment</span>
+                            </div>
+                            <h1 class="text-white text-lg font-bold">Rent Manager</h1>
+                        </div>
+                        <button id="mobile-menu-close" class="p-2 text-[#9dabb8] hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-2xl">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Navigation -->
+                    <nav class="flex flex-col gap-2">
+                        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group" asp-controller="Dashboard" asp-action="Index">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">dashboard</span>
+                            <p class="text-sm font-medium leading-normal">Dashboard</p>
+                        </a>
+                        <a asp-controller="Property" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">domain</span>
+                            <p class="text-sm font-medium leading-normal">Properties</p>
+                        </a>
+                        <a asp-controller="Rent" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">payments</span>
+                            <p class="text-sm font-medium leading-normal">Payments</p>
+                        </a>
+                        <a asp-controller="Vouchers" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">receipt_long</span>
+                            <p class="text-sm font-medium leading-normal">Vouchers</p>
+                        </a>
+                        <a asp-controller="Leases" asp-action="Manage" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">assignment</span>
+                            <p class="text-sm font-medium leading-normal">Assignments</p>
+                        </a>
+                        <a asp-controller="Tenant" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">group</span>
+                            <p class="text-sm font-medium leading-normal">Tenants</p>
+                        </a>
+                        <a asp-controller="Maintenance" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <div class="relative">
+                                <span class="material-symbols-outlined group-hover:text-white transition-colors">home_repair_service</span>
+                                <span class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-background-dark"></span>
+                            </div>
+                            <p class="text-sm font-medium leading-normal">Maintenance</p>
+                        </a>
+                        <a asp-controller="Document" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors group">
+                            <span class="material-symbols-outlined group-hover:text-white transition-colors">description</span>
+                            <p class="text-sm font-medium leading-normal">Documents</p>
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="px-3">
+                        <p class="text-xs font-bold text-[#9dabb8] uppercase tracking-wider mb-2">System</p>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors mb-1" href="#">
+                            <span class="material-symbols-outlined">settings</span>
+                            <p class="text-sm font-medium leading-normal">Settings</p>
+                        </a>
+                        <form asp-controller="Login" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#293038] text-[#9dabb8] hover:text-white transition-colors text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <p class="text-sm font-medium leading-normal">Logout</p>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#1e252b] border border-[#293038]">
+                        <div class="flex items-center gap-3">
+                            <div class="size-10 rounded-full bg-cover bg-center bg-[#293038] flex items-center justify-center" data-alt="User profile photo">
+                                <span class="material-symbols-outlined text-[#9dabb8]">person</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white">Admin User</p>
+                                <p class="text-xs text-[#9dabb8]">Manager</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-background-light dark:bg-background-dark">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Jaffar_Mall_Rent_Management_System - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const closeBtn = document.getElementById('mobile-menu-close');
+
+        function toggleSidebar(show) {
+            if (show) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+                backdrop.classList.add('opacity-100');
+                document.body.classList.add('overflow-hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        backdrop.classList.add('hidden');
+                    }
+                }, 300);
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        // Handle all toggle buttons (including ones in views)
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#mobile-menu-open') || e.target.closest('.mobile-menu-toggle')) {
+                toggleSidebar(true);
+            }
+            if (e.target.closest('#mobile-menu-close') || e.target.closest('#sidebar-backdrop')) {
+                toggleSidebar(false);
+            }
+        });
+
+        // Close sidebar on navigation (mobile)
+        const navLinks = sidebar.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleSidebar(false);
+                }
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-</html> *@
-@RenderBody()
+</html>

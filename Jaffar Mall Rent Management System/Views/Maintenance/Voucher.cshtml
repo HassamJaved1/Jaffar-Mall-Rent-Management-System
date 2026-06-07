@@ -1,0 +1,160 @@
+@model Jaffar_Mall_Rent_Management_System.Models.Maintenance
+
+@{
+    ViewData["Title"] = "Maintenance Voucher #" + Model.Id;
+    var properties = ViewBag.Properties as IEnumerable<Jaffar_Mall_Rent_Management_System.Models.Property> 
+                     ?? Enumerable.Empty<Jaffar_Mall_Rent_Management_System.Models.Property>();
+    var property = properties.FirstOrDefault(p => p.Id == Model.PropertyId);
+    string propName = property != null ? $"{property.Name} ({property.PropertyNumber})" : $"Unknown Property ({Model.PropertyId})";
+    decimal grandTotal = Model.RepairCost + Model.AmountPaid;
+}
+
+<div class="max-w-3xl mx-auto my-10 p-8 bg-white text-black shadow-lg border border-gray-200" id="voucher-print-area">
+    <!-- Header -->
+    <div class="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight">
+                <span class="text-[#1e3a8a]">JAFFAR</span>
+                <span class="text-[#eab308]">MALL</span>
+            </h1>
+            <h2 class="text-lg font-semibold text-gray-700 mt-1">Maintenance & Repair Voucher</h2>
+            <p class="text-sm text-gray-500 mt-2">Main GT Road, Jhelum, Punjab</p>
+            <p class="text-sm text-gray-500">Contact: +92 310 3709000</p>
+        </div>
+        <div class="text-right">
+            <p class="text-gray-600 font-medium">Voucher No: <span class="text-red-600 font-bold">#@Model.Id.ToString("D5")</span></p>
+            <p class="text-gray-600 font-medium mt-1">Date: <span>@Model.CreatedAt.ToString("dd MMM yyyy")</span></p>
+            <span class="inline-block mt-3 px-3 py-1 bg-green-100 text-green-800 font-bold text-xs uppercase tracking-wider rounded border border-green-300">
+                Resolved
+            </span>
+        </div>
+    </div>
+
+    <!-- Details Section -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+        <!-- Property Info -->
+        <div>
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Property Details</h3>
+            <p class="font-semibold text-gray-800 text-lg">@propName</p>
+        </div>
+        <!-- Repairer Info -->
+        <div class="text-right">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Repairer Details</h3>
+            <p class="font-semibold text-gray-800 text-lg">@(string.IsNullOrEmpty(Model.RepairerName) ? "Internal Maintenance" : Model.RepairerName)</p>
+            @if (!string.IsNullOrEmpty(Model.RepairerDetails))
+            {
+                <p class="text-gray-600 text-sm mt-1">@Model.RepairerDetails</p>
+            }
+        </div>
+    </div>
+
+    <!-- Issue Table -->
+    <div class="mb-8">
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Repair Description</h3>
+        <table class="w-full border-collapse border border-gray-300">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Issue / Title</th>
+                    <th class="border border-gray-300 px-4 py-3 text-right text-sm font-bold text-gray-700 w-32">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="border border-gray-300 px-4 py-4 text-gray-800">
+                        <strong class="block mb-1">@Model.Title</strong>
+                        <span class="text-sm text-gray-600">@(string.IsNullOrEmpty(Model.Description) ? "No detailed description provided." : Model.Description)</span>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-4 text-right text-gray-800 font-bold align-top">
+                        @Model.RepairCost.ToString("C")
+                    </td>
+                </tr>
+                <tr class="bg-gray-100">
+                    <td class="border border-gray-300 px-4 py-2 text-right text-sm font-bold text-gray-700">
+                        Issue / Repair Cost Estimate
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-right text-gray-800 font-bold">
+                        @Model.RepairCost.ToString("C")
+                    </td>
+                </tr>
+                <tr class="bg-blue-50">
+                    <td class="border border-gray-300 px-4 py-2 text-right text-sm font-bold text-gray-700">
+                        Amount Paid to Repairer
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-right text-blue-800 font-extrabold text-lg">
+                        @Model.AmountPaid.ToString("C")
+                    </td>
+                </tr>
+                <tr class="bg-gray-800">
+                    <td class="border border-gray-600 px-4 py-3 text-right text-sm font-extrabold text-white uppercase tracking-wider">
+                        Grand Total
+                    </td>
+                    <td class="border border-gray-600 px-4 py-3 text-right text-yellow-400 font-extrabold text-xl">
+                        @grandTotal.ToString("C")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="flex justify-end mb-12">
+        <div class="w-1/2">
+            <div class="flex justify-between py-2 border-b border-gray-200">
+                <span class="font-semibold text-gray-600">Issue / Repair Cost Estimate:</span>
+                <span class="font-bold text-gray-800">@Model.RepairCost.ToString("C")</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-200">
+                <span class="font-semibold text-gray-600">Amount Paid to Repairer:</span>
+                <span class="font-extrabold text-blue-700">@Model.AmountPaid.ToString("C")</span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 border-gray-800 mt-1 bg-gray-50 px-2">
+                <span class="font-extrabold text-gray-800 uppercase tracking-wide">Grand Total:</span>
+                <span class="font-extrabold text-[#1e3a8a] text-xl">@grandTotal.ToString("C")</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="flex justify-between items-end pt-12 mt-12">
+        <div class="text-center w-48">
+            <div class="border-t border-gray-400 pt-2 text-sm font-bold text-gray-600 uppercase">Manager Signature</div>
+        </div>
+        <div class="text-center w-48">
+            <div class="border-t border-gray-400 pt-2 text-sm font-bold text-gray-600 uppercase">Repairer Signature</div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Actions -->
+<div class="max-w-3xl mx-auto mb-10 flex justify-end gap-4 no-print">
+    <a asp-action="Index" class="px-6 py-2.5 rounded-lg border border-[#293038] text-white hover:bg-[#293038] transition-colors font-medium">Back to List</a>
+    <button onclick="window.print()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors shadow-lg">
+        <span class="material-symbols-outlined text-[20px]">print</span>
+        Print Voucher
+    </button>
+</div>
+
+<style>
+    @@media print {
+        body {
+            background-color: white !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+        /* Hide layout sidebar/header if they don't have no-print classes */
+        aside, header, nav, .sidebar {
+            display: none !important;
+        }
+        main, .flex-1 {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #voucher-print-area {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+        }
+    }
+</style>

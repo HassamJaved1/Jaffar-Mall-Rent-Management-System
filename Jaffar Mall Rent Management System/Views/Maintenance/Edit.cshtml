@@ -1,0 +1,113 @@
+@model Jaffar_Mall_Rent_Management_System.Models.Maintenance
+
+@{
+    ViewData["Title"] = "Edit Maintenance Voucher";
+    var properties = ViewBag.Properties as IEnumerable<Jaffar_Mall_Rent_Management_System.Models.Property> 
+                     ?? Enumerable.Empty<Jaffar_Mall_Rent_Management_System.Models.Property>();
+}
+
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-[#293038] bg-background-dark shrink-0 z-20">
+    <div class="flex items-center gap-4">
+        <h2 class="text-lg font-bold text-white">Edit Repair Voucher #@Model.Id.ToString("D5")</h2>
+    </div>
+    <div class="flex items-center gap-4 flex-1 justify-end">
+        <a asp-action="Index" class="text-[#9dabb8] hover:text-white transition-colors text-sm font-medium">Cancel</a>
+    </div>
+</header>
+
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+    <div class="max-w-2xl mx-auto space-y-6 pb-10">
+        
+        <div class="bg-[#1e252b] rounded-xl border border-[#293038] p-6">
+            <h3 class="text-white text-base font-bold mb-6">Maintenance / Repair Details</h3>
+            
+            <form asp-action="Update" method="post" class="space-y-6">
+                <!-- Hidden fields for existing data -->
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <input type="hidden" name="TenantId" value="@Model.TenantId" />
+                <input type="hidden" name="CreatedAt" value="@Model.CreatedAt.ToString("O")" />
+                <input type="hidden" name="Status" value="@Model.Status" />
+
+                <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
+
+                <!-- Property Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-[#9dabb8] mb-1">Select Property</label>
+                    <select name="PropertyId" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required>
+                        <option value="">-- Select Property --</option>
+                        @foreach (var p in properties)
+                        {
+                            if (Model.PropertyId == p.Id)
+                            {
+                                <option value="@p.Id" selected>@p.Name (@p.PropertyNumber)</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@p.Name (@p.PropertyNumber)</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Issue Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Issue / Repair Title</label>
+                        <input type="text" name="Title" value="@Model.Title" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" placeholder="e.g. Short circuit repaired" required />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#9dabb8] mb-1">Detailed Description</label>
+                    <textarea name="Description" rows="2" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" placeholder="Details about the repair work undertaken...">@Model.Description</textarea>
+                </div>
+
+                <hr class="border-[#293038] my-4" />
+                <h4 class="text-white text-sm font-semibold mb-4">Repairer & Financial Details</h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Repairer Name</label>
+                        <input type="text" name="RepairerName" value="@Model.RepairerName" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" placeholder="e.g. Asad Ali" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Repairer Details (Phone/Role)</label>
+                        <input type="text" name="RepairerDetails" value="@Model.RepairerDetails" class="block w-full rounded-lg border-0 py-2.5 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" placeholder="e.g. Electrician - 03001234567" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Total Repair Cost</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-[#9dabb8] sm:text-sm">PKR</span>
+                            </div>
+                            <input type="number" step="0.01" name="RepairCost" value="@Model.RepairCost" class="block w-full rounded-lg border-0 py-2.5 pl-10 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required />
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-[#9dabb8] mb-1">Amount Paid to Repairer</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-[#9dabb8] sm:text-sm">PKR</span>
+                            </div>
+                            <input type="number" step="0.01" name="AmountPaid" value="@Model.AmountPaid" class="block w-full rounded-lg border-0 py-2.5 pl-10 bg-[#293038] text-white placeholder-[#9dabb8] focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 transition-all" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex gap-4">
+                    <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors shadow-lg shadow-primary/20">
+                        Update Voucher
+                    </button>
+                    <a asp-action="Index" class="px-6 py-2.5 rounded-lg border border-[#293038] text-white hover:bg-[#293038] transition-colors font-medium">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
