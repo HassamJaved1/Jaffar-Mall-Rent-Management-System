@@ -34,7 +34,7 @@
         <!-- Rent Status Table -->
         <div class="bg-[#1e252b] rounded-xl border border-[#293038] overflow-hidden">
             <div class="p-6 border-b border-[#293038] flex items-center justify-between">
-                <h3 class="text-white text-base font-bold">Active Leases & Payment Status</h3>
+                <h3 class="text-white text-base font-bold">Payment Details</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -44,14 +44,14 @@
                             <th class="px-6 py-3 font-semibold">Property</th>
                             <th class="px-6 py-3 font-semibold text-right">Start Date</th>
                             <th class="px-6 py-3 font-semibold text-right">Deadline</th>
-                            <th class="px-6 py-3 font-semibold text-right">Security deposit</th>
+                          @*   <th class="px-6 py-3 font-semibold text-right">Security deposit</th> *@
                             <th class="px-6 py-3 font-semibold text-right">Paid Security</th>
-                            <th class="px-6 py-3 font-semibold text-right">Security Bal</th>
+                           @*  <th class="px-6 py-3 font-semibold text-right">Security Bal</th> *@
                             <th class="px-6 py-3 font-semibold text-right">Monthly Rent</th>
                             <th class="px-6 py-3 font-semibold text-right">Expected Rent</th>
                             <th class="px-6 py-3 font-semibold text-right" title="Paid towards current interval">Paid (Current)</th>
-                            <th class="px-6 py-3 font-semibold text-right" title="Cumulative rent paid all time">Total Paid</th>
-                            <th class="px-6 py-3 font-semibold text-right">Rent Bal</th>
+                            <th class="px-6 py-3 font-semibold text-right" title="Cumulative rent paid all time">Total Rent Collected</th>
+                            <th class="px-6 py-3 font-semibold text-right">Pending Rent</th>
                             <th class="px-6 py-3 font-semibold text-center">Status</th>
                             <th class="px-6 py-3 font-semibold text-right">Actions</th>
                         </tr>
@@ -73,17 +73,29 @@
                                         <span class="text-white text-sm">@item.LeaseStartDate.ToString("MMM dd, yyyy")</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <span class="text-white text-sm">@(item.NextRentDueDate.HasValue ? item.NextRentDueDate.Value.ToString("MMM dd, yyyy") : "N/A")</span>
+                                        <span class="text-white text-sm">
+                                            @(
+                                                item.NextRentDueDate.HasValue
+                                                ? $"{item.NextRentDueDate.Value.ToString("MMM dd, yyyy")} " +
+                                                  $"({(item.NextRentDueDate.Value.Date - DateTime.Now.Date).Days switch
+                                                  {
+                                                      < 0 => $"{Math.Abs((item.NextRentDueDate.Value.Date - DateTime.Now.Date).Days)} days overdue",
+                                                      0 => "Due today",
+                                                      _ => $"{(item.NextRentDueDate.Value.Date - DateTime.Now.Date).Days} days left"
+                                                  }})"
+                                                : "N/A"
+                                            )
+                                        </span>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                   @*  <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@(item.SecurityDeposit.HasValue ? item.SecurityDeposit.Value.ToString("C") : "0.00")</span>
-                                    </td>
+                                    </td> *@
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@item.PaidSecurityDeposit.ToString("C")</span>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                   @*  <td class="px-6 py-4 text-right">
                                         <span class="text-yellow-500 text-sm font-bold">@item.SecurityBalance.ToString("C")</span>
-                                    </td>
+                                    </td> *@
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-white text-sm">@item.MonthlyRent.ToString("C")</span>
                                     </td>

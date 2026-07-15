@@ -85,35 +85,38 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
                     decimal intervalRent = lease.RentAmount * rentDueMonths;
 
-                    int intervalsDue = 0;
-                    var currentDueDate = startDate.AddMonths(rentDueMonths);
-                    while (currentDueDate <= dueDate)
-                    {
-                        if (lease.EndDate.HasValue && currentDueDate > lease.EndDate.Value) break;
-                        intervalsDue++;
-                        currentDueDate = currentDueDate.AddMonths(rentDueMonths);
-                    }
-                    decimal expectedSoFar = intervalsDue * intervalRent;
+                    int intervalsPaid = (int)(totalPaid / intervalRent);
+                    var earliestUnpaidDate = startDate.AddMonths(rentDueMonths * (intervalsPaid + 1));
 
-                    bool hasPaidCurrentPeriod = totalPaid >= expectedSoFar;
+                    if (lease.EndDate.HasValue && earliestUnpaidDate > lease.EndDate.Value) 
+                        continue; // Fully paid up to lease end
 
-                    int daysUntilDue = (dueDate - today).Days;
+                    int daysUntilDue = (earliestUnpaidDate - today).Days;
 
                     // ── 7-day advance reminder ──────────────────────────
-                    if (daysUntilDue == 7 && !hasPaidCurrentPeriod)
+                    if (daysUntilDue == 7)
                     {
                         _logger.LogInformation("[RentReminder] Sending 7-day reminder → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentReminderEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, dueDate, managerEmail);
+                            lease.RentAmount, earliestUnpaidDate, managerEmail);
                     }
-                    // ── Due today not paid ──────────────────────────────
-                    else if (daysUntilDue == 0 && !hasPaidCurrentPeriod)
+                    // ── Due today not paid (Becomes Pending) ───────────────
+                    else if (daysUntilDue == 0)
                     {
                         _logger.LogInformation("[RentReminder] Sending overdue notice → {Tenant} ({Property})", tenant.Name, property.Name);
                         await emailService.SendRentOverdueEmailAsync(
                             tenant.Email, tenant.Name, property.Name,
-                            lease.RentAmount, dueDate, managerEmail);
+                            lease.RentAmount, earliestUnpaidDate, managerEmail);
+                    }
+                    // ── Overdue / Pending ───────────────────────────────
+                    // Send an email every 3 days when it is pending/overdue to act as a reminder.
+                    else if (daysUntilDue < 0 && Math.Abs(daysUntilDue) % 3 == 0)
+                    {
+                        _logger.LogInformation("[RentReminder] Sending ongoing pending/overdue reminder → {Tenant} ({Property})", tenant.Name, property.Name);
+                        await emailService.SendRentOverdueEmailAsync(
+                            tenant.Email, tenant.Name, property.Name,
+                            lease.RentAmount, earliestUnpaidDate, managerEmail);
                     }
                 }
                 catch (Exception ex)

@@ -44,7 +44,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
 
                             <p>Dear <strong>{tenantName}</strong>,</p>
 
-                            <p>We are pleased to officially confirm the lease assignment for the property located at <strong>{propertyName}</strong>. This communication serves as a formal acknowledgment of the terms agreed upon for your tenancy at Jaffar Mall.</p>
+                            <p>We are pleased to officially confirm the lease assignment for the property named <strong>{propertyName}</strong>. This communication serves as a formal acknowledgment of the terms agreed upon for your tenancy at Jaffar Mall.</p>
 
                             <p>According to our records, your lease is scheduled to commence on <strong>{startDate:MMMM dd, yyyy}</strong> and will remain in effect for a duration of <strong>{months} months</strong>, concluding on <strong>{endDate:MMMM dd, yyyy}</strong>. The monthly rental commitment for this unit has been established at <strong>PKR {rentAmount:N2}</strong>, with payments due every <strong>{rentDueMonths} months</strong>.</p>
 
@@ -53,14 +53,14 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                                 <strong>Note on Rent Increment:</strong> Please be advised that as per the agreement, a rent increase of <strong>{incrementPercentage}%</strong> will be applied automatically every <strong>{incrementMonths} months</strong> during the tenure of this lease.
                             </p>" : "")}
 
-                            <p>To finalize the security requirements, a deposit of <strong>PKR {securityDeposit:N2}</strong> is required within the next <strong>{securityDueDays} days</strong>. This deposit is held to ensure the maintenance and care of the premises throughout your occupancy.</p>
+                            <p>To finalize the security requirements, a deposit of <strong>PKR {securityDeposit:N2} has been made. This deposit is held to ensure the maintenance and care of the premises throughout your occupancy.</p>
 
                             <p>We are committed to providing a professional and supportive managed environment for all our tenants. Should you have any questions regarding these terms or require further assistance, please do not hesitate to contact our management office directly.</p>
 
                             <div style='margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0;'>
                                 <p style='margin: 0; font-weight: 600; color: #1e3a8a;'>Manager</p>
                                 <p style='margin: 4px 0; font-weight: 600; color: #1e3a8a;'>Jaffar Mall Management Office</p>
-                                <p style='margin: 4px 0; color: #eab308; font-size: 14px;'>Main GT Road, Jhelum, Punjab, Pakistan</p>
+                                <p style='margin: 4px 0; color: #eab308; font-size: 14px;'>Main GT Road, Jhelum,                Punjab, Pakistan</p>
                                 <p style='margin: 4px 0; color: #eab308; font-size: 14px;'>Contact: +92 310 3709000</p>
                             </div>
                         </div>

@@ -1,7 +1,6 @@
 using Jaffar_Mall_Rent_Management_System.Models;
 using Jaffar_Mall_Rent_Management_System.Models.ViewModels;
 using Jaffar_Mall_Rent_Management_System.Repositories;
-using System.Linq;
 
 namespace Jaffar_Mall_Rent_Management_System.Services
 {
