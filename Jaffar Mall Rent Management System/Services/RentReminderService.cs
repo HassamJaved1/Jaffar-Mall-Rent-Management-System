@@ -14,7 +14,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
         private readonly ILogger<RentReminderService> _logger;
 
         // How often to check (every 24 hours)
-        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
+        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
 
         public RentReminderService(IServiceScopeFactory scopeFactory, ILogger<RentReminderService> logger)
         {
@@ -136,12 +136,12 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     }
 
                     // ── Automated Rent Increment ───────────────────────
-                    if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0)
+                    if (lease.IncrementMonths > 0 && lease.IncrementPercentage > 0 && (!lease.EndDate.HasValue || today <= lease.EndDate.Value))
                     {
                         var baseDate = lease.LastIncrementDate ?? lease.StartDate ?? lease.CreatedAt;
                         var nextIncrementDue = baseDate.AddMonths(lease.IncrementMonths);
 
-                        if (today >= nextIncrementDue)
+                        if (today == nextIncrementDue)
                         {
                             decimal oldRent = lease.RentAmount;
                             decimal increaseAmount = oldRent * (lease.IncrementPercentage / 100);
@@ -151,7 +151,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                                 lease.Id, tenant.Name, property.Name, oldRent.ToString("N2"), newRent.ToString("N2"), lease.IncrementPercentage);
 
                             lease.RentAmount = newRent;
-                            lease.LastIncrementDate = today; // Or nextIncrementDue
+                            lease.LastIncrementDate = nextIncrementDue; // Advance strictly by the increment interval
                             lease.UpdatedAt = DateTime.UtcNow;
 
                             bool success = await leasesRepo.UpdateLeaseAsync(lease);

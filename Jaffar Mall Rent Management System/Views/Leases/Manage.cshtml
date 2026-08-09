@@ -81,6 +81,19 @@
                                         }
                                         <span class="text-sm font-mono font-black text-primary">PKR @cumulatedRent.ToString("N0")</span>
                                         <span class="text-[10px] text-gray-400 font-medium">@item.Lease.RentDueMonths x @item.Lease.RentAmount.ToString("N0")</span>
+                                        
+                                        @if (item.Lease.IncrementMonths > 0 && item.Lease.IncrementPercentage > 0)
+                                        {
+                                            var baseDate = item.Lease.LastIncrementDate ?? item.Lease.StartDate ?? item.Lease.CreatedAt;
+                                            var nextIncrement = baseDate.AddMonths(item.Lease.IncrementMonths);
+                                            if (!item.Lease.EndDate.HasValue || nextIncrement <= item.Lease.EndDate.Value)
+                                            {
+                                                <div class="mt-1 flex items-center justify-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full" title="Next Rent Increment">
+                                                    <span class="material-symbols-outlined text-[12px]">trending_up</span>
+                                                    <span>@nextIncrement.ToString("MMM dd, yyyy") (@item.Lease.IncrementPercentage%)</span>
+                                                </div>
+                                            }
+                                        }
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
