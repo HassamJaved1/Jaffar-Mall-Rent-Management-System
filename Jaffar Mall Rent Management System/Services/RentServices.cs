@@ -118,19 +118,23 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                     int rentDueMonths = lease.RentDueMonths > 0 ? lease.RentDueMonths : 1;
                     decimal intervalRent = lease.RentAmount * rentDueMonths;
 
-                    int intervalsPassed = 0;
+                    int expectedIntervals = 1;
                     var candidateDate = startDate.AddMonths(rentDueMonths);
                     while (candidateDate <= DateTime.Now)
                     {
                          if (lease.EndDate.HasValue && candidateDate > lease.EndDate.Value) break;
-                         intervalsPassed++;
+                         expectedIntervals++;
                          candidateDate = candidateDate.AddMonths(rentDueMonths);
                     }
                     
-                    decimal totalExpected = intervalsPassed * intervalRent;
+                    decimal totalExpected = expectedIntervals * intervalRent;
 
                     // 4. Get Total Paid
                     decimal totalPaid = await _rentRepository.GetTotalPaidByLeaseIdAsync(lease.Id);
+
+                    // Current Paid Rent
+                    decimal previousExpected = totalExpected - intervalRent;
+                    decimal currentPaidRent = Math.Max(0, totalPaid - previousExpected);
 
                     // 5. Balance
                     decimal balance = totalExpected - totalPaid;
@@ -165,6 +169,7 @@ namespace Jaffar_Mall_Rent_Management_System.Services
                         IntervalRent = intervalRent,
                         TotalRentExpected = totalExpected,
                         TotalAmountPaid = totalPaid,
+                        CurrentPaidRent = currentPaidRent,
                         Balance = balance,
                         PaidSecurityDeposit = lease.PaidSecurityDeposit,
                         SecurityBalance = (lease.SecurityDeposit ?? 0) - lease.PaidSecurityDeposit,

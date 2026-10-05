@@ -91,6 +91,7 @@
                                         </h4>
                                         <div class="text-sm text-slate-500 dark:text-text-secondary mt-1 flex gap-4">
                                             <span><strong>Rent:</strong> PKR @lease.RentAmount.ToString("N2")/mo</span>
+                                            <span><strong>Interval:</strong> @lease.RentDueMonths Mo.</span>
                                             <span><strong>Start Date:</strong> @(lease.StartDate?.ToString("MMM dd, yyyy") ?? "-")</span>
                                             <span><strong>Deadline:</strong> @(lease.EndDate?.ToString("MMM dd, yyyy") ?? "-")</span>
                                         </div>

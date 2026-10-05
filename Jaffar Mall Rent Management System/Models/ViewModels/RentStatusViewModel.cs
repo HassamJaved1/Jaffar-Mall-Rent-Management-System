@@ -22,6 +22,7 @@ namespace Jaffar_Mall_Rent_Management_System.Models.ViewModels
         // Calculated fields
         public decimal TotalRentExpected { get; set; } // Based on current date vs start date
         public decimal TotalAmountPaid { get; set; }
+        public decimal CurrentPaidRent { get; set; }
         public decimal Balance { get; set; } // Expected Rent - Paid Rent
         public decimal SecurityBalance { get; set; } // Total Security - Paid Security
         

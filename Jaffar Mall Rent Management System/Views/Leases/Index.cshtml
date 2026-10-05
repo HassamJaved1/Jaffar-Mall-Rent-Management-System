@@ -128,7 +128,7 @@
                                 </div>
                             </label>
                             <label class="flex flex-col flex-1 gap-2 group">
-                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Duration (Months)</span>
+                                <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Contract Duration (Months)</span>
                                 <div class="relative">
                                     <input id="Months" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="1" min="1" />
                                 </div>
@@ -144,6 +144,7 @@
                                 <div class="relative">
                                     <input id="RentDueMonths" class="w-full rounded-lg border border-gray-300 dark:border-[#3c4753] bg-gray-50 dark:bg-[#111418] px-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" type="number" value="1" min="1" />
                                 </div>
+                                <span id="RentDueError" class="text-[10px] text-red-500 font-bold hidden">Interval cannot exceed duration!</span>
                             </label>
                             <label class="flex flex-col flex-1 gap-2 group">
                                 <span class="text-sm font-medium text-slate-700 dark:text-[#9dabb8] group-focus-within:text-primary transition-colors">Security Due In (Days)</span>
@@ -212,11 +213,23 @@
                             </div>
                         </label>
                         <hr class="border-gray-200 dark:border-[#293038] my-2" />
-                        <!-- Summary -->
                         <div class="flex flex-col gap-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Term Length</span>
-                                <span id="TermLengthDisplay" class="text-sm font-medium text-slate-900 dark:text-white">12 Months</span>
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Term Duration</span>
+                                <span id="TermLengthDisplay" class="text-sm font-medium text-slate-900 dark:text-white">1 Month</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Collection Interval</span>
+                                <span id="TermRentCollectionDisplay" class="text-sm font-medium text-slate-900 dark:text-white">1 Month</span>
+                            </div>
+                            <hr class="border-gray-200 dark:border-[#293038] my-1" />
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">First Net Rent</span>
+                                <span id="FirstCollectionDisplay" class="text-sm font-bold text-emerald-600">PKR 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Regular Collection</span>
+                                <span id="RegularCollectionDisplay" class="text-sm font-medium text-slate-900 dark:text-white">PKR 0.00</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500 dark:text-[#9dabb8]">Cumulated Rent</span>
@@ -246,6 +259,9 @@
             const elRent = document.getElementById('RentAmount');
             const elMonths = document.getElementById('Months');
             const elTermDisplay = document.getElementById('TermLengthDisplay');
+            const rentcollectionTermDisplay = document.getElementById('TermRentCollectionDisplay');
+            const elFirstCollectionDisplay = document.getElementById('FirstCollectionDisplay');
+            const elRegularCollectionDisplay = document.getElementById('RegularCollectionDisplay');
             const elTotalDisplay = document.getElementById('TotalValueDisplay');
             const btnCreate = document.getElementById('btnCreateAssignment');
 
@@ -288,10 +304,34 @@
             }
 
             function updateSummary(months, rent) {
-                elTermDisplay.textContent = months + " Months";
                 const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
-                const cumulatedRent = rentDueMonths * rent;
-                elTotalDisplay.textContent = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(cumulatedRent);
+                const securityDeposit = parseFloat(document.getElementById('SecurityDeposit').value) || 0;
+                const rentDueError = document.getElementById('RentDueError');
+
+                // Validation
+                if (rentDueMonths > months && months > 0) {
+                    document.getElementById('RentDueMonths').classList.add('border-red-500', 'text-red-500');
+                    if (rentDueError) rentDueError.classList.remove('hidden');
+                } else {
+                    document.getElementById('RentDueMonths').classList.remove('border-red-500', 'text-red-500');
+                    if (rentDueError) rentDueError.classList.add('hidden');
+                }
+
+                elTermDisplay.textContent = months + (months === 1 ? " Month" : " Months");
+                if (rentcollectionTermDisplay) {
+                    rentcollectionTermDisplay.textContent = rentDueMonths + (rentDueMonths === 1 ? " Month" : " Months");
+                }
+
+                const formatter = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 });
+                
+                const regularCollection = rent * rentDueMonths;
+                const firstCollection = regularCollection - securityDeposit;
+
+                if (elRegularCollectionDisplay) elRegularCollectionDisplay.textContent = formatter.format(regularCollection);
+                if (elFirstCollectionDisplay) elFirstCollectionDisplay.textContent = formatter.format(firstCollection);
+
+                const cumulatedRent = months * rent;
+                elTotalDisplay.textContent = formatter.format(cumulatedRent);
             }
 
             // Listen for changes
@@ -300,7 +340,12 @@
             elEndDate.addEventListener('input', updateCalculationsFromDates);
             elRent.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
             
+            const elSecurityDeposit = document.getElementById('SecurityDeposit');
             const elRentDueMonths = document.getElementById('RentDueMonths');
+
+            if (elSecurityDeposit) {
+                elSecurityDeposit.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
+            }
             if (elRentDueMonths) {
                 elRentDueMonths.addEventListener('input', () => updateSummary(parseInt(elMonths.value) || 0, parseFloat(elRent.value) || 0));
             }
@@ -313,14 +358,21 @@
                 const endDate = document.getElementById('EndDate').value;
                 const rentAmount = document.getElementById('RentAmount').value;
                 const securityDeposit = document.getElementById('SecurityDeposit').value;
-                const rentDueMonths = document.getElementById('RentDueMonths').value;
+                const rentDueMonths = parseInt(document.getElementById('RentDueMonths').value) || 1;
+                const monthsInput = parseInt(elMonths.value) || 0;
+
+                if (rentDueMonths > monthsInput && monthsInput >0) {
+                    alert("Rent collection interval cannot be greater than the total contract duration.");
+                    return;
+                }
+
                 const securityDueDays = document.getElementById('SecurityDueDays').value;
                 const incrementMonths = document.getElementById('IncrementMonths').value;
                 const incrementPercentage = document.getElementById('IncrementPercentage').value;
                 const description = document.getElementById('Description').value;
 
                 if (!tenantId || !propertyId || !rentAmount || !startDate || !endDate || !rentDueMonths) {
-                    alert("Please select a Tenant, Property, Start Date, End Date, enter Rent Amount, and Rent Due Months.");
+                    alert("Please fill in all required fields, including Rent Amount and Collection Interval.");
                     return;
                 }
 
