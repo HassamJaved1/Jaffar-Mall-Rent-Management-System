@@ -5,11 +5,18 @@
 <div class="max-w-[1400px] mx-auto flex flex-col gap-4">
     @if (Model != null && Model.Items != null && Model.Items.Any())
     {
+        var rentStatusByPropertyId = ViewBag.RentStatusByPropertyId as IDictionary<long, RentStatusViewModel>;
         @foreach (var property in Model.Items)
         {
             var isVacant = string.IsNullOrEmpty(property.TenantName);
-            var totalRent = property.RentAmount * property.RentDueMonths;
-            var isPaid = totalRent > 0 && property.TotalPaid >= totalRent;
+            var rentStatus = rentStatusByPropertyId != null && rentStatusByPropertyId.TryGetValue(property.Id, out var rs) ? rs : null;
+
+            // Interval-aware amounts/status (same basis as Rent page)
+            var intervalRent = rentStatus?.IntervalRent ?? (property.RentAmount * property.RentDueMonths);
+            var rentDueMonths = rentStatus?.RentDueMonths ?? property.RentDueMonths;
+            var paymentStatus = rentStatus?.Status ?? ((intervalRent > 0 && property.TotalPaid >= intervalRent) ? "Paid" : "Pending");
+            var isPaid = string.Equals(paymentStatus, "Paid", StringComparison.OrdinalIgnoreCase);
+            var isOverdue = string.Equals(paymentStatus, "Overdue", StringComparison.OrdinalIgnoreCase);
             var statusColor = isVacant ? "text-[#637588] dark:text-[#9dabb8]" : (isPaid ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500");
             var statusBg = isVacant ? "bg-[#637588]/10 border-[#637588]/20" : (isPaid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-amber-500/10 border-amber-500/20");
             var statusText = isVacant ? "Vacant" : "Occupied";
@@ -66,7 +73,7 @@
                         <div class="flex flex-col">
                             <p class="text-sm font-bold text-[#111418] dark:text-white truncate max-w-[150px]">@property.TenantName</p>
                             <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Lease Duration: @property.LeaseMonths Months</p>
-                            <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Collect After: @property.RentDueMonths Months</p>
+                            <p class="text-xs text-[#637588] dark:text-[#9dabb8]">Collect After: @rentDueMonths Months</p>
                         </div>
                     </div>
                 }
@@ -84,7 +91,7 @@
                         }
                         else
                         {
-                            <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">PKR @totalRent.ToString("N0")</p>
+                            <p class="text-lg font-bold text-[#111418] dark:text-white tabular-nums">PKR @intervalRent.ToString("N0")</p>
                             @if (isPaid)
                             {
                                 <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -94,9 +101,9 @@
                             }
                             else
                             {
-                                <div class="flex items-center gap-1 text-amber-500">
+                                <div class="flex items-center gap-1 @(isOverdue ? "text-red-500" : "text-amber-500")">
                                     <span class="material-symbols-outlined text-[16px] filled">error</span>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Pending</span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">@paymentStatus</span>
                                 </div>
                             }
                         }

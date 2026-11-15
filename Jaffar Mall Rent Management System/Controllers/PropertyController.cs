@@ -27,23 +27,22 @@ namespace Jaffar_Mall_Rent_Management_System.Controllers
             const int pageSize = 10; 
             if (page < 1) page = 1;
 
+            // Use the same interval-aware rent status summary used by the Rent/Leases area,
+            // so Properties shows accurate Paid/Pending/Overdue per collection interval.
+            var rentStatusResult = await _rentServices.GetRentStatusSummaryAsync();
+            var rentStatuses = rentStatusResult.Data?.ToList() ?? new List<RentStatusViewModel>();
+            ViewBag.RentStatusByPropertyId = rentStatuses
+                .GroupBy(rs => rs.PropertyId)
+                .ToDictionary(g => g.Key, g => g.First());
+
             IEnumerable<long>? filterPropertyIds = null;
             if (!string.IsNullOrEmpty(payment))
             {
-                var rentStatusResult = await _rentServices.GetRentStatusSummaryAsync();
-                var rentStatuses = rentStatusResult.Data;
-                
-                if (rentStatuses != null)
-                {
-                    filterPropertyIds = rentStatuses
-                        .Where(rs => string.Equals(rs.Status, payment, StringComparison.OrdinalIgnoreCase))
-                        .Select(rs => rs.PropertyId)
-                        .ToList();
-                }
-                else
-                {
-                    filterPropertyIds = new List<long>();
-                }
+                filterPropertyIds = rentStatuses
+                    .Where(rs => string.Equals(rs.Status, payment, StringComparison.OrdinalIgnoreCase))
+                    .Select(rs => rs.PropertyId)
+                    .Distinct()
+                    .ToList();
             }
 
             var viewModel = await _propertyServices.GetAllPropertiesAsync(page, pageSize, search, type, status, sort, filterPropertyIds);
